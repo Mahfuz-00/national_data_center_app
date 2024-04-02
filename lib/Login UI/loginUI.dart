@@ -70,7 +70,7 @@ class _LoginState extends State<Login> {
                             'Welcome Again!',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: Color.fromRGBO(25, 192, 122, 1),
+                                color: Color.fromRGBO(13, 70, 127, 1),
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'default'),
@@ -209,7 +209,7 @@ class _LoginState extends State<Login> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+                                backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -260,7 +260,7 @@ class _LoginState extends State<Login> {
                               'Register now',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Color.fromRGBO(25, 192, 122, 1),
+                                color: Color.fromRGBO(13, 70, 127, 1),
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'default',

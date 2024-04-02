@@ -19,9 +19,9 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+        backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(Icons.menu, color: Colors.white,),
           onPressed: () {},
         ),
         title: const Text(
@@ -36,16 +36,12 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications_rounded),
+            icon: const Icon(Icons.notifications_rounded, color: Colors.white,),
           ),
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.white,),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert_outlined),
-            onPressed: () {},
-          )
         ],
       ),
       body: SingleChildScrollView(
@@ -82,147 +78,102 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                       )),
                   const SizedBox(height: 5),
                   Container(
-                    color: Colors.grey[200],
                     padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          width: 200,
+                          width: MediaQuery.of(context).size.width* 0.3,
+                          height: MediaQuery.of(context).size.height* 0.15,
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child:  Container(
+                            width: MediaQuery.of(context).size.width* 0.25,
+                            height: MediaQuery.of(context).size.height* 0.1,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              ),
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),),
+                            child: const Icon(Icons.person,
+                              size: 100,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10,),
+                        Expanded(
                           child: RichText(
                               text: const TextSpan(children: [
-                            TextSpan(
-                                text: 'Name:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Organization Name:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Appointment With:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Belongs:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Mobile No:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Appointment Time & Date:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Entry Time & Date:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            TextSpan(
-                                text: 'Status:\n',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                          ])),
-                        ),
-                        RichText(
-                            text: const TextSpan(children: [
-                          TextSpan(
-                              text: 'Abddus Sobhan\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: 'Touch and Solve\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: 'Dhukhu Mia\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: 'A Handbag\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: '00111222333\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: '11:30, 15 February 2024\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: '11:28, 15 February 2024\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                          TextSpan(
-                              text: 'Pending\n',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                        ]))
+                                TextSpan(
+                                    text: 'Name: Abddus Sobhan\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Organization Name: Touch and Solve\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Appointment With: Dhukhu Mia\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Belongs: A Handbag\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Mobile No: 00111222333\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Appointment Time & Date: 11:30, 15 February 2024\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Entry Time & Date: 11:28, 15 February 2024\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Status: Pending\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                              ])),
+                        )
                       ],
                     ),
                   ),
@@ -237,23 +188,125 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Container(
-                          width: MediaQuery.of(context).size.width* 0.4,
-                          height: MediaQuery.of(context).size.height* 0.2,
+                          width: MediaQuery.of(context).size.width* 0.3,
+                          height: MediaQuery.of(context).size.height* 0.15,
                           padding: const EdgeInsets.symmetric(horizontal: 5),
                           child:  Container(
-                            width: MediaQuery.of(context).size.width* 0.3,
-                            height: MediaQuery.of(context).size.height* 0.2,
+                            width: MediaQuery.of(context).size.width* 0.25,
+                            height: MediaQuery.of(context).size.height* 0.1,
                             decoration: BoxDecoration(
                               border: Border.all(
                                 width: 1,
                                 color: Colors.black,
                               ),
-                              borderRadius: const BorderRadius.all(Radius.circular(20)),),
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),),
                             child: const Icon(Icons.person,
-                                    size: 150,
+                              size: 100,
                             ),
                           ),
                         ),
+                        SizedBox(width: 10,),
+                        Expanded(
+                          child: RichText(
+                              text: const TextSpan(children: [
+                                TextSpan(
+                                    text: 'Name: Abddus Sobhan\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Organization Name: Touch and Solve\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Appointment With: Dhukhu Mia\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Belongs: A Handbag\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Mobile No: 00111222333\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Appointment Time & Date: 11:30, 15 February 2024\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Entry Time & Date: 11:28, 15 February 2024\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                                TextSpan(
+                                    text: 'Status: Pending\n',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                              ])),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5,),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width* 0.3,
+                          height: MediaQuery.of(context).size.height* 0.15,
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child:  Container(
+                            width: MediaQuery.of(context).size.width* 0.25,
+                            height: MediaQuery.of(context).size.height* 0.1,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              ),
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),),
+                            child: const Icon(Icons.person,
+                                    size: 100,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10,),
                         Expanded(
                           child: RichText(
                               text: const TextSpan(children: [
@@ -330,7 +383,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                   Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+                        backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                         fixedSize: Size(MediaQuery.of(context).size.width* 0.8, MediaQuery.of(context).size.height * 0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -356,124 +409,129 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         ),
       ),
       bottomNavigationBar: Container(
-        height: screenHeight* 0.08,
-        color: const Color.fromRGBO(25, 192, 122, 1),
+        height: screenHeight * 0.08,
+        color: const Color.fromRGBO(13, 70, 127, 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: screenWidth/3,
-              decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  )
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: screenHeight*0.025,
-                    width: screenWidth*0.04,
-                    child: IconButton(
-                      icon: const Icon(Icons.home,
-                        size: 20,
-                        color: Colors.white,),
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => NDCDashboard()));
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Text('Home',
-                    style: TextStyle(
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NDCDashboard()));
+              },
+              child: Container(
+                width: screenWidth / 3,
+                padding: EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.home,
+                      size: 30,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      fontFamily: 'default',
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Home',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'default',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  )
-              ),
-              width: screenWidth/3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: screenHeight*0.025,
-                    width: screenWidth*0.04,
-                    child: IconButton(
-                      icon: const Icon(Icons.search,
-                        size: 20,
-                        color: Colors.white,),
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        /*Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => ));*/
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Text('Search',
-                    style: TextStyle(
+            GestureDetector(
+              onTap: (){
+                /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SearchUser()));*/
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                      left: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    )),
+                width: screenWidth / 3,
+                padding: EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.search,
+                      size: 30,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      fontFamily: 'default',
-                    ),),
-                ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Search',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'default',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
-                  )
-              ),
-              width: screenWidth/3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: screenHeight*0.025,
-                    width: screenWidth*0.04,
-                    child: IconButton(
-                      icon: const Icon(Icons.info,
-                        size: 20,
-                        color: Colors.white,),
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        /*Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => ));*/
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Text('Information',
-                    style: TextStyle(
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: (){
+                /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Information()));*/
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                      left: BorderSide(
+                        color: Colors.black,
+                        width: 1.0,
+                      ),
+                    )),
+                width: screenWidth / 3,
+                padding: EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.info,
+                      size: 30,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      fontFamily: 'default',
-                    ),),
-                ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Information',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: 'default',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

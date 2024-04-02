@@ -336,35 +336,6 @@ class _SignupState extends State<Signup> {
                                   ),
                                 ),
                               ),
-                              //const SizedBox(height: 5),
-                              Container(
-                                width: 350,
-                                height: 120,
-                                child: TextFormField(
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    labelText: 'Address',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                    alignLabelWithHint: true,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical: 145),
-                                    border:  const OutlineInputBorder(
-                                        borderRadius: const BorderRadius.all(Radius.circular(5))
-                                    ),
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         ),

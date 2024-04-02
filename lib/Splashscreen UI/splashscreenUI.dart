@@ -77,16 +77,10 @@ class _SplashScreenState extends State<SplashScreen>
               position: animatedpadding,
               child: const Padding(
                 padding: EdgeInsets.all(30),
-                child: Text(
-                  'National Data Center',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'default',
-                  ),
-                ),
+                child: Image(
+                  image: AssetImage('Assets/Images/NDC Logo.png'),
+                  height: 100,
+                  width: 150,)
               ),
             ),
             const SizedBox(
@@ -99,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
                 FadeTransition(
                   opacity: FadeAnimation,
                   child: const Image(
-                    image: AssetImage('Assets/Images/TNS-logo.png'),
+                    image: AssetImage('Assets/Images/Powered by TNS.png'),
                     height: 100,
                     width: 150,
                     alignment: Alignment.bottomCenter,
@@ -126,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     builder: (context) => const Login()));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+                            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                               //side: BorderSide(color: Colors.black, width: 2),
