@@ -132,92 +132,23 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                     child: Column(
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child:  Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width* 0.3,
-                                    height: MediaQuery.of(context).size.height* 0.15,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1,
-                                        color: Colors.black,
-                                      ),
-                                      borderRadius: const BorderRadius.all(Radius.circular(20)),),
-                                    child: const Icon(Icons.person,
-                                      size: 100,
-                                    ),
+                              child:  Container(
+                                width: MediaQuery.of(context).size.width* 0.3,
+                                height: MediaQuery.of(context).size.height* 0.15,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 1,
+                                    color: Colors.black,
                                   ),
-                                  SizedBox(height: 10,),
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Text('Entry Time',
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          ),
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Container(
-                                          width: screenWidth*0.35,
-                                          height: screenHeight*0.075,
-                                          child: TextFormField(
-                                            keyboardType: TextInputType.datetime,
-                                            controller: _Clockcontroller,
-                                            readOnly: true, // Make the text field readonly
-                                            enableInteractiveSelection: false, // Disable interactive selection
-                                            enableSuggestions: false,
-                                            style: const TextStyle(
-                                              color: Color.fromRGBO(143, 150, 158, 1),
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'default',
-                                            ),
-                                            decoration: InputDecoration(
-                                              labelText: 'Entry Time',
-                                              labelStyle: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 10,
-                                                fontFamily: 'default',
-                                              ),
-                                              border:  const OutlineInputBorder(
-                                                  borderRadius: const BorderRadius.all(Radius.circular(10))
-                                              ),
-                                              floatingLabelBehavior: FloatingLabelBehavior.never,
-                                              suffixIcon: GestureDetector(
-                                                onTap: () {
-                                                  showTimePicker(
-                                                    context: context,
-                                                    initialTime: TimeOfDay.now(),
-                                                  ).then((selectedTime) {
-                                                    if (selectedTime != null) {
-                                                      _Clockcontroller.text = selectedTime.format(context);
-                                                    }
-                                                  });
-                                                },
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                                                  child: Icon(Icons.schedule_rounded, size: 40,),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                ],
+                                  borderRadius: const BorderRadius.all(Radius.circular(20)),),
+                                child: const Icon(Icons.person,
+                                  size: 100,
+                                ),
                               ),
                             ),
                             Expanded(
@@ -284,37 +215,87 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                           ],
                         ),
                         SizedBox(height: 15),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[200],
-                            //backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-                            fixedSize: Size(MediaQuery.of(context).size.width* 0.6, MediaQuery.of(context).size.height * 0.07),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            side: BorderSide(
-                              width: 2,
-                              color: Colors.black,
-                           ),
-                          ),
-                          onPressed: () {
-                            /*Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) => AccessForm()));*/
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.print, color: Colors.black,),
-                              SizedBox(width: 10,),
-                              Text('Print',
-                                  style: TextStyle(
+                        Row(
+                          children: [
+                            Container(
+                              width: screenWidth*0.35,
+                              height: screenHeight*0.07,
+                              child: TextFormField(
+                                keyboardType: TextInputType.datetime,
+                                controller: _Clockcontroller,
+                                readOnly: true, // Make the text field readonly
+                                enableInteractiveSelection: false, // Disable interactive selection
+                                enableSuggestions: false,
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Entry Time',
+                                  labelStyle: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 13,
                                     fontFamily: 'default',
-                                  )),
-                            ],
-                          ),
+                                  ),
+                                  border:  const OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(Radius.circular(10))
+                                  ),
+                                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay.now(),
+                                      ).then((selectedTime) {
+                                        if (selectedTime != null) {
+                                          _Clockcontroller.text = selectedTime.format(context);
+                                        }
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
+                                      child: Icon(Icons.schedule_rounded, size: 30,),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10,),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromRGBO(13, 70, 127, 1),
+                                //backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+                                fixedSize: Size(MediaQuery.of(context).size.width* 0.5, MediaQuery.of(context).size.height * 0.07),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                side: BorderSide(
+                                  width: 1,
+                               ),
+                              ),
+                              onPressed: () {
+                                /*Navigator.push(context,
+                                              MaterialPageRoute(builder: (context) => AccessForm()));*/
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.print, color: Colors.white,),
+                                  SizedBox(width: 10,),
+                                  Text('Print',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -580,95 +561,29 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                 topRight: Radius.circular(10),
               ),
             ),
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(15.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.15,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: Colors.black,
-                              ),
-                              borderRadius: const BorderRadius.all(Radius.circular(20)),
-                            ),
-                            child: const Icon(
-                              Icons.person,
-                              size: 100,
-                            ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        height: MediaQuery.of(context).size.height * 0.15,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
                           ),
-                          SizedBox(height: 10),
-                          Container(
-                            child: Column(
-                              children: [
-                                Text('Entry Time',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Container(
-                                  width: screenWidth * 0.35,
-                                  height: screenHeight * 0.075,
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.datetime,
-                                    controller: _Clockcontroller,
-                                    readOnly: true, // Make the text field readonly
-                                    enableInteractiveSelection: false, // Disable interactive selection
-                                    enableSuggestions: false,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    ),
-                                    decoration: InputDecoration(
-                                      labelText: 'Entry Time',
-                                      labelStyle: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10,
-                                        fontFamily: 'default',
-                                      ),
-                                      border: const OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(Radius.circular(10))
-                                      ),
-                                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {
-                                          showTimePicker(
-                                            context: context,
-                                            initialTime: TimeOfDay.now(),
-                                          ).then((selectedTime) {
-                                            if (selectedTime != null) {
-                                              _Clockcontroller.text = selectedTime.format(context);
-                                            }
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                                          child: Icon(Icons.schedule_rounded, size: 40,),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        ),
+                        child: const Icon(
+                          Icons.person,
+                          size: 100,
+                        ),
                       ),
                     ),
                     Expanded(
@@ -676,48 +591,133 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Name: ${user.name}'),
-                          Text('Organization: ${user.orgName}'),
-                          Text('Appointment With: ${user.appointmentWith}'),
-                          Text('Belongs to: ${user.belongs}'),
-                          Text('Mobile No: ${user.mobileNo}'),
-                          Text('Appointment Date: ${DateFormat('dd.MM.yyyy').format(user.appointmentDate)}, ${user.appointmentTime.hour.toString().padLeft(2, '0')}:${user.appointmentTime.minute.toString().padLeft(2, '0')} ${user.appointmentTime.period == DayPeriod.am ? 'AM' : 'PM'}'),
-                          Text('Status: ${user.status}'),
+                          Text('Name: ${user.name}',
+                              style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'default',
+                      )),
+                          Text('Organization: ${user.orgName}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Appointment With: ${user.appointmentWith}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Belongs to: ${user.belongs}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Mobile No: ${user.mobileNo}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Appointment Date: ${DateFormat('dd.MM.yyyy').format(user.appointmentDate)}, ${user.appointmentTime.hour.toString().padLeft(2, '0')}:${user.appointmentTime.minute.toString().padLeft(2, '0')} ${user.appointmentTime.period == DayPeriod.am ? 'AM' : 'PM'}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Status: ${user.status}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
                         ],
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: 15),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[200],
-                    fixedSize: Size(MediaQuery.of(context).size.width * 0.6, MediaQuery.of(context).size.height * 0.07),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    side: BorderSide(
-                      width: 2,
-                      color: Colors.black,
-                    ),
-                  ),
-                  onPressed: () {
-                    // Add functionality for print button here
-                  },
-                  child:  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.print, color: Colors.black,),
-                      SizedBox(width: 10,),
-                      Text('Print',
-                          style: TextStyle(
+                Row(
+                  children: [
+                    Container(
+                      width: screenWidth * 0.35,
+                      height: screenHeight * 0.07,
+                      child: TextFormField(
+                        keyboardType: TextInputType.datetime,
+                        controller: _Clockcontroller,
+                        readOnly: true, // Make the text field readonly
+                        enableInteractiveSelection: false, // Disable interactive selection
+                        enableSuggestions: false,
+                        style: const TextStyle(
+                          color: Color.fromRGBO(143, 150, 158, 1),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'default',
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Entry Time',
+                          labelStyle: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            fontSize: 13,
                             fontFamily: 'default',
-                          )),
-                    ],
-                  ),
+                          ),
+                          border: const OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(Radius.circular(10))
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              ).then((selectedTime) {
+                                if (selectedTime != null) {
+                                  _Clockcontroller.text = selectedTime.format(context);
+                                }
+                              });
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
+                              child: Icon(Icons.schedule_rounded, size: 30,),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(13, 70, 127, 1),
+                        fixedSize: Size(MediaQuery.of(context).size.width * 0.5, MediaQuery.of(context).size.height * 0.07),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        side: BorderSide(
+                          width: 1,
+                        ),
+                      ),
+                      onPressed: () {
+                        // Add functionality for print button here
+                      },
+                      child:  Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.print, color: Colors.white,),
+                          SizedBox(width: 10,),
+                          Text('Print',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

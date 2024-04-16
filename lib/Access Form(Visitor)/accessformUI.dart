@@ -164,7 +164,7 @@ class _AccessFormState extends State<AccessForm> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                            child: Icon(Icons.calendar_today_outlined, size: 40,),
+                            child: Icon(Icons.calendar_today_outlined, size: 30,),
                           ),
                         ),
                       ),
@@ -208,7 +208,7 @@ class _AccessFormState extends State<AccessForm> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                            child: Icon(Icons.schedule_rounded, size: 40,),
+                            child: Icon(Icons.schedule_rounded, size: 30,),
                           ),
                         ),
                       ),
