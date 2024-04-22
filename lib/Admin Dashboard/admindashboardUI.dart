@@ -4,6 +4,7 @@ import 'package:flutter_charts/flutter_charts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_charts/flutter_charts.dart' as charts;
 import '../Graph/graphs.dart';
+import '../Login UI/loginUI.dart';
 import '../Template Models/userinfo.dart';
 import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 
@@ -17,6 +18,7 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<User> _people = [
     User(
@@ -70,11 +72,17 @@ class _AdminDashboardState extends State<AdminDashboard>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white,),
-          onPressed: () {},
+          icon: const Icon(
+            Icons.menu,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
         ),
         title: const Text(
           'Admin Dashboard',
@@ -138,6 +146,85 @@ class _AdminDashboardState extends State<AdminDashboard>
               ],
             ),
           ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(13, 70, 127, 1),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    child: Icon(
+                      Icons.person,
+                      size: 35,
+                    ),
+                    radius: 30,
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'User Name',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'default',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              title: Text('Home',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',)),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NDCDashboard())); // Close the drawer
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Information',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',)),
+              onTap: () {
+                /* Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Information()));*/
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Logout',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',)),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const Login())); // Close the drawer
+              },
+            ),
+            Divider(),
+          ],
         ),
       ),
       body: TabBarView(
