@@ -96,14 +96,23 @@ class _AdminDashboardState extends State<AdminDashboard>
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications_rounded, color: Colors.white,),
+            icon: const Icon(
+              Icons.notifications_rounded,
+              color: Colors.white,
+            ),
           ),
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.white,),
+            icon: const Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.more_vert_outlined, color: Colors.white,),
+            icon: const Icon(
+              Icons.more_vert_outlined,
+              color: Colors.white,
+            ),
             onPressed: () {},
           )
         ],
@@ -185,12 +194,14 @@ class _AdminDashboardState extends State<AdminDashboard>
                     color: Colors.black87,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
+                    fontFamily: 'default',
+                  )),
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const NDCDashboard())); // Close the drawer
+                        builder: (context) =>
+                            const NDCDashboard())); // Close the drawer
               },
             ),
             Divider(),
@@ -200,7 +211,8 @@ class _AdminDashboardState extends State<AdminDashboard>
                     color: Colors.black87,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
+                    fontFamily: 'default',
+                  )),
               onTap: () {
                 /* Navigator.push(
                     context,
@@ -215,12 +227,14 @@ class _AdminDashboardState extends State<AdminDashboard>
                     color: Colors.black87,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
+                    fontFamily: 'default',
+                  )),
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Login())); // Close the drawer
+                        builder: (context) =>
+                            const Login())); // Close the drawer
               },
             ),
             Divider(),
@@ -236,8 +250,8 @@ class _AdminDashboardState extends State<AdminDashboard>
               child: Container(
                 color: Colors.white,
                 child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -281,14 +295,15 @@ class _AdminDashboardState extends State<AdminDashboard>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: MediaQuery.of(context).size.width *
-                                            0.27,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.27,
                                         height:
                                             MediaQuery.of(context).size.height *
                                                 0.12,
@@ -413,14 +428,6 @@ class _AdminDashboardState extends State<AdminDashboard>
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'default',
                                         )),
-                                    TextSpan(
-                                        text: 'Status: Pending\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
                                   ])),
                                 )
                               ],
@@ -428,48 +435,52 @@ class _AdminDashboardState extends State<AdminDashboard>
                           ),
                         ),
                         SizedBox(height: 25),
-                        Text('Daily Analytic Graph',
+                        Text(
+                          'Daily Analytic Graph',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'default',),),
-                        SizedBox(height: 10),
-                        Center(
-                          child: Container(
-                              width: screenWidth * 0.9,
-                              height: screenHeight * 0.35,
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 1,
-                                  )
-                              ),
-                              child: chartToRunLine()
+                            fontFamily: 'default',
                           ),
                         ),
-                        SizedBox(height: 25),
-                        Text('Monthly Analytic Graph',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',),),
                         SizedBox(height: 10),
                         Center(
                           child: Container(
                               width: screenWidth * 0.9,
                               height: screenHeight * 0.35,
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
                               decoration: BoxDecoration(
                                   border: Border.all(
-                                    width: 1,
-                                  )
-                              ),
-                              child: chartToRunVertical()
+                                width: 1,
+                              )),
+                              child: chartToRunLine()),
+                        ),
+                        SizedBox(height: 25),
+                        Text(
+                          'Monthly Analytic Graph',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
                           ),
+                        ),
+                        SizedBox(height: 10),
+                        Center(
+                          child: Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.35,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                width: 1,
+                              )),
+                              child: chartToRunVertical()),
                         )
                       ],
                     )),
@@ -481,7 +492,8 @@ class _AdminDashboardState extends State<AdminDashboard>
             child: Container(
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -489,69 +501,74 @@ class _AdminDashboardState extends State<AdminDashboard>
                       child: Text(
                         'Welcome, Admin Name',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black,
+                        style: TextStyle(
+                          color: Colors.black,
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'default',
-                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 15),
                     const Text(
-                    'Accepted List',
+                      'Accepted List',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'default',
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'default',
                       ),
                     ),
                     const SizedBox(height: 5),
                     _buildPanel(),
                     SizedBox(height: 25),
-                    Text('Daily Analytic Graph',
+                    Text(
+                      'Daily Analytic Graph',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        fontFamily: 'default',),),
-                    SizedBox(height: 10),
-                    Center(
-                      child: Container(
-                          width: screenWidth * 0.9,
-                          height: screenHeight * 0.35,
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                            )
-                          ),
-                          child: chartToRunLine()
+                        fontFamily: 'default',
                       ),
                     ),
-                    SizedBox(height: 25),
-                    Text('Monthly Analytic Graph',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'default',),),
                     SizedBox(height: 10),
                     Center(
                       child: Container(
                           width: screenWidth * 0.9,
                           height: screenHeight * 0.35,
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                width: 1,
-                              )
-                          ),
-                          child: chartToRunVertical()
+                            width: 1,
+                          )),
+                          child: chartToRunLine()),
+                    ),
+                    SizedBox(height: 25),
+                    Text(
+                      'Monthly Analytic Graph',
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'default',
                       ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Container(
+                          width: screenWidth * 0.9,
+                          height: screenHeight * 0.35,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            width: 1,
+                          )),
+                          child: chartToRunVertical()),
                     )
                   ],
                 ),
@@ -569,10 +586,8 @@ class _AdminDashboardState extends State<AdminDashboard>
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NDCDashboard()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => NDCDashboard()));
               },
               child: Container(
                 width: screenWidth / 3,
@@ -603,7 +618,7 @@ class _AdminDashboardState extends State<AdminDashboard>
               ),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 /*Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -613,11 +628,11 @@ class _AdminDashboardState extends State<AdminDashboard>
               child: Container(
                 decoration: BoxDecoration(
                     border: Border(
-                      left: BorderSide(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
-                    )),
+                  left: BorderSide(
+                    color: Colors.black,
+                    width: 1.0,
+                  ),
+                )),
                 width: screenWidth / 3,
                 padding: EdgeInsets.all(5),
                 child: Column(
@@ -646,7 +661,7 @@ class _AdminDashboardState extends State<AdminDashboard>
             ),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: (){
+              onTap: () {
                 /*Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -655,11 +670,11 @@ class _AdminDashboardState extends State<AdminDashboard>
               child: Container(
                 decoration: BoxDecoration(
                     border: Border(
-                      left: BorderSide(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
-                    )),
+                  left: BorderSide(
+                    color: Colors.black,
+                    width: 1.0,
+                  ),
+                )),
                 width: screenWidth / 3,
                 padding: EdgeInsets.all(5),
                 child: Column(
@@ -692,138 +707,164 @@ class _AdminDashboardState extends State<AdminDashboard>
     );
   }
 
-Widget _buildPanel() {
-  final screenWidth = MediaQuery.of(context).size.width;
-  final screenHeight = MediaQuery.of(context).size.height;
-  return ExpansionPanelList(
-    expansionCallback: (int index, bool isExpanded) {
-      setState(() {
-        _people[index].isExpanded = isExpanded;
-      });
-    },
-    children: _people.map<ExpansionPanel>((User user) {
-      return ExpansionPanel(
-        headerBuilder: (BuildContext context, bool isExpanded) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: ListTile(
-              visualDensity: VisualDensity(vertical: -4),
-              tileColor: Colors.white,
-              title: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      user.name,
-                      style: TextStyle(
-                        fontSize: isExpanded ? 20 : 12,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ),
-                  if (!isExpanded) ...[
-                  SizedBox(width: screenWidth * 0.05),
-                  Expanded(
-                    child: Text(
-                      user.orgName,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: screenWidth * 0.05),
-                  Expanded(
-                    child: Text(
-                      DateFormat('dd.MM.yyyy').format(user.appointmentDate),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ),
-                  ],
-                  Divider(
-                    height: 10,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        body: Column(
-          children: [
-            Divider(),
-            Container(
+  Widget _buildPanel() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setState(() {
+          _people[index].isExpanded = isExpanded;
+        });
+      },
+      children: _people.map<ExpansionPanel>((User user) {
+        return ExpansionPanel(
+          headerBuilder: (BuildContext context, bool isExpanded) {
+            return Container(
               decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              padding: EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width *
-                              0.3,
-                          height:
-                          MediaQuery.of(context).size.height *
-                              0.15,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: Colors.black,
-                            ),
-                            borderRadius: const BorderRadius.all(
-                                Radius.circular(20)),
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 100,
+              child: ListTile(
+                visualDensity: VisualDensity(vertical: -4),
+                tileColor: Colors.white,
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        user.name,
+                        style: TextStyle(
+                          fontSize: isExpanded ? 20 : 12,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'default',
+                        ),
+                      ),
+                    ),
+                    if (!isExpanded) ...[
+                      SizedBox(width: screenWidth * 0.05),
+                      Expanded(
+                        child: Text(
+                          user.orgName,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
                           ),
                         ),
-                      ],
+                      ),
+                      SizedBox(width: screenWidth * 0.05),
+                      Expanded(
+                        child: Text(
+                          DateFormat('dd.MM.yyyy').format(user.appointmentDate),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
+                          ),
+                        ),
+                      ),
+                    ],
+                    Divider(
+                      height: 10,
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Name: ${user.name}'),
-                        Text('Organization: ${user.orgName}'),
-                        Text('Appointment With: ${user.appointmentWith}'),
-                        Text('Belongs to: ${user.belongs}'),
-                        Text('Mobile No: ${user.mobileNo}'),
-                        Text('Appointment Date: ${DateFormat('dd.MM.yyyy').format(user.appointmentDate)}, ${user.appointmentTime.hour.toString().padLeft(2, '0')}:${user.appointmentTime.minute.toString().padLeft(2, '0')} ${user.appointmentTime.period == DayPeriod.am ? 'AM' : 'PM'}'),
-                        Text('Status: ${user.status}'),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        isExpanded: user.isExpanded,
-        backgroundColor: Colors.white,
-      );
-    }).toList(),
-  );
-}
+            );
+          },
+          body: Column(
+            children: [
+              Divider(),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.15,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.black,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(20)),
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              size: 100,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Name: ${user.name}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Organization: ${user.orgName}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Appointment With: ${user.appointmentWith}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Belongs to: ${user.belongs}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text('Mobile No: ${user.mobileNo}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                          Text(
+                              'Appointment Date: ${DateFormat('dd.MM.yyyy').format(user.appointmentDate)}, ${user.appointmentTime.hour.toString().padLeft(2, '0')}:${user.appointmentTime.minute.toString().padLeft(2, '0')} ${user.appointmentTime.period == DayPeriod.am ? 'AM' : 'PM'}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              )),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          isExpanded: user.isExpanded,
+          backgroundColor: Colors.white,
+        );
+      }).toList(),
+    );
+  }
 }
