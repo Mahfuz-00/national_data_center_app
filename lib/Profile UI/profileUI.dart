@@ -40,7 +40,7 @@ class _ProfileState extends State<Profile> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return PopScope(
-        canPop: true,
+        canPop: false,
         child: Scaffold(
           backgroundColor: Colors.grey[100],
           //resizeToAvoidBottomInset: false,

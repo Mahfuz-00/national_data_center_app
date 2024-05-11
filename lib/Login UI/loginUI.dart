@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../API Model and Service (Login)/apiservicelogin.dart';
 import '../API Model and Service (Login)/loginmodels.dart';
+import '../API Model and Service (Profile)/apiserviceprofile.dart';
+import '../API Model and Service (Profile)/profilemodel.dart';
 import '../Forgot Password UI/forgotpasswordUI.dart';
 import '../Sign Up UI/signupUI.dart';
 import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
@@ -156,7 +158,7 @@ class _LoginState extends State<Login> {
                                             _loginRequest.Password = input!,
                                             validator: (input) =>
                                             input!.length < 8
-                                                ? "Password should be more than 8 characters"
+                                                ? "Password should be more than 7 characters"
                                                 : null,
                                             controller: _passwordController,
                                             obscureText: _isObscured,
@@ -250,19 +252,19 @@ class _LoginState extends State<Login> {
                                         if (userType == 'ndc_internal') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(/*shouldRefresh: true*/)),
+                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
                                         if (userType == 'ndc_vendor') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(/*shouldRefresh: true*/)),
+                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
                                         if (userType == 'ndc_customer') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(/*shouldRefresh: true*/)),
+                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
                                         if (userType == 'ndc_admin') {
@@ -373,7 +375,7 @@ class _LoginState extends State<Login> {
           storeTokenLocally(response.token);
           userType = response.userType;
           print('UserType :: $userType');
-          //_fetchUserProfile(response.token);
+          _fetchUserProfile(response.token);
           return true;
         } else {
           // Handle unsuccessful login
@@ -419,7 +421,7 @@ class _LoginState extends State<Login> {
     print(prefs.getString('token'));
   }
 
-/*  Future<void> _fetchUserProfile(String token) async {
+  Future<void> _fetchUserProfile(String token) async {
     try {
       final apiService = await APIProfileService();
       final profile = await apiService.fetchUserProfile(token);
@@ -446,6 +448,6 @@ class _LoginState extends State<Login> {
       print('Error fetching user profile: $e');
       // Handle error as needed
     }
-  }*/
+  }
 
 }
