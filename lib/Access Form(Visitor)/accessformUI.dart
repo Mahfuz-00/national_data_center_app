@@ -34,14 +34,13 @@ class _AccessFormState extends State<AccessForm> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
         leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-        ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_new_outlined,
+              color: Colors.white,
+            )),
         title: const Text(
           'Access Form',
           style: TextStyle(
@@ -50,91 +49,6 @@ class _AccessFormState extends State<AccessForm> {
             fontSize: 20,
             fontFamily: 'default',
           ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert_outlined, color: Colors.white,),
-            onPressed: () {},
-          )
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(13, 70, 127, 1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    child: Icon(
-                      Icons.person,
-                      size: 35,
-                    ),
-                    radius: 30,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'User Name',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'default',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: Text('Home',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NDCDashboard())); // Close the drawer
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Information',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                /* Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Logout',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Login())); // Close the drawer
-              },
-            ),
-            Divider(),
-          ],
         ),
       ),
       body: SafeArea(
@@ -153,7 +67,7 @@ class _AccessFormState extends State<AccessForm> {
                   )),
                   SizedBox(height:20),
                   Container(
-                    width: screenWidth*0.8,
+                    width: screenWidth*0.9,
                     height: screenHeight*0.15,
                     child: TextFormField(
                       style: const TextStyle(
@@ -180,7 +94,7 @@ class _AccessFormState extends State<AccessForm> {
                   ),
                   SizedBox(height: 10,),
                   Container(
-                    width: screenWidth*0.8,
+                    width: screenWidth*0.9,
                     height: screenHeight*0.075,
                     //padding: EdgeInsets.all(20),
                     /*decoration: BoxDecoration(
@@ -212,7 +126,32 @@ class _AccessFormState extends State<AccessForm> {
                   ),
                   SizedBox(height: 10,),
                   Container(
-                    width: screenWidth*0.8,
+                    width: screenWidth*0.9,
+                    height: screenHeight*0.075,
+                    child: TextFormField(
+                      style: const TextStyle(
+                        color: Color.fromRGBO(143, 150, 158, 1),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'default',
+                      ),
+                      decoration: InputDecoration(
+                        labelText: 'Appointment With',
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: 'default',
+                        ),
+                        border: const OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(Radius.circular(10))
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Container(
+                    width: screenWidth*0.9,
                     height: screenHeight*0.075,
                     child: TextFormField(
                       controller: _Datecontroller,
@@ -251,7 +190,7 @@ class _AccessFormState extends State<AccessForm> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                            child: Icon(Icons.calendar_today_outlined, size: 30,),
+                            child: Icon(Icons.calendar_today_outlined, size: 25,),
                           ),
                         ),
                       ),
@@ -259,7 +198,7 @@ class _AccessFormState extends State<AccessForm> {
                   ),
                   SizedBox(height: 10,),
                   Container(
-                    width: screenWidth*0.8,
+                    width: screenWidth*0.9,
                     height: screenHeight*0.075,
                     child: TextFormField(
                       controller: _Clockcontroller,
@@ -295,7 +234,7 @@ class _AccessFormState extends State<AccessForm> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                            child: Icon(Icons.schedule_rounded, size: 30,),
+                            child: Icon(Icons.schedule_rounded, size: 25,),
                           ),
                         ),
                       ),
@@ -306,7 +245,7 @@ class _AccessFormState extends State<AccessForm> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-                        fixedSize: Size(MediaQuery.of(context).size.width* 0.8, MediaQuery.of(context).size.height * 0.1),
+                        fixedSize: Size(MediaQuery.of(context).size.width* 0.9, MediaQuery.of(context).size.height * 0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -328,135 +267,6 @@ class _AccessFormState extends State<AccessForm> {
               ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: screenHeight * 0.08,
-        color: const Color.fromRGBO(13, 70, 127, 1),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NDCDashboard()));
-              },
-              child: Container(
-                width: screenWidth / 3,
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.home,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'Home',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: (){
-                /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SearchUser()));*/
-              },
-              behavior: HitTestBehavior.translucent,
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
-                    )),
-                width: screenWidth / 3,
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.search,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'Search',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: (){
-                /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                      left: BorderSide(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
-                    )),
-                width: screenWidth / 3,
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.info,
-                      size: 30,
-                      color: Colors.white,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      'Information',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        fontFamily: 'default',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

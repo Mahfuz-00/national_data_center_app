@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_charts/flutter_charts.dart' as charts;
+import 'package:ndc_app/Profile%20UI/profileUI.dart';
 import '../Graph/graphs.dart';
 import '../Login UI/loginUI.dart';
 import '../Template Models/userinfo.dart';
@@ -75,23 +76,20 @@ class _AdminDashboardState extends State<AdminDashboard>
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-        ),
-        title: const Text(
-          'Admin Dashboard',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            fontFamily: 'default',
-          ),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            SizedBox(width: 28,),
+            const Text(
+              'Admin Dashboard',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontFamily: 'default',
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -101,33 +99,20 @@ class _AdminDashboardState extends State<AdminDashboard>
               color: Colors.white,
             ),
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.search,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.more_vert_outlined,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          )
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight),
           child: Container(
             decoration: BoxDecoration(
+              color: Colors.white,
               border: Border(
                 top: BorderSide(color: Colors.black, width: 1.0),
               ),
             ),
             child: TabBar(
               controller: _tabController,
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
+              indicatorColor: const Color.fromRGBO(13, 70, 127, 1),
+              labelColor: const Color.fromRGBO(13, 70, 127, 1),
               unselectedLabelColor: Colors.black,
               tabs: [
                 Tab(
@@ -155,90 +140,6 @@ class _AdminDashboardState extends State<AdminDashboard>
               ],
             ),
           ),
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(13, 70, 127, 1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    child: Icon(
-                      Icons.person,
-                      size: 35,
-                    ),
-                    radius: 30,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'User Name',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'default',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: Text('Home',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',
-                  )),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const NDCDashboard())); // Close the drawer
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Information',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',
-                  )),
-              onTap: () {
-                /* Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Logout',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',
-                  )),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            const Login())); // Close the drawer
-              },
-            ),
-            Divider(),
-          ],
         ),
       ),
       body: TabBarView(
@@ -290,145 +191,190 @@ class _AdminDashboardState extends State<AdminDashboard>
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
+                            child: Column(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.27,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.12,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            width: 1,
-                                            color: Colors.black,
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width:
+                                                MediaQuery.of(context).size.width *
+                                                    0.27,
+                                            height:
+                                                MediaQuery.of(context).size.height *
+                                                    0.12,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                width: 1,
+                                                color: Colors.black,
+                                              ),
+                                              borderRadius: const BorderRadius.all(
+                                                  Radius.circular(20)),
+                                            ),
+                                            child: const Icon(
+                                              Icons.person,
+                                              size: 100,
+                                            ),
                                           ),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(20)),
-                                        ),
-                                        child: const Icon(
-                                          Icons.person,
-                                          size: 100,
-                                        ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                        ],
                                       ),
-                                      SizedBox(
-                                        height: 15,
+                                    ),
+                                    Expanded(
+                                      child: RichText(
+                                          text: const TextSpan(children: [
+                                        TextSpan(
+                                            text: 'Name: Abddus Sobhan\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text:
+                                                'Organization Name: Touch and Solve\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text: 'Appointment With: Dhukhu Mia\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text: 'Belongs: A Handbag\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text: 'Mobile No: 00111222333\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text:
+                                                'Appointment Time & Date: 11:30, 15 February 2024\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                        TextSpan(
+                                            text:
+                                                'Entry Time & Date: 11:28, 15 February 2024\n',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                      ])),
+                                    )
+                                  ],
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center ,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+                                          fixedSize: Size(MediaQuery.of(context).size.width * 0.35,
+                                              MediaQuery.of(context).size.height * 0.06),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                         /* action = 'accepted';
+                                          handleAcceptOrReject(action);*/
+                                          const snackBar = SnackBar(
+                                            content: Text('Processing...'),
+                                          );
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                          Future.delayed(Duration(seconds: 2), () {
+                                            /*Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => NTTNDashboard(shouldRefresh: true)),
+                                            );*/
+                                            const snackBar = SnackBar(
+                                              content: Text('Request Accepted!'),
+                                            );
+                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                          });
+                                        },
+                                        child: Text('Accept',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
                                       ),
-                                      Container(
-                                          width: screenWidth * 0.25,
-                                          height: screenHeight * 0.05,
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.green,
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(5)),
-                                                ),
-                                                child: GestureDetector(
-                                                  onTap: () {},
-                                                  child: Icon(
-                                                    Icons.check,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: screenWidth * 0.05,
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(5)),
-                                                ),
-                                                child: GestureDetector(
-                                                  onTap: () {},
-                                                  child: Icon(
-                                                    Icons.close,
-                                                    size: 40,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          )),
+                                      SizedBox(width: 10,),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                          fixedSize: Size(MediaQuery.of(context).size.width * 0.35,
+                                              MediaQuery.of(context).size.height * 0.06),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          /*action = 'rejected';
+                                          handleAcceptOrReject(action);*/
+                                          const snackBar = SnackBar(
+                                            content: Text('Processing...'),
+                                          );
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                          Future.delayed(Duration(seconds: 2), () {
+                                           /* Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(builder: (context) =>
+                                                  NTTNDashboard(shouldRefresh: true)),
+                                            );*/
+                                            const snackBar = SnackBar(
+                                              content: Text('Request Rejected!'),
+                                            );
+                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                          });
+                                        },
+                                        child: Text('Decline',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
+                                      ),
                                     ],
                                   ),
-                                ),
-                                Expanded(
-                                  child: RichText(
-                                      text: const TextSpan(children: [
-                                    TextSpan(
-                                        text: 'Name: Abddus Sobhan\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text:
-                                            'Organization Name: Touch and Solve\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text: 'Appointment With: Dhukhu Mia\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text: 'Belongs: A Handbag\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text: 'Mobile No: 00111222333\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text:
-                                            'Appointment Time & Date: 11:30, 15 February 2024\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                    TextSpan(
-                                        text:
-                                            'Entry Time & Date: 11:28, 15 February 2024\n',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
-                                  ])),
                                 )
                               ],
                             ),
@@ -587,7 +533,7 @@ class _AdminDashboardState extends State<AdminDashboard>
               behavior: HitTestBehavior.translucent,
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => NDCDashboard()));
+                    MaterialPageRoute(builder: (context) => AdminDashboard()));
               },
               child: Container(
                 width: screenWidth / 3,
@@ -619,10 +565,10 @@ class _AdminDashboardState extends State<AdminDashboard>
             ),
             GestureDetector(
               onTap: () {
-                /*Navigator.push(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SearchUser()));*/
+                        builder: (context) => const Profile()));
               },
               behavior: HitTestBehavior.translucent,
               child: Container(
@@ -639,7 +585,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.search,
+                      Icons.person,
                       size: 30,
                       color: Colors.white,
                     ),
@@ -647,7 +593,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                       height: 5,
                     ),
                     Text(
-                      'Search',
+                      'Profile',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -662,10 +608,7 @@ class _AdminDashboardState extends State<AdminDashboard>
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
+                _showLogoutDialog(context);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -681,7 +624,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.info,
+                      Icons.logout,
                       size: 30,
                       color: Colors.white,
                     ),
@@ -689,7 +632,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                       height: 5,
                     ),
                     Text(
-                      'Information',
+                      'Log Out',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -704,6 +647,71 @@ class _AdminDashboardState extends State<AdminDashboard>
           ],
         ),
       ),
+    );
+  }
+
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Column(
+            children: [
+              Text('Logout Confirmation',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontFamily: 'default',
+                ),),
+              Divider()
+            ],
+          ),
+          content: Text('Are you sure you want to log out?',
+            style: TextStyle(
+              color: const Color.fromRGBO(13, 70, 127, 1),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              fontFamily: 'default',
+            ),),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('Cancel',
+                    style: TextStyle(
+                      color: const Color.fromRGBO(13, 70, 127, 1),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'default',
+                    ),),
+                ),
+                SizedBox(width: 10,),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Login()));
+                  },
+                  child: Text('Logout',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'default',
+                    ),),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 

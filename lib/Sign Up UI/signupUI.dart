@@ -1,9 +1,14 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:footer/footer.dart';
+import 'dart:io';
 
-import '../API Models(Login and Sign Up)/registermodels.dart';
-import '../API Service(Login and Sign Up)/apiserviceregister.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:footer/footer.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
+import 'package:connectivity/connectivity.dart';
+
+import '../API Model and Service (Sign Up)/apiserviceregister.dart';
+import '../API Model and Service (Sign Up)/registermodels.dart';
 import '../Login UI/loginUI.dart';
 import 'dropdownfield.dart';
 
@@ -18,16 +23,36 @@ class _SignupState extends State<Signup> {
   bool _isObscuredPassword = true;
   bool _isObscuredConfirmPassword = true;
   late RegisterRequestmodel _registerRequest;
+  late TextEditingController _fullNameController;
+  late TextEditingController _organizationController;
+  late TextEditingController _designationController;
   late TextEditingController _emailController;
+  late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
+  String _selectedVisitorType = '';
+  File? _imageFile;
   var globalKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalfromkey = GlobalKey<FormState>();
+  double _imageHeight = 0;
+  double _imageWidth = 0;
 
-  List<DropdownMenuItem<String>> dropdownItems1 = [
-    DropdownMenuItem(child: Text("User"), value: "ISP"),
-    DropdownMenuItem(child: Text("BCC Staff"), value: "BCC"),
-    DropdownMenuItem(child: Text("NTTN Provider"), value: "NTTN"),
+  // Function to load image dimensions
+  Future<void> _getImageDimensions() async {
+    if (_imageFile != null) {
+      final data = await _imageFile!.readAsBytes();
+      final image = await decodeImageFromList(data);
+      setState(() {
+        _imageHeight = image.height.toDouble();
+        _imageWidth = image.width.toDouble();
+      });
+    }
+  }
+
+  List<DropdownMenuItem<String>> dropdownItems = [
+    DropdownMenuItem(child: Text("ndc_internal"), value: "BCC Staff"),
+    DropdownMenuItem(child: Text("ndc_customer"), value: "Customer"),
+    DropdownMenuItem(child: Text("ndc_vendor"), value: "Vendor"),
   ];
 
   IconData _getIconPassword() {
@@ -41,8 +66,21 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
-    _registerRequest = RegisterRequestmodel(Email: '', Password: '');
+    _registerRequest = RegisterRequestmodel(
+      fullName: '',
+      organization: '',
+      designation: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+      userType: '',
+    );
+    _fullNameController = TextEditingController();
+    _organizationController = TextEditingController();
+    _designationController = TextEditingController();
     _emailController = TextEditingController();
+    _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
   }
@@ -53,23 +91,24 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Container(
-            color: Colors.grey[100],
-            child: Padding(
-              padding: const EdgeInsets.only(top: 100.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Column(
-                      children : [
+    return InternetChecker(
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
+          //resizeToAvoidBottomInset: false,
+          body: SingleChildScrollView(
+            child: SafeArea(
+              child: Container(
+                color: Colors.grey[100],
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 100.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                          child: Column(children: [
                         const Text(
                           'Hello! Register to get started!',
                           textAlign: TextAlign.center,
@@ -100,6 +139,13 @@ class _SignupState extends State<Signup> {
                                 width: 350,
                                 height: 70,
                                 child: TextFormField(
+                                  controller: _fullNameController,
+                                  validator: (input) {
+                                    if (input == null || input.isEmpty) {
+                                      return 'Please enter your full name';
+                                    }
+                                    return null;
+                                  },
                                   style: const TextStyle(
                                     color: Color.fromRGBO(143, 150, 158, 1),
                                     fontSize: 10,
@@ -125,6 +171,13 @@ class _SignupState extends State<Signup> {
                                 width: 350,
                                 height: 70,
                                 child: TextFormField(
+                                  controller: _organizationController,
+                                  validator: (input) {
+                                    if (input == null || input.isEmpty) {
+                                      return 'Please enter your organization name';
+                                    }
+                                    return null;
+                                  },
                                   style: const TextStyle(
                                     color: Color.fromRGBO(143, 150, 158, 1),
                                     fontSize: 10,
@@ -150,6 +203,13 @@ class _SignupState extends State<Signup> {
                                 width: 350,
                                 height: 70,
                                 child: TextFormField(
+                                  controller: _designationController,
+                                  validator: (input) {
+                                    if (input == null || input.isEmpty) {
+                                      return 'Please enter your designation';
+                                    }
+                                    return null;
+                                  },
                                   style: const TextStyle(
                                     color: Color.fromRGBO(143, 150, 158, 1),
                                     fontSize: 10,
@@ -175,15 +235,19 @@ class _SignupState extends State<Signup> {
                                 width: 350,
                                 height: 70,
                                 child: TextFormField(
+                                  controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
-                                  onSaved: (input) => _registerRequest.Email= input!,
                                   validator: (input) {
-                                    if (input == null || !input.contains('@')) {
-                                      return "Please enter a valid email address";
+                                    if (input!.isEmpty) {
+                                      return 'Please enter your email address';
+                                    }
+                                    final emailRegex = RegExp(
+                                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                    if (!emailRegex.hasMatch(input)) {
+                                      return 'Please enter a valid email address';
                                     }
                                     return null;
                                   },
-                                  controller: _emailController,
                                   style: const TextStyle(
                                     color: Color.fromRGBO(143, 150, 158, 1),
                                     fontSize: 10,
@@ -209,6 +273,20 @@ class _SignupState extends State<Signup> {
                                 width: 350,
                                 height: 70,
                                 child: TextFormField(
+                                  controller: _phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ],
+                                  validator: (input) {
+                                    if (input == null || input.isEmpty) {
+                                      return 'Please enter your mobile number name';
+                                    }
+                                    if (input.length != 11) {
+                                      return 'Mobile number must be 11 digits';
+                                    }
+                                    return null; // Return null if the input is valid
+                                  },
                                   style: const TextStyle(
                                     color: Color.fromRGBO(143, 150, 158, 1),
                                     fontSize: 10,
@@ -235,8 +313,10 @@ class _SignupState extends State<Signup> {
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
-                                  onSaved: (input)=> _registerRequest.Password = input!,
-                                  validator: (input) => input!.length < 6 ? "Password should be more than 3 characters": null,
+                                  //onSaved: (input)=> _registerRequest.Password = input!,
+                                  validator: (input) => input!.length < 8
+                                      ? "Password should be more than 8 characters"
+                                      : null,
                                   controller: _passwordController,
                                   obscureText: _isObscuredPassword,
                                   style: const TextStyle(
@@ -260,7 +340,8 @@ class _SignupState extends State<Signup> {
                                       icon: Icon(_getIconPassword()),
                                       onPressed: () {
                                         setState(() {
-                                          _isObscuredPassword = !_isObscuredPassword;
+                                          _isObscuredPassword =
+                                              !_isObscuredPassword;
                                           _passwordController.text =
                                               _passwordController.text;
                                         });
@@ -275,8 +356,10 @@ class _SignupState extends State<Signup> {
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
-                                  onSaved: (input)=> _registerRequest.Password = input!,
-                                  validator: (input) => input!.length < 6 ? "Password should be more than 3 characters": null,
+                                  //onSaved: (input)=> _registerRequest.Password = input!,
+                                  validator: (input) => input!.length < 8
+                                      ? "Password should be more than 8 characters"
+                                      : null,
                                   controller: _confirmPasswordController,
                                   obscureText: _isObscuredConfirmPassword,
                                   style: const TextStyle(
@@ -300,7 +383,8 @@ class _SignupState extends State<Signup> {
                                       icon: Icon(_getIconConfirmPassword()),
                                       onPressed: () {
                                         setState(() {
-                                          _isObscuredConfirmPassword = !_isObscuredConfirmPassword;
+                                          _isObscuredConfirmPassword =
+                                              !_isObscuredConfirmPassword;
                                           _confirmPasswordController.text =
                                               _confirmPasswordController.text;
                                         });
@@ -310,61 +394,83 @@ class _SignupState extends State<Signup> {
                                 ),
                               ),
                               //const SizedBox(height: 5),
-                              DropdownFormField(hintText: 'Vendor', dropdownItems: dropdownItems1,),
+                              DropdownFormField(
+                                hintText: 'Visitor Type',
+                                dropdownItems: dropdownItems,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value == 'BCC Staff') {
+                                      _selectedVisitorType =
+                                          'ndc_internal' ?? '';
+                                    }
+                                    if (value == 'Customer') {
+                                      _selectedVisitorType =
+                                          'ndc_customer' ?? '';
+                                    }
+                                    if (value == 'Vendor') {
+                                      _selectedVisitorType = 'ndc_vendor' ?? '';
+                                    }
+                                    //print('New: $_selectedUserType');
+                                  });
+                                },
+                              ),
                               const SizedBox(height: 15),
                               Container(
-                                width: 350,
-                                height: 70,
-                                child: TextFormField(
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Add Profile Picture',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                    suffixIcon: GestureDetector(
-                                      onTap: (){},
-                                      child: Container(
-                                          margin: EdgeInsets.only(right: 2),
-                                          padding: EdgeInsets.all(3),
-                                          width: 80,
-                                          height: 50,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            borderRadius: BorderRadius.only(
-                                              topRight: Radius.circular(2),
-                                              bottomRight: Radius.circular(2),
-                                            ),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Icon(Icons.file_upload,
-                                                color: Color.fromRGBO(143, 150, 158, 1),),
-                                              Text('Upload',
-                                                style: TextStyle(
-                                                  color: Color.fromRGBO(143, 150, 158, 1),
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontFamily: 'default',
-                                                ),)
-                                            ],
-                                          )
+                                width: (_imageWidth != 0
+                                    ? (_imageWidth + 10).clamp(0, 350)
+                                    : 350),
+                                height: (_imageHeight != 0
+                                    ? (_imageHeight + 10).clamp(0, 200)
+                                    : 80),
+                                child: InkWell(
+                                  onTap: _selectImage,
+                                  child: InputDecorator(
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      border: OutlineInputBorder(
+                                          borderSide: Divider.createBorderSide(
+                                              context)),
+                                      labelText: 'Add Profile Picture',
+                                      labelStyle: TextStyle(
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        fontFamily: 'default',
                                       ),
+                                      errorMaxLines: null,
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .red), // Customize error border color
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: _imageFile != null
+                                              ? Image.file(
+                                                  _imageFile!,
+                                                  width: null,
+                                                  height: null,
+                                                  fit: BoxFit.contain,
+                                                )
+                                              : Icon(Icons.image,
+                                                  size: 60, color: Colors.grey),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text('Upload',
+                                            style:
+                                                TextStyle(color: Colors.blue)),
+                                        // Customize upload text style
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                height: 15,
+                              )
                             ],
                           ),
                         ),
@@ -386,51 +492,53 @@ class _SignupState extends State<Signup> {
                                   color: Colors.white,
                                   fontFamily: 'default',
                                 ))),
-                      ]
-                    )
-                  ),
-                  Footer(
-                    backgroundColor: Color.fromRGBO(246, 246, 246, 255),
-                    alignment: Alignment.bottomCenter,
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      ])),
+                      Footer(
+                        backgroundColor: Color.fromRGBO(246, 246, 246, 255),
+                        alignment: Alignment.bottomCenter,
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            const Text(
-                              'Already have an account?  ',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color.fromRGBO(143, 150, 158, 1),
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => Login()));
-                              },
-                              child: const Text(
-                                'Login now',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromRGBO(13, 70, 127, 1),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Already have an account?  ',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
                                 ),
-                              ),
-                            )
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Login()));
+                                  },
+                                  child: const Text(
+                                    'Login now',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(13, 70, 127, 1),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -441,25 +549,40 @@ class _SignupState extends State<Signup> {
 
   void _registerUser() {
     if (validateAndSave() && checkConfirmPassword()) {
-      RegisterRequestmodel registerRequest = RegisterRequestmodel(
-        //fullName: _fullNameController.text,
-        Email: _emailController.text,
-        Password: _passwordController.text,
+      final registerRequest = RegisterRequestmodel(
+        fullName: _fullNameController.text,
+        organization: _organizationController.text,
+        designation: _designationController.text,
+        email: _emailController.text,
+        phone: _phoneController.text,
+        password: _passwordController.text,
+        confirmPassword: _confirmPasswordController.text,
+        userType: _selectedVisitorType,
       );
 
-      // Call your API service to register the user
-      APIService apiService = APIService();
-      apiService.register(registerRequest).then((response) {
-        // Handle the response accordingly
-        // For example, show a success message or navigate to the next screen
-      }).catchError((error) {
-        if (kDebugMode) {
-          print(error);
+      final apiService = APIService();
+      // Call register method passing registerRequestModel, _imageFile, and authToken
+      apiService.register(registerRequest, _imageFile).then((response) {
+        print("Submitted");
+        print(_selectedVisitorType);
+        if (response != null && response == "User Registration Successfully") {
+          clearForm();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => Login()),
+            (route) => false, // This will remove all routes from the stack
+          );
+          const snackBar = SnackBar(
+            content: Text('Registration Submitted!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
+      }).catchError((error) {
+        // Handle registration error
+        print(error);
         const snackBar = SnackBar(
-          content: Text('Register Failed!'),
+          content: Text('Registration failed!'),
         );
-
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       });
     }
@@ -476,5 +599,31 @@ class _SignupState extends State<Signup> {
 
   bool checkConfirmPassword() {
     return _passwordController.text == _confirmPasswordController.text;
+  }
+
+  Future<void> _selectImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+      await _getImageDimensions();
+    }
+  }
+
+  void clearForm() {
+    _fullNameController.clear();
+    _organizationController.clear();
+    _designationController.clear();
+    _emailController.clear();
+    _phoneController.clear();
+    _passwordController.clear();
+    _confirmPasswordController.clear();
+    setState(() {
+      _selectedVisitorType = '';
+      _imageFile = null;
+    });
   }
 }

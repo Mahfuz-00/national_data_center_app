@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../Graph/graphs.dart';
 import '../Login UI/loginUI.dart';
+import '../Profile UI/profileUI.dart';
 import '../Template Models/userinfo.dart';
 import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 
@@ -64,117 +65,27 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            _scaffoldKey.currentState!.openDrawer();
-          },
-        ),
-        title: const Text(
-          'Security Admin Dashboard',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            fontFamily: 'default',
-          ),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            SizedBox(width: 28,),
+            const Text(
+              'Security Admin Dashboard',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontFamily: 'default',
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_rounded, color: Colors.white,),
           ),
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white,),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.more_vert_outlined, color: Colors.white,),
-            onPressed: () {},
-          )
         ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: const Color.fromRGBO(13, 70, 127, 1),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    child: Icon(
-                      Icons.person,
-                      size: 35,
-                    ),
-                    radius: 30,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'User Name',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'default',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: Text('Home',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NDCDashboard())); // Close the drawer
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Information',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                /* Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('Logout',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'default',)),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Login())); // Close the drawer
-              },
-            ),
-            Divider(),
-          ],
-        ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -303,9 +214,10 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                         ),
                         SizedBox(height: 15),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              width: screenWidth*0.35,
+                              width: screenWidth*0.4,
                               height: screenHeight*0.07,
                               child: TextFormField(
                                 keyboardType: TextInputType.datetime,
@@ -355,7 +267,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Color.fromRGBO(13, 70, 127, 1),
                                 //backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-                                fixedSize: Size(MediaQuery.of(context).size.width* 0.5, MediaQuery.of(context).size.height * 0.07),
+                                fixedSize: Size(MediaQuery.of(context).size.width* 0.4, MediaQuery.of(context).size.height * 0.07),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -448,10 +360,8 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NDCDashboard()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SecurityAdminDashboard()));
               },
               child: Container(
                 width: screenWidth / 3,
@@ -482,11 +392,11 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
               ),
             ),
             GestureDetector(
-              onTap: (){
-                /*Navigator.push(
+              onTap: () {
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SearchUser()));*/
+                        builder: (context) => const Profile()));
               },
               behavior: HitTestBehavior.translucent,
               child: Container(
@@ -503,7 +413,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.search,
+                      Icons.person,
                       size: 30,
                       color: Colors.white,
                     ),
@@ -511,7 +421,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                       height: 5,
                     ),
                     Text(
-                      'Search',
+                      'Profile',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -525,11 +435,8 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
             ),
             GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: (){
-                /*Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Information()));*/
+              onTap: () {
+                _showLogoutDialog(context);
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -545,7 +452,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.info,
+                      Icons.logout,
                       size: 30,
                       color: Colors.white,
                     ),
@@ -553,7 +460,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                       height: 5,
                     ),
                     Text(
-                      'Information',
+                      'Log Out',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -727,9 +634,10 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                 ),
                 SizedBox(height: 15),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: screenWidth * 0.35,
+                      width: screenWidth * 0.4,
                       height: screenHeight * 0.07,
                       child: TextFormField(
                         keyboardType: TextInputType.datetime,
@@ -778,7 +686,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(13, 70, 127, 1),
-                        fixedSize: Size(MediaQuery.of(context).size.width * 0.5, MediaQuery.of(context).size.height * 0.07),
+                        fixedSize: Size(MediaQuery.of(context).size.width * 0.4, MediaQuery.of(context).size.height * 0.07),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -815,6 +723,70 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
           backgroundColor: Colors.white,
         );
       }).toList(),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Column(
+            children: [
+              Text('Logout Confirmation',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontFamily: 'default',
+                ),),
+              Divider()
+            ],
+          ),
+          content: Text('Are you sure you want to log out?',
+            style: TextStyle(
+              color: const Color.fromRGBO(13, 70, 127, 1),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              fontFamily: 'default',
+            ),),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('Cancel',
+                    style: TextStyle(
+                      color: const Color.fromRGBO(13, 70, 127, 1),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'default',
+                    ),),
+                ),
+                SizedBox(width: 10,),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Login()));
+                  },
+                  child: Text('Logout',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'default',
+                    ),),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 }
