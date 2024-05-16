@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
+import 'package:ndc_app/Access%20Form%20(Guest)/accessFormGuestUI.dart';
 
 import '../Login UI/loginUI.dart';
 import '../Sign Up UI/signupUI.dart';
@@ -46,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -126,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen>
                               //side: BorderSide(color: Colors.black, width: 2),
                             ),
                             //elevation: 3,
-                            fixedSize: const Size(350, 70),
+                            fixedSize: Size(screenWidth*0.9, 70),
                           ),
                           child: const Text('Login',
                               textAlign: TextAlign.center,
@@ -153,7 +155,7 @@ class _SplashScreenState extends State<SplashScreen>
                               side: const BorderSide(color: Colors.black, width: 2),
                             ),
                             //elevation: 3,
-                            fixedSize: const Size(350, 70),
+                            fixedSize: Size(screenWidth*0.9, 70),
                           ),
                           child: const Text('Register',
                               textAlign: TextAlign.center,
@@ -161,6 +163,33 @@ class _SplashScreenState extends State<SplashScreen>
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
+                                fontFamily: 'default',
+                              ))),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AccessFormGuestUI()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(color: const Color.fromRGBO(13, 70, 127, 1), width: 2),
+                            ),
+                            //elevation: 3,
+                            fixedSize: Size(screenWidth*0.9, 70),
+                          ),
+                          child: const Text('Access Form (Only Guest)',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromRGBO(13, 70, 127, 1),
                                 fontFamily: 'default',
                               )))
                     ],

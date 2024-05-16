@@ -28,6 +28,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   bool _isFetched = false;
   bool _isLoading = false;
   bool _pageLoading = true;
+  bool _errorOccurred = false;
 
   late String userName = '';
   late String organizationName = '';
@@ -63,7 +64,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       }
       print(dashboardData);
 
-      final Map<String, dynamic> records = dashboardData['records'];
+      final Map<String, dynamic>? records = dashboardData['records'];
       if (records == null || records.isEmpty) {
         // No records available
         print('No records available');
@@ -92,22 +93,32 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
         return VisitorRequestInfoCard(
-          AppointmentWith: request['appointment_with'],
+          Name: request['name'],
+          Organization: request['organization'],
+          Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
-          Belongs: request['belongs'],
+          Belongs: request['belong'],
           Status: request['status'],
+          Designation: request['designation'],
+          Email: request['email'],
+          Sector: request['sector'],
         );
       }).toList();
 
       // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return VisitorRequestInfoCard(
-          AppointmentWith: request['appointment_with'],
+          Name: request['name'],
+          Organization: request['organization'],
+          Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
-          Belongs: request['belongs'],
+          Belongs: request['belong'],
           Status: request['status'],
+          Designation: request['designation'],
+          Email: request['email'],
+          Sector: request['sector'],
         );
       }).toList();
 
@@ -118,6 +129,8 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       });
     } catch (e) {
       print('Error fetching connection requests: $e');
+      _isFetched = true;
+      //_errorOccurred = true;
       // Handle error as needed
     }
   }
@@ -135,7 +148,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         borderRadius: BorderRadius.circular(10),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
             fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
                 MediaQuery.of(context).size.height * 0.08),
             shape: RoundedRectangleBorder(
@@ -146,7 +159,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
             /*   Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ISPRequestList()));*/
           },
-          child: Text('See All Request',
+          child: Text('See all pending request',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -166,7 +179,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         borderRadius: BorderRadius.circular(10),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
+            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
             fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
                 MediaQuery.of(context).size.height * 0.08),
             shape: RoundedRectangleBorder(
@@ -177,7 +190,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
             /*    Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ISPReviewedList()));*/
           },
-          child: Text('See All Reviewed Request',
+          child: Text('See all reviewed request',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
@@ -193,6 +206,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   void initState() {
     super.initState();
     print('initState called');
+    loadUserProfile();
     Future.delayed(Duration(seconds: 5), () {
       if (widget.shouldRefresh && !_isFetched) {
         loadUserProfile();
@@ -278,7 +292,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             Center(
+                            Center(
                               child: Text(
                                 'Welcome, $userName',
                                 textAlign: TextAlign.center,
@@ -316,11 +330,11 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                       return Container(
                                         height: 200, // Adjust height as needed
                                         width:
-                                        screenWidth, // Adjust width as needed
+                                            screenWidth, // Adjust width as needed
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                          BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                         ),
                                         child: Center(
                                           child: CircularProgressIndicator(),
@@ -331,8 +345,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                       return buildNoRequestsWidget(screenWidth,
                                           'Error: ${snapshot.error}');
                                     } else if (_isFetched) {
-                                      if (pendingRequests
-                                          .isNotEmpty) {
+                                      if (pendingRequests.isNotEmpty) {
                                         // If data is loaded successfully, display the ListView
                                         return Container(
                                           child: Column(
@@ -340,23 +353,21 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                               ListView.separated(
                                                 shrinkWrap: true,
                                                 physics:
-                                                NeverScrollableScrollPhysics(),
+                                                    NeverScrollableScrollPhysics(),
                                                 itemCount:
-                                                pendingRequests
-                                                    .length >
-                                                    10
-                                                    ? 10
-                                                    : pendingRequests
-                                                    .length,
+                                                    pendingRequests.length > 10
+                                                        ? 10
+                                                        : pendingRequests
+                                                            .length,
                                                 itemBuilder: (context, index) {
                                                   // Display each connection request using ConnectionRequestInfoCard
-                                                  return pendingRequests[
-                                                  index];
+                                                  return pendingRequests[index];
                                                 },
                                                 separatorBuilder: (context,
-                                                    index) =>
-                                                const SizedBox(height: 10),
+                                                        index) =>
+                                                    const SizedBox(height: 10),
                                               ),
+                                              SizedBox(height: 10,),
                                               if (shouldShowSeeAllButton(
                                                   pendingRequests))
                                                 buildSeeAllButtonRequestList(
@@ -364,8 +375,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                             ],
                                           ),
                                         );
-                                      } else if (pendingRequests
-                                          .isEmpty) {
+                                      } else if (pendingRequests.isEmpty) {
                                         // Handle the case when there are no pending connection requests
                                         return buildNoRequestsWidget(
                                             screenWidth,
@@ -402,11 +412,11 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                       return Container(
                                         height: 200, // Adjust height as needed
                                         width:
-                                        screenWidth, // Adjust width as needed
+                                            screenWidth, // Adjust width as needed
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                          BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                         ),
                                         child: Center(
                                           child: CircularProgressIndicator(),
@@ -422,8 +432,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                         return buildNoRequestsWidget(
                                             screenWidth,
                                             'No connection requests reviewed yet');
-                                      } else if (acceptedRequests
-                                          .isNotEmpty) {
+                                      } else if (acceptedRequests.isNotEmpty) {
                                         // If data is loaded successfully, display the ListView
                                         return Container(
                                           child: Column(
@@ -431,23 +440,22 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                               ListView.separated(
                                                 shrinkWrap: true,
                                                 physics:
-                                                NeverScrollableScrollPhysics(),
+                                                    NeverScrollableScrollPhysics(),
                                                 itemCount:
-                                                acceptedRequests
-                                                    .length >
-                                                    10
-                                                    ? 10
-                                                    : acceptedRequests
-                                                    .length,
+                                                    acceptedRequests.length > 10
+                                                        ? 10
+                                                        : acceptedRequests
+                                                            .length,
                                                 itemBuilder: (context, index) {
                                                   // Display each connection request using ConnectionRequestInfoCard
                                                   return acceptedRequests[
-                                                  index];
+                                                      index];
                                                 },
                                                 separatorBuilder: (context,
-                                                    index) =>
-                                                const SizedBox(height: 10),
+                                                        index) =>
+                                                    const SizedBox(height: 10),
                                               ),
+                                              SizedBox(height: 10,),
                                               if (shouldShowSeeAllButton(
                                                   acceptedRequests))
                                                 buildSeeAllButtonReviewedList(
@@ -588,7 +596,8 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const Profile()));
+                                  builder: (context) =>
+                                      const Profile(shouldRefresh: true)));
                         },
                         child: Container(
                           decoration: BoxDecoration(

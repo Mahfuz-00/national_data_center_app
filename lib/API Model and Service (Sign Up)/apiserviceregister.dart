@@ -19,6 +19,7 @@ class APIService {
       request.fields['full_name'] = registerRequestModel.fullName;
       request.fields['organization'] = registerRequestModel.organization;
       request.fields['designation'] = registerRequestModel.designation;
+      request.fields['identification_number'] = registerRequestModel.NID;
       request.fields['email'] = registerRequestModel.email;
       request.fields['phone'] = registerRequestModel.phone;
       request.fields['password'] = registerRequestModel.password;

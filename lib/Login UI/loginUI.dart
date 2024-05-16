@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:footer/footer.dart';
+import 'package:ndc_app/Access%20Form%20(Guest)/accessFormGuestUI.dart';
 import 'package:ndc_app/Admin%20Dashboard/admindashboardUI.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
 import 'package:ndc_app/Security%20Admin%20Dashboard/securityadmindashboardUI.dart';
@@ -62,6 +63,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return InternetChecker(
       child: PopScope(
         canPop: false,
@@ -108,7 +111,7 @@ class _LoginState extends State<Login> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 350,
+                                      width: screenWidth*0.9,
                                       height: 70,
                                       child: TextFormField(
                                         controller: _emailController,
@@ -148,7 +151,7 @@ class _LoginState extends State<Login> {
                                     ),
                                     const SizedBox(height: 15),
                                     Container(
-                                      width: 350,
+                                      width: screenWidth*0.9,
                                       height: 85,
                                       child: Column(
                                         children: [
@@ -270,13 +273,13 @@ class _LoginState extends State<Login> {
                                         if (userType == 'ndc_admin') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => AdminDashboard()),
+                                            MaterialPageRoute(builder: (context) => AdminDashboard(shouldRefresh: true)),
                                           );
                                         }
                                         if (userType == 'ndc_security_admin') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => SecurityAdminDashboard(/*shouldRefresh: true*/)),
+                                            MaterialPageRoute(builder: (context) => SecurityAdminDashboard(shouldRefresh: true)),
                                           );
                                         }
                                       }
@@ -290,9 +293,11 @@ class _LoginState extends State<Login> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    fixedSize: const Size(350, 70),
+                                    fixedSize: Size(screenWidth*0.9, 70),
                                   ),
-                                  child: const Text('Login',
+                                  child: _isButtonClicked
+                                      ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                      : const Text('Login',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 20,
@@ -313,39 +318,77 @@ class _LoginState extends State<Login> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Column(
                             children: [
-                              const Text(
-                                'Don\'t have an account?  ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color.fromRGBO(143, 150, 158, 1),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const Signup()));
-                                },
-                                child: const Text(
-                                  'Register now',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(13, 70, 127, 1),
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Are you Guest?  ',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(143, 150, 158, 1),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    ),
                                   ),
-                                ),
-                              )
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const AccessFormGuestUI()));
+                                    },
+                                    child: const Text(
+                                      'Physical Accesss Request Form',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color.fromRGBO(13, 70, 127, 1),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 5,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Don\'t have an account?  ',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(143, 150, 158, 1),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const Signup()));
+                                    },
+                                    child: const Text(
+                                      'Register now',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Color.fromRGBO(13, 70, 127, 1),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ],
-                          ),
+                          )
                         ],
                       ),
                     ),
@@ -414,6 +457,7 @@ class _LoginState extends State<Login> {
   late final String? UserName;
   late final String? OrganizationName;
   late final String? PhotoURL;
+  late final String? User;
 
   Future<void> storeTokenLocally(String token) async {
     final prefs = await SharedPreferences.getInstance();
@@ -433,12 +477,15 @@ class _LoginState extends State<Login> {
         await prefs.setString('userName', userProfile.name);
         await prefs.setString('organizationName', userProfile.organization);
         await prefs.setString('photoUrl', userProfile.photo);
+        await prefs.setString('user', userProfile.user);
         UserName = prefs.getString('userName');
         OrganizationName = prefs.getString('organizationName');
         PhotoURL = prefs.getString('photoUrl');
+        User = prefs.getString('user');
         print('User Name: $UserName');
         print('Organization Name: $OrganizationName');
         print('Photo URL: $PhotoURL');
+        print('User Type: $User');
         print('User profile saved successfully');
       } catch (e) {
         print('Error saving user profile: $e');

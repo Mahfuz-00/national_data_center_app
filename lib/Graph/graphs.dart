@@ -1,31 +1,34 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_charts/flutter_charts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Widget chartToRunLine() {
+Widget chartToRunLine(Map<String, dynamic> data) {
   LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   ChartData chartData;
   ChartOptions chartOptions = const ChartOptions();
-  // Example shows how to create ChartOptions instance
-  //   which will request to start Y axis at data minimum.
-  // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
-  //   as it does not make sense there.
-  chartOptions = const ChartOptions(
-    dataContainerOptions: DataContainerOptions(
-      startYAxisAtDataMinRequested: true,
-    ),
-  );
+
+  List<double> monthlyData = List.filled(12, 0.0);
+  List<String> monthlyLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  SharedPreferences.getInstance().then((prefs) {
+    String? monthlyDataJson = prefs.getString('monthlyData');
+    if (monthlyDataJson != null) {
+      List<dynamic> monthlyDataList = json.decode(monthlyDataJson);
+      for (int i = 0; i < monthlyDataList.length; i++) {
+        monthlyData[i] = monthlyDataList[i] as double;
+      }
+    }
+  });
+
   chartData = ChartData(
-    dataRows: const [
-      [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
-      [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
-    ],
-    xUserLabels: const ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'],
-    dataRowsLegends: const [
-      'Off zero 1',
-      'Off zero 2',
-    ],
+    dataRows: [monthlyData],
+    xUserLabels: monthlyLabels,
+    dataRowsLegends: ['Monthly Data'],
     chartOptions: chartOptions,
   );
+
   var lineChartContainer = LineChartTopContainer(
     chartData: chartData,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,
@@ -36,34 +39,37 @@ Widget chartToRunLine() {
       lineChartContainer: lineChartContainer,
     ),
   );
-  return lineChart;}
+  return lineChart;
+}
 
-
-Widget chartToRunVertical() {
+Widget chartToRunVertical(Map<String, dynamic> data) {
   LabelLayoutStrategy? xContainerLabelLayoutStrategy;
   ChartData chartData;
   ChartOptions chartOptions = const ChartOptions();
-  // Example shows how to create ChartOptions instance
-  //   which will request to start Y axis at data minimum.
-  // Even though startYAxisAtDataMinRequested is set to true, this will not be granted on bar chart,
-  //   as it does not make sense there.
-  chartOptions = const ChartOptions(
-    dataContainerOptions: DataContainerOptions(
-      startYAxisAtDataMinRequested: true,
-    ),
-  );
+
+  List<double> weeklyData = List.filled(7, 0.0);
+  List<String> weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  print('Graph Data: $data');
+  SharedPreferences.getInstance().then((prefs) {
+    String? weeklyDataJson = prefs.getString('weeklyData');
+    if (weeklyDataJson != null) {
+      Map<String, dynamic> weeklyDataMap = json.decode(weeklyDataJson);
+      for (int i = 0; i < weekDays.length; i++) {
+        if (weeklyDataMap.containsKey(weekDays[i])) {
+          weeklyData[i] = weeklyDataMap[weekDays[i]] as double;
+        }
+      }
+    }
+  });
+
   chartData = ChartData(
-    dataRows: const [
-      [20.0, 25.0, 30.0, 35.0, 40.0, 20.0],
-      [35.0, 40.0, 20.0, 25.0, 30.0, 20.0],
-    ],
-    xUserLabels: const ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    dataRowsLegends: const [
-      'Off zero 1',
-      'Off zero 2',
-    ],
+    dataRows: [weeklyData],
+    xUserLabels: weekDays,
+    dataRowsLegends: ['Weekly Data'],
     chartOptions: chartOptions,
   );
+
   var verticalBarChartContainer = VerticalBarChartTopContainer(
     chartData: chartData,
     xContainerLabelLayoutStrategy: xContainerLabelLayoutStrategy,

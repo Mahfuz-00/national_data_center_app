@@ -5,6 +5,7 @@ class DashboardItem {
   final String belongs;
   final String phone;
   final String appointmentdateandtime;
+  final int applicationID;
   final String status;
 
   DashboardItem({
@@ -14,6 +15,7 @@ class DashboardItem {
     required this.belongs,
     required this.phone,
     required this.appointmentdateandtime,
+    required this.applicationID,
     required this.status,
   });
 
@@ -25,6 +27,7 @@ class DashboardItem {
       belongs: json['belong'],
       phone: json['phone'],
       appointmentdateandtime: json['appointment_date_time'],
+      applicationID: json['appointment_id'],
       status: json['status'],
     );
   }

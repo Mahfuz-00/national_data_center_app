@@ -51,7 +51,14 @@ class APIProfileService {
         // If the server returns a 200 OK response, parse the JSON
         Map<String, dynamic> userProfile = json.decode(response.body);
         print(response.body);
-        return userProfile['records'];
+        Map<String, dynamic> filteredRecords = {};
+        userProfile['records'].forEach((key, value) {
+          if (value != 'None') {
+            filteredRecords[key] = value;
+          }
+        });
+
+        return filteredRecords;
       } else {
         // If the server did not return a 200 OK response,
         // throw an exception.

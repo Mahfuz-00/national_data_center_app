@@ -26,6 +26,7 @@ class _SignupState extends State<Signup> {
   late TextEditingController _fullNameController;
   late TextEditingController _organizationController;
   late TextEditingController _designationController;
+  late TextEditingController _NIDController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
@@ -70,6 +71,7 @@ class _SignupState extends State<Signup> {
       fullName: '',
       organization: '',
       designation: '',
+      NID: '',
       email: '',
       phone: '',
       password: '',
@@ -79,6 +81,7 @@ class _SignupState extends State<Signup> {
     _fullNameController = TextEditingController();
     _organizationController = TextEditingController();
     _designationController = TextEditingController();
+    _NIDController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
@@ -93,6 +96,8 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return InternetChecker(
       child: PopScope(
         canPop: false,
@@ -136,7 +141,7 @@ class _SignupState extends State<Signup> {
                           child: Column(
                             children: [
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _fullNameController,
@@ -168,7 +173,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _organizationController,
@@ -200,7 +205,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _designationController,
@@ -230,9 +235,40 @@ class _SignupState extends State<Signup> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 5), Container(
+                                width: screenWidth*0.9,
+                                height: 70,
+                                child: TextFormField(
+                                  controller: _NIDController,
+                                  validator: (input) {
+                                    if (input == null || input.isEmpty) {
+                                      return 'Please enter your NID number or your passport number';
+                                    }
+                                    return null;
+                                  },
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
+                                  decoration: const InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(),
+                                    labelText: 'NID or Passport Number',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'default',
+                                    ),
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _emailController,
@@ -270,7 +306,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _phoneController,
@@ -309,13 +345,13 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
                                   //onSaved: (input)=> _registerRequest.Password = input!,
                                   validator: (input) => input!.length < 8
-                                      ? "Password should be more than 8 characters"
+                                      ? "Password should be more than 7 characters"
                                       : null,
                                   controller: _passwordController,
                                   obscureText: _isObscuredPassword,
@@ -352,13 +388,13 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: 350,
+                                width: screenWidth*0.9,
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
                                   //onSaved: (input)=> _registerRequest.Password = input!,
                                   validator: (input) => input!.length < 8
-                                      ? "Password should be more than 8 characters"
+                                      ? "Password should be more than 7 characters"
                                       : null,
                                   controller: _confirmPasswordController,
                                   obscureText: _isObscuredConfirmPassword,
@@ -417,8 +453,8 @@ class _SignupState extends State<Signup> {
                               const SizedBox(height: 15),
                               Container(
                                 width: (_imageWidth != 0
-                                    ? (_imageWidth + 10).clamp(0, 350)
-                                    : 350),
+                                    ? (_imageWidth + 10).clamp(0, screenWidth*0.9)
+                                    : screenWidth*0.9),
                                 height: (_imageHeight != 0
                                     ? (_imageHeight + 10).clamp(0, 200)
                                     : 80),
@@ -482,7 +518,7 @@ class _SignupState extends State<Signup> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              fixedSize: Size(350, 70),
+                              fixedSize: Size(screenWidth*0.9, 70),
                             ),
                             child: const Text('Register',
                                 textAlign: TextAlign.center,
@@ -549,10 +585,16 @@ class _SignupState extends State<Signup> {
 
   void _registerUser() {
     if (validateAndSave() && checkConfirmPassword()) {
+      const snackBar = SnackBar(
+        content: Text(
+            'Processing'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       final registerRequest = RegisterRequestmodel(
         fullName: _fullNameController.text,
         organization: _organizationController.text,
         designation: _designationController.text,
+        NID: _NIDController.text,
         email: _emailController.text,
         phone: _phoneController.text,
         password: _passwordController.text,
@@ -617,6 +659,7 @@ class _SignupState extends State<Signup> {
     _fullNameController.clear();
     _organizationController.clear();
     _designationController.clear();
+    _NIDController.clear();
     _emailController.clear();
     _phoneController.clear();
     _passwordController.clear();

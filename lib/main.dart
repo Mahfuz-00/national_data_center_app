@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_printer/flutter_printer.dart';
 
 import 'Splashscreen UI/splashscreenUI.dart';
 

@@ -4,8 +4,7 @@ class UserProfileFull {
   final String organization;
   final String designation;
   final String phone;
-  final String license;
-  final String ISPuserType;
+  final String VisitorType;
   final String email;
   final String photo;
 
@@ -15,8 +14,7 @@ class UserProfileFull {
     required this.organization,
     required this.designation,
     required this.phone,
-    required this.license,
-    required this.ISPuserType,
+    required this.VisitorType,
     required this.email,
     required this.photo,
   });
@@ -28,8 +26,7 @@ class UserProfileFull {
       organization: json['organization'],
       designation: json['designation'],
       phone: json['phone'],
-      license: json['licenseNumber'],
-      ISPuserType: json['ispUserType'],
+      VisitorType: json['userType'],
       email: json['email'],
       photo: json['photo'],
     );

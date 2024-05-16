@@ -14,6 +14,7 @@ class RegisterRequestmodel {
   late String fullName;
   late String organization;
   late String designation;
+  late String NID;
   late String email;
   late String phone;
   late String password;
@@ -24,6 +25,7 @@ class RegisterRequestmodel {
     required this.fullName,
     required this.organization,
     required this.designation,
+    required this.NID,
     required this.email,
     required this.phone,
     required this.password,
@@ -36,6 +38,7 @@ class RegisterRequestmodel {
       'full_name': fullName,
       'organization': organization,
       'designation': designation,
+      'NID': NID,
       'email': email,
       'phone': phone,
       'password': password,

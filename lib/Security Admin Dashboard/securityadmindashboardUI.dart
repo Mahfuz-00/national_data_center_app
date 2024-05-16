@@ -1,15 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../API Model And Service (Dashboard)/apiserviceDashboard.dart';
+import '../API Service (PDF Download)/apiServicePDF.dart';
+import '../Analytics UI/analyticsUI.dart';
 import '../Graph/graphs.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
+import '../Template Models/templateerrorcontainer.dart';
 import '../Template Models/userinfo.dart';
+import '../Template Models/visitorRequestInfoCardSecurityAdmin.dart';
 import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 
 class SecurityAdminDashboard extends StatefulWidget {
-  const SecurityAdminDashboard({super.key});
+  final bool shouldRefresh;
+  const SecurityAdminDashboard({Key? key, this.shouldRefresh = false})
+      : super(key: key);
 
   @override
   State<SecurityAdminDashboard> createState() => _SecurityAdminDashboardState();
@@ -18,39 +28,180 @@ class SecurityAdminDashboard extends StatefulWidget {
 class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController _Clockcontroller= TextEditingController();
+  List<Widget> pendingRequests = [];
+  List<Widget> acceptedRequests = [];
+  bool _isFetched = false;
+  bool _isLoading = false;
+  bool _pageLoading = true;
+  bool _errorOccurred = false;
+  late Map<String, dynamic> monthlyData;
+  late Map<String, dynamic> dailyData;
 
-  List<User> _people = [
-    User(
-      name: 'Md. Sajjad Hasan',
-      orgName: 'Touch and Solve',
-      appointmentWith: 'Munna Bhai',
-      belongs: 'A bag',
-      mobileNo: 01234567890,
-      appointmentDate: DateTime(2024, 2, 22),
-      appointmentTime: TimeOfDay(hour: 10, minute: 0),
-      status: 'Pending',
-    ),
-    User(
-      name: 'Md, Sajjad Khan',
-      orgName: 'Touch and Solve',
-      appointmentWith: 'Munna Bhai',
-      belongs: 'A handbag',
-      mobileNo: 01234567890,
-      appointmentDate: DateTime(2024, 3, 31),
-      appointmentTime: TimeOfDay(hour: 17, minute: 0),
-      status: 'Pending',
-    ),
-    User(
-      name: 'Md. Sajjad Munna',
-      orgName: 'Touch and Solve',
-      appointmentWith: 'Munna Bhai',
-      belongs: 'A Guccibag',
-      mobileNo: 01234567890,
-      appointmentDate: DateTime(2025, 2, 22),
-      appointmentTime: TimeOfDay(hour: 10, minute: 0),
-      status: 'Pending',
-    ),
-  ];
+  late String userName = '';
+  late String organizationName = '';
+  late String photoUrl = '';
+
+  Future<void> loadUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('userName') ?? '';
+      organizationName = prefs.getString('organizationName') ?? '';
+      photoUrl = prefs.getString('photoUrl') ?? '';
+      photoUrl = 'https://bcc.touchandsolve.com' + photoUrl;
+      print('User Name: $userName');
+      print('Organization Name: $organizationName');
+      print('Photo URL: $photoUrl');
+      print('User profile got it!!!!');
+    });
+  }
+
+  Future<void> fetchConnectionRequests() async {
+    if (_isFetched) return;
+    try {
+      final apiService = await DashboardAPIService.create();
+
+      // Fetch dashboard data
+      final Map<String, dynamic>? dashboardData =
+      await apiService.fetchDashboardItems();
+      if (dashboardData == null || dashboardData.isEmpty) {
+        // No data available or an error occurred
+        print(
+            'No data available or error occurred while fetching dashboard data');
+        return;
+      }
+      print(dashboardData);
+
+      final Map<String, dynamic>? records = dashboardData['records'] ?? [];
+      print(records);
+      if (records == null || records.isEmpty) {
+        // No records available
+        print('No records available');
+        return;
+      }
+
+      // Set isLoading to true while fetching data
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Simulate fetching data for 5 seconds
+      await Future.delayed(Duration(seconds: 3));
+
+      final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
+      for (var index = 0; index < pendingRequestsData.length; index++) {
+        print(
+            'Pending Request at index $index: ${pendingRequestsData[index]}\n');
+      }
+      final List<dynamic> acceptedRequestsData = records['Accepted'] ?? [];
+      for (var index = 0; index < acceptedRequestsData.length; index++) {
+        print(
+            'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
+      }
+
+   /*   monthlyData = records['Monthly'] ?? [];
+      // Serialize dailyData to JSON string
+      final monthlyDataJson = jsonEncode(dailyData);
+
+      // Save dailyDataJson to SharedPreferences
+      await saveMonthlyDataToSharedPreferences(monthlyDataJson);
+
+      dailyData = records['Weekly'] ?? [];
+      // Serialize dailyData to JSON string
+      final dailyDataJson = jsonEncode(dailyData);
+
+      // Save dailyDataJson to SharedPreferences
+      await saveDailyDataToSharedPreferences(dailyDataJson);
+*/
+      // Map pending requests to widgets
+      final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
+        return VisitorRequestInfoCardSecurityAdmin(
+          Name: request['name'],
+          Organization: request['organization'],
+          Phone: request['phone'],
+          AppointmentDate: request['appointment_date_time'],
+          Purpose: request['purpose'],
+          Belongs: request['belong'],
+          ApplicationID: request['appointment_id'],
+          // ApplicationID: request['appointment_id'],
+          Designation: request['designation'],
+          Email: request['email'],
+          Sector: request['sector'],
+        );
+      }).toList();
+
+      // Map accepted requests to widgets
+      final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
+        return VisitorRequestInfoCardSecurityAdmin(
+          Name: request['name'],
+          Organization: request['organization'],
+          Phone: request['phone'],
+          AppointmentDate: request['appointment_date_time'],
+          Purpose: request['purpose'],
+          Belongs: request['belong'],
+          ApplicationID: request['appointment_id'],
+          Designation: request['designation'],
+          Email: request['email'],
+          Sector: request['sector'],
+        );
+      }).toList();
+
+      setState(() {
+        pendingRequests = pendingWidgets;
+        acceptedRequests = acceptedWidgets;
+        _isFetched = true;
+      });
+    } catch (e) {
+      print('Error fetching connection requests: $e');
+      _isFetched = true;
+      //_errorOccurred = true;
+      // Handle error as needed
+    }
+  }
+
+/*// Function to save data to SharedPreferences
+  Future<void> saveDailyDataToSharedPreferences(String dataJson) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('dailyData', dataJson);
+    } catch (e) {
+      print('Error saving data to SharedPreferences: $e');
+      // Handle error as needed
+    }
+  }
+  // Function to save data to SharedPreferences
+  Future<void> saveMonthlyDataToSharedPreferences(String dataJson) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('monthlyData', dataJson);
+    } catch (e) {
+      print('Error saving data to SharedPreferences: $e');
+      // Handle error as needed
+    }
+  }*/
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState called');
+    loadUserProfile();
+    Future.delayed(Duration(seconds: 5), () {
+      if (widget.shouldRefresh && !_isFetched) {
+        loadUserProfile();
+        // Refresh logic here, e.g., fetch data again
+        print('Page Loading Done!!');
+        // connectionRequests = [];
+        if (!_isFetched) {
+          fetchConnectionRequests();
+          //_isFetched = true; // Set _isFetched to true after the first call
+        }
+      }
+      // After 5 seconds, set isLoading to false to stop showing the loading indicator
+      setState(() {
+        print('Page Loading');
+        _pageLoading = false;
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -62,7 +213,15 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return InternetChecker(
+    return _pageLoading
+        ? Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        // Show circular loading indicator while waiting
+        child: CircularProgressIndicator(),
+      ),
+    )
+        :InternetChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -89,6 +248,12 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                 onPressed: () {},
                 icon: const Icon(Icons.notifications_rounded, color: Colors.white,),
               ),
+         /*     IconButton(
+                onPressed: () {
+                  _showLogoutDialog(context);
+                },
+                icon: const Icon(Icons.logout, color: Colors.white,),
+              ),*/
             ],
           ),
           body: SingleChildScrollView(
@@ -102,7 +267,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                     children: [
                       const Center(
                         child: Text(
-                          'Welcome, Security Admin Name',
+                          'Welcome, Admin',
                           //textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.black,
@@ -124,7 +289,89 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                             fontFamily: 'default',
                           )),
                       const SizedBox(height: 5),
+                      Divider(),
+                      const SizedBox(height: 5),
                       Container(
+                        //height: screenHeight*0.25,
+                        child: FutureBuilder<void>(
+                            future: _isLoading
+                                ? null
+                                : fetchConnectionRequests(),
+                            builder: (context, snapshot) {
+                              if (!_isFetched) {
+                                // Return a loading indicator while waiting for data
+                                return Container(
+                                  height: 200, // Adjust height as needed
+                                  width:
+                                  screenWidth, // Adjust width as needed
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                    BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                // Handle errors
+                                return buildNoRequestsWidget(screenWidth,
+                                    'Error: ${snapshot.error}');
+                              } else if (_isFetched) {
+                                if (acceptedRequests.isEmpty) {
+                                  // Handle the case when there are no pending connection requests
+                                  return buildNoRequestsWidget(
+                                      screenWidth,
+                                      'No connection requests reviewed yet');
+                                } else if (acceptedRequests
+                                    .isNotEmpty) {
+                                  // If data is loaded successfully, display the ListView
+                                  return Container(
+                                    child: Column(
+                                      children: [
+                                        ListView.separated(
+                                          shrinkWrap: true,
+                                          physics:
+                                          NeverScrollableScrollPhysics(),
+                                          itemCount:
+                                          acceptedRequests
+                                              .length >
+                                              10
+                                              ? 10
+                                              : acceptedRequests
+                                              .length,
+                                          itemBuilder: (context, index) {
+                                            // Display each connection request using ConnectionRequestInfoCard
+                                            return acceptedRequests[
+                                            index];
+                                          },
+                                          separatorBuilder: (context,
+                                              index) =>
+                                          const SizedBox(height: 10),
+                                        ),
+                                      /*  if (shouldShowSeeAllButton(
+                                            acceptedConnectionRequests))
+                                          buildSeeAllButtonReviewedList(
+                                              context),*/
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+                              return SizedBox();
+                            }),
+                      ),
+                      Divider(),
+/*                      VisitorRequestInfoCardSecurityAdmin(
+                          name: 'Md. Abdur Sattar',
+                          organization: 'Touch and Solve',
+                          AppointmentWith: 'Md. Masud Bhuiya',
+                          AppointmentDate: '12-04-2024, 12:00 PM',
+                          Purpose: 'Visting',
+                          Belongs: 'A handBag',
+                          ApplicationID: 1234343,
+                          Status: 'Accepted'),*/
+                      /*Container(
                         width: screenWidth*0.95,
                         //height: MediaQuery.of(context).size.height* 0.35,
                         padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
@@ -280,8 +527,6 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                    ),
                                   ),
                                   onPressed: () {
-                                    /*Navigator.push(context,
-                                                  MaterialPageRoute(builder: (context) => AccessForm()));*/
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -302,53 +547,9 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                             ),
                           ],
                         ),
-                      ),
-                      _buildPanel(_people),
+                      ),*/
+                      //_buildPanel(_people),
                       const SizedBox(height: 10),
-                      SizedBox(height: 15),
-                      Text('Daily Analytic Graph',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'default',),),
-                      SizedBox(height: 10),
-                      Center(
-                        child: Container(
-                            width: screenWidth * 0.9,
-                            height: screenHeight * 0.35,
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 1,
-                                )
-                            ),
-                            child: chartToRunLine()
-                        ),
-                      ),
-                      SizedBox(height: 25),
-                      Text('Monthly Analytic Graph',
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'default',),),
-                      SizedBox(height: 10),
-                      Center(
-                        child: Container(
-                            width: screenWidth * 0.9,
-                            height: screenHeight * 0.35,
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 1,
-                                )
-                            ),
-                            child: chartToRunVertical()
-                        ),
-                      )
                     ],
                   ),
                 ),
@@ -484,7 +685,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
     );
   }
 
-  Widget _buildPanel(List<User> users) {
+/*  Widget _buildPanel(List<User> users) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -730,7 +931,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         );
       }).toList(),
     );
-  }
+  }*/
 
   void _showLogoutDialog(BuildContext context) {
     showDialog(

@@ -1,7 +1,7 @@
 class AppointmentRequestModel {
   final String Purpose;
   final String Belongs;
-  final String AppointmentWith;
+  final String Sector;
   final String AppointmentDate;
   final String AppointmentTime;
 
@@ -9,7 +9,7 @@ class AppointmentRequestModel {
   AppointmentRequestModel({
   required this.Purpose,
   required this.Belongs,
-  required this.AppointmentWith,
+  required this.Sector,
   required this.AppointmentDate,
   required this.AppointmentTime,
   });
@@ -18,7 +18,7 @@ class AppointmentRequestModel {
     return {
     'purpose': Purpose,
     'belong': Belongs,
-    'appoint_mentor': AppointmentWith,
+    'sector': Sector,
     'date': AppointmentDate,
     'time': AppointmentTime,
     };
