@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../API Service (Forgot Password)/apiServiceCreateNewPassword.dart';
 import 'passwordchangedUI.dart';
 
 class CreateNewPassword extends StatefulWidget {
@@ -11,9 +13,52 @@ class CreateNewPassword extends StatefulWidget {
 }
 
 class _CreateNewPasswordState extends State<CreateNewPassword> {
+  bool _isLoading = true;
+  late TextEditingController _newPasswordcontroller = TextEditingController();
+  late TextEditingController _confirmPasswordcontroller = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future<void> _createNewPassword(String email, String password, String confirmPassword) async {
+    final apiService = await APIServiceCreateNewPassword.create();
+    apiService.NewPassword(email, password, confirmPassword).then((response) {
+      if (response == 'Password Update Successfully') {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PasswordChanged())
+        );
+      }
+    }).catchError((error) {
+      // Handle registration error
+      print(error);
+      const snackBar = SnackBar(
+        content: Text('There was an error. Try again'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+    // Navigate to OTP verification screen
+  }
+
   @override
   Widget build(BuildContext context) {
-    return InternetChecker(
+    return _isLoading
+        ? Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        // Show circular loading indicator while waiting
+        child: CircularProgressIndicator(),
+      ),
+    )
+        :InternetChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -55,7 +100,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                   'Enter new password',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
-                                      color: Color.fromRGBO(25, 192, 122, 1),
+                                      color: Color.fromRGBO(13, 70, 127, 1),
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'default'),
@@ -79,6 +124,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                   width: 350,
                                   height: 70,
                                   child: TextFormField(
+                                    controller: _newPasswordcontroller,
                                     style: const TextStyle(
                                       color: Color.fromRGBO(143, 150, 158, 1),
                                       fontSize: 10,
@@ -103,6 +149,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                   width: 350,
                                   height: 70,
                                   child: TextFormField(
+                                    controller: _confirmPasswordcontroller,
                                     style: const TextStyle(
                                       color: Color.fromRGBO(143, 150, 158, 1),
                                       fontSize: 10,
@@ -125,14 +172,26 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                 ),
                                 SizedBox(height: 50,),
                                 ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => PasswordChanged()));
+                                    onPressed: () async {
+                                      if (_newPasswordcontroller.text.isNotEmpty &&
+                                          _confirmPasswordcontroller.text.isNotEmpty) {
+                                        if(_newPasswordcontroller.text != _confirmPasswordcontroller.text){
+                                          const snackBar = SnackBar(
+                                            content: Text('Password and Confirm Password did not Match'),
+                                          );
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                        } else{
+                                          final prefs =
+                                          await SharedPreferences.getInstance();
+                                          String email =
+                                              await prefs.getString('email') ?? '';
+                                          print(email);
+                                          _createNewPassword(email, _newPasswordcontroller.text, _confirmPasswordcontroller.text);
+                                        }
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(25, 192, 122, 1),
+                                      backgroundColor: Color.fromRGBO(13, 70, 127, 1),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),

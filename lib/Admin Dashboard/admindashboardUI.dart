@@ -11,6 +11,7 @@ import 'package:ndc_app/Profile%20UI/profileUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../API Model And Service (Dashboard)/apiserviceDashboard.dart';
 import '../API Service (Log Out)/apiServiceLogOut.dart';
+import '../API Service (Notification)/apiServiceNotificationRead.dart';
 import '../Graph/graphs.dart';
 import '../Login UI/loginUI.dart';
 import '../Template Models/templateerrorcontainer.dart';
@@ -45,6 +46,7 @@ class _AdminDashboardState extends State<AdminDashboard>
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
+  List<String> notifications = [];
 
   Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
@@ -88,6 +90,9 @@ class _AdminDashboardState extends State<AdminDashboard>
         _isLoading = true;
       });
 
+      // Extract notifications
+      notifications = List<String>.from(records['notifications'] ?? []);
+
       // Simulate fetching data for 5 seconds
       await Future.delayed(Duration(seconds: 5));
 
@@ -110,6 +115,7 @@ class _AdminDashboardState extends State<AdminDashboard>
           Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
+          Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
           ApplicationID: request['appointment_id'],
@@ -127,6 +133,7 @@ class _AdminDashboardState extends State<AdminDashboard>
           Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
+          Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
          // ApplicationID: request['appointment_id'],
@@ -163,7 +170,7 @@ class _AdminDashboardState extends State<AdminDashboard>
       // Save dailyDataJson to SharedPreferences
       await saveDailyDataToSharedPreferences(dailyDataJson);*/
 
-// Function to save data to SharedPreferences
+/*// Function to save data to SharedPreferences
   Future<void> saveDailyDataToSharedPreferences(String dataJson) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -182,7 +189,7 @@ class _AdminDashboardState extends State<AdminDashboard>
       print('Error saving data to SharedPreferences: $e');
       // Handle error as needed
     }
-  }
+  }*/
 
 /*  // Function to check if more than 10 items are available in the list
   bool shouldShowSeeAllButton(List list) {
@@ -319,13 +326,49 @@ class _AdminDashboardState extends State<AdminDashboard>
                     ],
                   ),
                   actions: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.notifications_rounded,
-                        color: Colors.white,
-                      ),
-                    ), /*IconButton(
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications,
+                            color: Colors.white,
+                          ),
+                          onPressed: () async {
+                            _showNotificationsOverlay(context);
+                            var notificationApiService =
+                            await NotificationReadApiService.create();
+                            notificationApiService.readNotification();
+                          },
+                        ),
+                        if (notifications.isNotEmpty)
+                          Positioned(
+                            right: 11,
+                            top: 11,
+                            child: Container(
+                              padding: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 12,
+                                minHeight: 12,
+                              ),
+                              child: Text(
+                                '${notifications.length}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+
+                    /*IconButton(
                       onPressed: () {
                         _showLogoutDialog(context);
                       },
@@ -827,4 +870,80 @@ class _AdminDashboardState extends State<AdminDashboard>
       ),
     );
   }
+
+  void _showNotificationsOverlay(BuildContext context) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: kToolbarHeight + 10.0,
+        right: 10.0,
+        width: 250,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: notifications.isEmpty
+                ? Container(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.notifications_off),
+                  SizedBox(width: 10,),
+                  Text(
+                    'No new notifications',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            )
+                : ListView.builder(
+              padding: EdgeInsets.all(8),
+              shrinkWrap: true,
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.info_outline),
+                      title: Text(notifications[index]),
+                      onTap: () {
+                        // Handle notification tap if necessary
+                        overlayEntry.remove();
+                      },
+                    ),
+                    if (index < notifications.length - 1)
+                      Divider()
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay?.insert(overlayEntry);
+
+    // Remove the overlay when tapping outside
+    Future.delayed(Duration(seconds: 5), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
+  }
+
+
 }

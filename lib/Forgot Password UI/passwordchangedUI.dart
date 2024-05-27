@@ -52,7 +52,7 @@ class _PasswordChangedState extends State<PasswordChanged> {
                           MaterialPageRoute(builder: (context) => Login()));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(25, 192, 122, 1),
+                      backgroundColor: Color.fromRGBO(13, 70, 127, 1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),

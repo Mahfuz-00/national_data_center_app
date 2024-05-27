@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:io'; // Add this import for handling files
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'connectionmodel.dart';
+import 'package:path/path.dart'; // Add this import for getting the file name
 
 class APIServiceGuestAppointmentRequest {
   final String URL = 'https://bcc.touchandsolve.com/api';
@@ -30,7 +31,7 @@ class APIServiceGuestAppointmentRequest {
     return token;
   }
 
-  Future<String> postConnectionRequest(GuestAppointmentRequestModel request) async {
+  Future<String> postConnectionRequest(GuestAppointmentRequestModel request, File? documentFile) async {
     final String token = await authToken; // Wait for the authToken to complete
     try {
       if (token.isEmpty) {
@@ -39,14 +40,27 @@ class APIServiceGuestAppointmentRequest {
         throw Exception('Authentication token is empty.');
       }
 
-      final http.Response response = await http.post(
-        Uri.parse('$URL/ndc/guest/appointment'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          //'Authorization': 'Bearer $token' // Use token here
-        },
-        body: jsonEncode(request.toJson()),
-      );
+      var uri = Uri.parse('$URL/ndc/guest/appointment');
+      var requestMultipart = http.MultipartRequest('POST', uri);
+
+      requestMultipart.headers['Authorization'] = 'Bearer $token';
+      requestMultipart.headers['Content-Type'] = 'multipart/form-data';
+
+      // Add text fields
+      request.toJson().forEach((key, value) {
+        requestMultipart.fields[key] = value.toString();
+      });
+
+      // Add file
+      requestMultipart.files.add(await http.MultipartFile.fromPath(
+        'document_file', // The field name for the file parameter
+        documentFile!.path,
+        filename: basename(documentFile.path), // Optional: you can specify the file name
+      ));
+
+      var streamedResponse = await requestMultipart.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
       print(response.body);
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);

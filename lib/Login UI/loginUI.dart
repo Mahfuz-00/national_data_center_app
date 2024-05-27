@@ -258,29 +258,32 @@ class _LoginState extends State<Login> {
                                             MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
-                                        if (userType == 'ndc_vendor') {
+                                        else if (userType == 'ndc_vendor') {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
-                                        if (userType == 'ndc_customer') {
+                                        else if (userType == 'ndc_customer') {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
                                           );
                                         }
-                                        if (userType == 'ndc_admin') {
+                                        else if (userType == 'ndc_admin') {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(builder: (context) => AdminDashboard(shouldRefresh: true)),
                                           );
                                         }
-                                        if (userType == 'ndc_security_admin') {
+                                        else if (userType == 'ndc_security_admin') {
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(builder: (context) => SecurityAdminDashboard(shouldRefresh: true)),
                                           );
+                                        }
+                                        else{
+                                          showTopToast(context, 'User is Invalid.');
                                         }
                                       }
                                     }
@@ -422,11 +425,12 @@ class _LoginState extends State<Login> {
           return true;
         } else {
           // Handle unsuccessful login
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopToast(context, 'Email or password is not valid.');
+         /* ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Email or password is not valid.'),
             ),
-          );
+          );*/
           return false;
         }
       } catch (e) {
@@ -441,16 +445,49 @@ class _LoginState extends State<Login> {
         else if (e.toString().contains('The email field is required') || e.toString().contains('The password field is required')) {
           errorMessage = 'Email or password is empty. Please fill in both fields.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopToast(context, errorMessage);
+       /* ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
           ),
-        );
+        );*/
         return false;
       }
     }
     // Return false if form validation fails
     return false;
+  }
+
+  void showTopToast(BuildContext context, String message) {
+    OverlayState? overlayState = Overlay.of(context);
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).padding.top + 10, // 10 is for a little margin from the top
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlayState?.insert(overlayEntry);
+
+    // Remove the overlay entry after some time (e.g., 3 seconds)
+    Future.delayed(Duration(seconds: 3)).then((_) {
+      overlayEntry.remove();
+    });
   }
 
   late String AuthenToken;

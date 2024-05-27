@@ -5,11 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../API Model And Service (Dashboard)/apiserviceDashboard.dart';
 import '../API Service (Log Out)/apiServiceLogOut.dart';
+import '../API Service (Notification)/apiServiceNotificationRead.dart';
 import '../Access Form(Visitor)/accessformUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Template Models/templateerrorcontainer.dart';
 import '../Template Models/visitorRequestInfoCard.dart';
 import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
+import '../Visitor Request and Review List (Full)/VisitorRequestList.dart';
+import '../Visitor Request and Review List (Full)/VisitorReviewedList.dart';
 
 class VisitorDashboard extends StatefulWidget {
   final bool shouldRefresh;
@@ -29,6 +32,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   bool _isLoading = false;
   bool _pageLoading = true;
   bool _errorOccurred = false;
+  List<String> notifications = [];
 
   late String userName = '';
   late String organizationName = '';
@@ -76,6 +80,9 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         _isLoading = true;
       });
 
+      // Extract notifications
+      notifications = List<String>.from(records['notifications'] ?? []);
+
       // Simulate fetching data for 5 seconds
       await Future.delayed(Duration(seconds: 5));
 
@@ -98,6 +105,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
           Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
+          Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['designation'],
@@ -114,6 +122,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
           Phone: request['phone'],
           AppointmentDate: request['appointment_date_time'],
           Purpose: request['purpose'],
+          Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['designation'],
@@ -156,8 +165,8 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
             ),
           ),
           onPressed: () {
-            /*   Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ISPRequestList()));*/
+               Navigator.push(context,
+                MaterialPageRoute(builder: (context) => VisitorRequestList()));
           },
           child: Text('See all pending request',
               style: TextStyle(
@@ -187,8 +196,8 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
             ),
           ),
           onPressed: () {
-            /*    Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ISPReviewedList()));*/
+                Navigator.push(context,
+                MaterialPageRoute(builder: (context) => VisitorReviewedList()));
           },
           child: Text('See all reviewed request',
               style: TextStyle(
@@ -264,12 +273,45 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                     ],
                   ),
                   actions: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.notifications_rounded,
-                        color: Colors.white,
-                      ),
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications,
+                            color: Colors.white,
+                          ),
+                          onPressed: () async {
+                            _showNotificationsOverlay(context);
+                            var notificationApiService =
+                            await NotificationReadApiService.create();
+                            notificationApiService.readNotification();
+                          },
+                        ),
+                        if (notifications.isNotEmpty)
+                          Positioned(
+                            right: 11,
+                            top: 11,
+                            child: Container(
+                              padding: EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 12,
+                                minHeight: 12,
+                              ),
+                              child: Text(
+                                '${notifications.length}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     IconButton(
                       icon: const Icon(
@@ -515,10 +557,10 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                       GestureDetector(
                         behavior: HitTestBehavior.translucent,
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => VisitorDashboard()));
+                                  builder: (context) => VisitorDashboard(shouldRefresh: true,)));
                         },
                         child: Container(
                           width: screenWidth / 3,
@@ -730,4 +772,79 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       },
     );
   }
+
+  void _showNotificationsOverlay(BuildContext context) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: kToolbarHeight + 10.0,
+        right: 10.0,
+        width: 250,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: notifications.isEmpty
+                ? Container(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.notifications_off),
+                  SizedBox(width: 10,),
+                  Text(
+                    'No new notifications',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            )
+                : ListView.builder(
+              padding: EdgeInsets.all(8),
+              shrinkWrap: true,
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.info_outline),
+                      title: Text(notifications[index]),
+                      onTap: () {
+                        // Handle notification tap if necessary
+                        overlayEntry.remove();
+                      },
+                    ),
+                    if (index < notifications.length - 1)
+                      Divider()
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay?.insert(overlayEntry);
+
+    // Remove the overlay when tapping outside
+    Future.delayed(Duration(seconds: 5), () {
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+      }
+    });
+  }
+
 }

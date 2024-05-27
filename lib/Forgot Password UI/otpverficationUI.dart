@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:footer/footer.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../API Service (Forgot Password)/apiServiceOTPVerification.dart';
 import 'createnewpasswordUI.dart';
 
 class OPTVerfication extends StatefulWidget {
@@ -12,9 +14,60 @@ class OPTVerfication extends StatefulWidget {
 }
 
 class _OPTVerficationState extends State<OPTVerfication> {
+  bool _isLoading = true;
+  late TextEditingController _firstdigitcontroller = TextEditingController();
+  late TextEditingController _seconddigitcontroller = TextEditingController();
+  late TextEditingController _thirddigitcontroller = TextEditingController();
+  late TextEditingController _forthdigitcontroller = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future<void> _sendOTP(String email, String OTP) async {
+    final apiService = await APIServiceOTPVerification.create();
+    apiService.OTPVerification(email, OTP).then((response) {
+      if (response == 'Otp Verified Successfully') {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateNewPassword())
+        );
+      } else if (response == 'Otp not match. Please resend forget password otp') {
+        const snackBar = SnackBar(
+          content: Text('OTP did not Match. Try again!'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }).catchError((error) {
+      // Handle registration error
+      print(error);
+      const snackBar = SnackBar(
+        content: Text('OTP did not Match. Try again!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
+    // Navigate to OTP verification screen
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return InternetChecker(
+    return _isLoading
+        ? Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        // Show circular loading indicator while waiting
+        child: CircularProgressIndicator(),
+      ),
+    )
+        :InternetChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -36,7 +89,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                   'OTP Verification',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
-                                      color: Color.fromRGBO(25, 192, 122, 1),
+                                      color: Color.fromRGBO(13, 70, 127, 1),
                                       fontSize: 25,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'default'),
@@ -66,6 +119,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                             width: 75,
                                             height: 70,
                                             child: TextFormField(
+                                              controller: _firstdigitcontroller,
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
                                                 fontSize: 10,
@@ -77,13 +131,13 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                                 fillColor: Color.fromRGBO(247,248,250,255),*/
                                                 enabledBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
                                                 focusedBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                      color: Color.fromRGBO(25, 192, 122, 1),
+                                                      color: Color.fromRGBO(13, 70, 127, 1),
                                                       width: 2.0,
                                                   ),
                                                 ),
@@ -96,6 +150,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                             width: 75,
                                             height: 70,
                                             child: TextFormField(
+                                              controller: _seconddigitcontroller,
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
                                                 fontSize: 10,
@@ -105,13 +160,13 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               decoration: const InputDecoration(
                                                 enabledBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
                                                 focusedBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
@@ -124,6 +179,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                             width: 75,
                                             height: 70,
                                             child: TextFormField(
+                                              controller: _thirddigitcontroller,
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
                                                 fontSize: 10,
@@ -133,13 +189,13 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               decoration: const InputDecoration(
                                                 enabledBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
                                                 focusedBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
@@ -152,6 +208,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                             width: 75,
                                             height: 70,
                                             child: TextFormField(
+                                              controller: _forthdigitcontroller,
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
                                                 fontSize: 10,
@@ -161,13 +218,13 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               decoration: const InputDecoration(
                                                 enabledBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
                                                 focusedBorder: OutlineInputBorder(
                                                   borderSide: BorderSide(
-                                                    color: Color.fromRGBO(25, 192, 122, 1),
+                                                    color: Color.fromRGBO(13, 70, 127, 1),
                                                     width: 2.0,
                                                   ),
                                                 ),
@@ -182,12 +239,26 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                 ),
                                 SizedBox(height: 50,),
                                 ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) => CreateNewPassword()));
+                                    onPressed: () async {
+                                      if (_firstdigitcontroller.text.isNotEmpty &&
+                                          _seconddigitcontroller.text.isNotEmpty &&
+                                          _thirddigitcontroller.text.isNotEmpty &&
+                                          _forthdigitcontroller.text.isNotEmpty) {
+                                        String OTP = _firstdigitcontroller.text +
+                                            _seconddigitcontroller.text +
+                                            _thirddigitcontroller.text +
+                                            _forthdigitcontroller.text;
+                                        print(OTP);
+                                        final prefs =
+                                        await SharedPreferences.getInstance();
+                                        String email =
+                                            await prefs.getString('email') ?? '';
+                                        print(email);
+                                        _sendOTP(email, OTP);
+                                      }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(25, 192, 122, 1),
+                                      backgroundColor: Color.fromRGBO(13, 70, 127, 1),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -238,7 +309,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                     'Resend',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
-                                      color: Color.fromRGBO(25, 192, 122, 1),
+                                      color: Color.fromRGBO(13, 70, 127, 1),
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'default',

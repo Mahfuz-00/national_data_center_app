@@ -79,10 +79,20 @@ class _SplashScreenState extends State<SplashScreen>
               position: animatedpadding,
               child: const Padding(
                 padding: EdgeInsets.all(30),
-                child: Image(
+                child: Text(
+                  'NDC Access',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontFamily: 'default',
+                  ),
+                ),
+                /*Image(
                   image: AssetImage('Assets/Images/NDC Logo.png'),
                   height: 100,
-                  width: 150,)
+                  width: 150,)*/
               ),
             ),
             const SizedBox(

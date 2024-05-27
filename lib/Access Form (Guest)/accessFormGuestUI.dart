@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -33,10 +36,15 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   late TextEditingController _commentcontroller;
   late TextEditingController _belongscontroller;
   late TextEditingController _appointmentwithcontroller;
+  late TextEditingController _devicemodelcontroller;
+  late TextEditingController _deviceserialcontroller;
+  late TextEditingController _devicedescriptioncontroller;
   late GuestAppointmentRequestModel _connectionRequest;
   late String appointmentDate;
   late String appointmentTime;
   String _selectedSector = 'Physical Security & Infrastructure';
+  FilePickerResult? result;
+  File? _file;
 
   @override
   void initState() {
@@ -50,6 +58,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     _commentcontroller = TextEditingController();
     _belongscontroller = TextEditingController();
     _appointmentwithcontroller = TextEditingController();
+    _devicemodelcontroller = TextEditingController();
+    _deviceserialcontroller = TextEditingController();
+    _devicedescriptioncontroller = TextEditingController();
     _connectionRequest = GuestAppointmentRequestModel(
       FullName: '',
       NID: '',
@@ -60,6 +71,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
       Purpose: '',
       Belongs: '',
       Sector: '',
+      DeviceModel: '',
+      DeviceSerial: '',
+      DeviceDescription: '',
       AppointmentDate: '',
       AppointmentTime: '',
     );
@@ -407,7 +421,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                             fontFamily: 'default',
                           ),
                           decoration: InputDecoration(
-                            labelText: 'Belongs',
+                            labelText: 'Belongings',
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -417,6 +431,129 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                             border: const OutlineInputBorder(
                                 borderRadius:
                                     const BorderRadius.all(Radius.circular(5))),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: screenWidth * 0.9,
+                        height: screenHeight * 0.075,
+                        //padding: EdgeInsets.all(20),
+                        /*decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          ),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
+                        child: TextFormField(
+                          controller: _devicemodelcontroller,
+                          validator: (input) {
+                            if (input == null || input.isEmpty) {
+                              return 'Please enter device model';
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            color: Color.fromRGBO(143, 150, 158, 1),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Device Model (If any)',
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontFamily: 'default',
+                            ),
+                            border: const OutlineInputBorder(
+                                borderRadius:
+                                const BorderRadius.all(Radius.circular(5))),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: screenWidth * 0.9,
+                        height: screenHeight * 0.075,
+                        //padding: EdgeInsets.all(20),
+                        /*decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          ),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
+                        child: TextFormField(
+                          controller: _deviceserialcontroller,
+                          validator: (input) {
+                            if (input == null || input.isEmpty) {
+                              return 'Please enter device serial number';
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            color: Color.fromRGBO(143, 150, 158, 1),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Device Serial Number(If any)',
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontFamily: 'default',
+                            ),
+                            border: const OutlineInputBorder(
+                                borderRadius:
+                                const BorderRadius.all(Radius.circular(5))),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: screenWidth * 0.9,
+                        height: screenHeight * 0.075,
+                        //padding: EdgeInsets.all(20),
+                        /*decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          ),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
+                        child: TextFormField(
+                          controller: _devicedescriptioncontroller,
+                          validator: (input) {
+                            if (input == null || input.isEmpty) {
+                              return 'Please enter the device description';
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            color: Color.fromRGBO(143, 150, 158, 1),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default',
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Device Description (If any)',
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              fontFamily: 'default',
+                            ),
+                            border: const OutlineInputBorder(
+                                borderRadius:
+                                const BorderRadius.all(Radius.circular(5))),
                           ),
                         ),
                       ),
@@ -540,6 +677,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                       SizedBox(
                         height: 10,
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Container(
                         width: screenWidth * 0.9,
                         height: screenHeight * 0.075,
@@ -629,6 +769,54 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                         ),
                       ),
                       SizedBox(
+                        height: 10,
+                      ),
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(13, 70, 127, 1),
+                                  fixedSize: Size(
+                                      MediaQuery.of(context).size.width * 0.9,
+                                      MediaQuery.of(context).size.height *
+                                          0.075),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                onPressed: _pickFile,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (_file == null) ...[
+                                      Icon(Icons.document_scanner, color: Colors.white,),
+                                      SizedBox(width: 10,),
+                                      Text('Pick File',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'default',
+                                          )),
+                                    ],
+                                    if (_file != null) ...[
+                                      Text('File Picked',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'default',
+                                          )),
+                                    ]
+                                  ],
+                                )),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
                         height: 60,
                       ),
                       Center(
@@ -666,6 +854,22 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     );
   }
 
+  Future<void> _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        setState(() {
+          _file = File(result.files.single.path!);
+        });
+      } else {
+        // User canceled the picker
+      }
+    } catch (e) {
+      print('Error picking file: $e');
+    }
+  }
+
   void _connectionRequestForm() {
     print('Full Name: ${_fullnamecontroller.text}');
     print('NID: ${_NIDcontroller.text}');
@@ -683,8 +887,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
       print('triggered Validation');
 
       const snackBar = SnackBar(
-        content: Text(
-            'Processing'),
+        content: Text('Processing'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       // Initialize connection request model
@@ -698,13 +901,16 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
           Purpose: _commentcontroller.text,
           Belongs: _belongscontroller.text,
           Sector: 'Physical Security & Infrastructure',
+          DeviceModel: _devicemodelcontroller.text,
+          DeviceSerial: _deviceserialcontroller.text,
+          DeviceDescription: _devicedescriptioncontroller.text,
           AppointmentDate: appointmentDate,
           AppointmentTime: appointmentTime);
 
       // Perform any additional actions before sending the request
       // Send the connection request using API service
       APIServiceGuestAppointmentRequest()
-          .postConnectionRequest(_connectionRequest)
+          .postConnectionRequest(_connectionRequest, _file)
           .then((response) {
         // Handle successful request
         print('Visitor request sent successfully!!');
@@ -719,8 +925,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                 'Request already Sumbitted, please wait for it to be reviewed!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-        else if (response != null &&
+        } else if (response != null &&
             response == "Appointment Request Successfully") {
           Navigator.pushAndRemoveUntil(
             context,
@@ -731,22 +936,17 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
             content: Text('Appointment Request Submitted!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-        else if(response == "Something is error"){
+        } else if (response == "Something is error") {
           const snackBar = SnackBar(
-            content: Text(
-                'Request is not submitted, please try again!'),
+            content: Text('Request is not submitted, please try again!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          const snackBar = SnackBar(
+            content: Text('Request is not submitted, please try again!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
-        else{
-          const snackBar = SnackBar(
-            content: Text(
-                'Request is not submitted, please try again!'),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-
       }).catchError((error) {
         // Handle error
         print('Error sending connection request: $error');

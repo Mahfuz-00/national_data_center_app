@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:footer/footer.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../API Service (Forgot Password)/apiServiceForgotPassword.dart';
 import '../Login UI/loginUI.dart';
@@ -32,12 +33,27 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   Future<void> _sendCode(String email) async {
     final apiService = await APIServiceForgotPassword.create();
-    apiService.sendForgotPasswordOTP(email);
+    apiService.sendForgotPasswordOTP(email).then((response) {
+      if (response == 'Forget password otp send successfully') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OPTVerfication()),
+        );
+      } else if (response == 'validation error') {
+        const snackBar = SnackBar(
+          content: Text('Invalid Email'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }).catchError((error) {
+      // Handle registration error
+      print(error);
+      const snackBar = SnackBar(
+        content: Text('Invalid Email'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
     // Navigate to OTP verification screen
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => OPTVerfication()),
-    );
   }
 
   @override
@@ -140,9 +156,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                             SizedBox(height: 50,),
                             ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   String email = _emailController.text;
                                   _sendCode(email);
+                                  final prefs = await SharedPreferences.getInstance();
+                                  await prefs.setString('email', email);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color.fromRGBO(13, 70, 127, 1),

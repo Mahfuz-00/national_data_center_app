@@ -26,13 +26,15 @@ class APIService {
       request.fields['password_confirmation'] = registerRequestModel.confirmPassword;
       request.fields['user_type'] = registerRequestModel.userType;
 
-      // Add the image file to the request
-      var imageStream = http.ByteStream(imageFile!.openRead());
-      var length = await imageFile.length();
-      var multipartFile = http.MultipartFile('photo', imageStream, length,
-          filename: imageFile.path.split('/').last);
+      // Add the image file to the request if it is not null
+      if (imageFile != null) {
+        var imageStream = http.ByteStream(imageFile.openRead());
+        var length = await imageFile.length();
+        var multipartFile = http.MultipartFile('photo', imageStream, length,
+            filename: imageFile.path.split('/').last);
 
-      request.files.add(multipartFile);
+        request.files.add(multipartFile);
+      }
 
       // Send the request and await the response
       var response = await request.send();

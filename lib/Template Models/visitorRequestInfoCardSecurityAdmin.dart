@@ -22,6 +22,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   final String AppointmentDate;
   final int ApplicationID;
   final String Purpose;
+  final String Personnel;
   final String Belongs;
 
 
@@ -36,6 +37,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
     required this.ApplicationID,
     required this.AppointmentDate,
     required this.Purpose,
+    required this.Personnel,
     required this.Belongs,
   }) : super(key: key);
 
@@ -68,6 +70,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
             _buildRow('Sector', Sector),
             _buildRow('Appoinment Date and Time', AppointmentDate),
             _buildRow('Purpose', Purpose),
+            _buildRow('Personnel', Personnel),
             _buildRow('Belongings', Belongs),
             Divider(),
             Row(
@@ -93,7 +96,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
                       labelStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                        fontSize: 16,
                         fontFamily: 'default',
                       ),
                       border: const OutlineInputBorder(
