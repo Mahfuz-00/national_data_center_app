@@ -69,7 +69,7 @@ class _InternetCheckerState extends State<InternetChecker> {
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromRGBO(25, 192, 122, 1),
+                      color: Color.fromRGBO(13, 70, 127, 1),
                       fontFamily: 'default'
                   ),
                 ),

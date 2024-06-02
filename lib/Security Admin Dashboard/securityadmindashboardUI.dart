@@ -17,7 +17,6 @@ import '../Sign Up UI/dropdownfield.dart';
 import '../Template Models/templateerrorcontainer.dart';
 import '../Template Models/userinfo.dart';
 import '../Template Models/visitorRequestInfoCardSecurityAdmin.dart';
-import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 
 class SecurityAdminDashboard extends StatefulWidget {
   final bool shouldRefresh;
@@ -259,22 +258,16 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                 appBar: AppBar(
                   backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                   automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      SizedBox(
-                        width: 28,
-                      ),
-                      const Text(
-                        'Security Admin Dashboard',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'default',
-                        ),
-                      ),
-                    ],
+                  title: const Text(
+                    'Security Admin Dashboard',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'default',
+                    ),
                   ),
+                  centerTitle: true,
                   actions: [
                     Stack(
                       children: [
@@ -681,7 +674,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                           // Handle the case when there are no pending connection requests
                                           return buildNoRequestsWidget(
                                               screenWidth,
-                                              'No connection requests reviewed yet');
+                                              'No appointment found');
                                         } else if (acceptedRequests
                                             .isNotEmpty) {
                                           // If data is loaded successfully, display the ListView
@@ -767,7 +760,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                           // Handle the case when there are no pending connection requests
                                           return buildNoRequestsWidget(
                                               screenWidth,
-                                              'No connection requests reviewed yet');
+                                              'No appointment found');
                                         } else if (SortedacceptedRequests
                                             .isNotEmpty) {
                                           // If data is loaded successfully, display the ListView

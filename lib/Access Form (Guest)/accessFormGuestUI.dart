@@ -13,7 +13,6 @@ import '../API Model and Service (Guest Access Form)/apiserviceconnection.dart';
 import '../API Model and Service (Guest Access Form)/connectionmodel.dart';
 import '../Login UI/loginUI.dart';
 import '../Sign Up UI/dropdownfield.dart';
-import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
 class AccessFormGuestUI extends StatefulWidget {
@@ -115,6 +114,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                 fontFamily: 'default',
               ),
             ),
+            centerTitle: true,
           ),
           body: SafeArea(
             child: SingleChildScrollView(

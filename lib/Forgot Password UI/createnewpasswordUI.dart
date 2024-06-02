@@ -50,6 +50,8 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return _isLoading
         ? Scaffold(
       backgroundColor: Colors.white,
@@ -121,13 +123,13 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                 ),
                                 const SizedBox(height: 50),
                                 Container(
-                                  width: 350,
+                                  width: screenWidth*0.9,
                                   height: 70,
                                   child: TextFormField(
                                     controller: _newPasswordcontroller,
                                     style: const TextStyle(
                                       color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 10,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'default',
                                     ),
@@ -146,13 +148,13 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                   ),
                                 ),
                                 Container(
-                                  width: 350,
+                                  width: screenWidth*0.9,
                                   height: 70,
                                   child: TextFormField(
                                     controller: _confirmPasswordcontroller,
                                     style: const TextStyle(
                                       color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 10,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'default',
                                     ),
@@ -195,7 +197,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      fixedSize: Size(350, 70),
+                                      fixedSize: Size(screenWidth*0.9, 70),
                                     ),
                                     child: const Text('Submit',
                                         textAlign: TextAlign.center,

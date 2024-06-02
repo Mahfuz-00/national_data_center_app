@@ -8,7 +8,6 @@ import '../API Model and Service (Access From)/apiserviceconnection.dart';
 import '../API Model and Service (Access From)/connectionmodel.dart';
 import '../Login UI/loginUI.dart';
 import '../Sign Up UI/dropdownfield.dart';
-import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
 class AccessForm extends StatefulWidget {
@@ -145,6 +144,7 @@ class _AccessFormState extends State<AccessForm> {
                 fontFamily: 'default',
               ),
             ),
+            centerTitle: true,
           ),
           body: SafeArea(
             child: SingleChildScrollView(

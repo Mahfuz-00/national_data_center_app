@@ -102,6 +102,7 @@ class _ProfileState extends State<Profile> {
                   fontFamily: 'default',
                 ),
               ),
+              centerTitle: true,
               leading: IconButton(
                   onPressed: () {
                     Navigator.pop(context);

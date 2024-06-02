@@ -10,7 +10,6 @@ import '../Access Form(Visitor)/accessformUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Template Models/templateerrorcontainer.dart';
 import '../Template Models/visitorRequestInfoCard.dart';
-import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 import '../Visitor Request and Review List (Full)/VisitorRequestList.dart';
 import '../Visitor Request and Review List (Full)/VisitorReviewedList.dart';
 
@@ -256,22 +255,16 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                 appBar: AppBar(
                   backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                   automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      SizedBox(
-                        width: 28,
-                      ),
-                      const Text(
-                        'Visitor Dashboard',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'default',
-                        ),
-                      ),
-                    ],
+                  title: const Text(
+                    'Visitor Dashboard',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'default',
+                    ),
                   ),
+                  centerTitle: true,
                   actions: [
                     Stack(
                       children: [

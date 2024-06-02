@@ -18,7 +18,6 @@ import '../Template Models/templateerrorcontainer.dart';
 import '../Template Models/userinfo.dart';
 import '../Template Models/visitorRequestInfoCard.dart';
 import '../Template Models/visitorRequestInfoCardAdmin.dart';
-import '../User Type Dashboard(Demo)/DemoAppDashboard.dart';
 
 class AdminDashboard extends StatefulWidget {
   final bool shouldRefresh;
@@ -309,22 +308,16 @@ class _AdminDashboardState extends State<AdminDashboard>
                 appBar: AppBar(
                   backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
                   automaticallyImplyLeading: false,
-                  title: Row(
-                    children: [
-                      SizedBox(
-                        width: 28,
-                      ),
-                      const Text(
-                        'Admin Dashboard',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          fontFamily: 'default',
-                        ),
-                      ),
-                    ],
+                  title: const Text(
+                    'Admin Dashboard',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'default',
+                    ),
                   ),
+                  centerTitle: true,
                   actions: [
                     Stack(
                       children: [

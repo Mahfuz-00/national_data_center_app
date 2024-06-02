@@ -58,6 +58,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return InternetChecker(
       child: PopScope(
         canPop: false,
@@ -130,13 +132,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                             const SizedBox(height: 50),
                             Container(
-                              width: 350,
+                              width: screenWidth*0.9,
                               height: 70,
                               child: TextFormField(
                                 controller: _emailController,
                                 style: const TextStyle(
                                   color: Color.fromRGBO(143, 150, 158, 1),
-                                  fontSize: 10,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'default',
                                 ),
@@ -167,7 +169,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  fixedSize: Size(350, 70),
+                                  fixedSize: Size(screenWidth*0.9, 70),
                                 ),
                                 child: const Text('Send Code',
                                     textAlign: TextAlign.center,

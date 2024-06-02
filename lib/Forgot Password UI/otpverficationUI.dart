@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:footer/footer.dart';
 import 'package:ndc_app/Connection%20Checker/internetconnectioncheck.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,6 +60,8 @@ class _OPTVerficationState extends State<OPTVerfication> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return _isLoading
         ? Scaffold(
       backgroundColor: Colors.white,
@@ -116,13 +119,18 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                       child: Row(
                                         children: [
                                           Container(
-                                            width: 75,
+                                            width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _firstdigitcontroller,
+                                              keyboardType: TextInputType.number,
+                                              maxLength: 1, // Limit to one digit
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                                              ],
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
-                                                fontSize: 10,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 fontFamily: 'default',
                                               ),
@@ -147,13 +155,18 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                           ),
                                           SizedBox(width: 15,),
                                           Container(
-                                            width: 75,
+                                            width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _seconddigitcontroller,
+                                              keyboardType: TextInputType.number,
+                                              maxLength: 1, // Limit to one digit
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                                              ],
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
-                                                fontSize: 10,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 fontFamily: 'default',
                                               ),
@@ -176,13 +189,18 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                           ),
                                           SizedBox(width: 15,),
                                           Container(
-                                            width: 75,
+                                            width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _thirddigitcontroller,
+                                              keyboardType: TextInputType.number,
+                                              maxLength: 1, // Limit to one digit
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                                              ],
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
-                                                fontSize: 10,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 fontFamily: 'default',
                                               ),
@@ -205,13 +223,18 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                           ),
                                           SizedBox(width: 15,),
                                           Container(
-                                            width: 75,
+                                            width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _forthdigitcontroller,
+                                              keyboardType: TextInputType.number,
+                                              maxLength: 1, // Limit to one digit
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                                              ],
                                               style: const TextStyle(
                                                 color: Color.fromRGBO(143, 150, 158, 1),
-                                                fontSize: 10,
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 fontFamily: 'default',
                                               ),
@@ -262,7 +285,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      fixedSize: Size(350, 70),
+                                      fixedSize: Size(screenWidth*0.9, 70),
                                     ),
                                     child: const Text('Verify',
                                         textAlign: TextAlign.center,

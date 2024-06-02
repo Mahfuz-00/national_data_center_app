@@ -225,22 +225,16 @@ class _VisitorReviewedListState extends State<VisitorReviewedList> {
           appBar: AppBar(
             backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
             automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                SizedBox(
-                  width: 28,
-                ),
-                const Text(
-                  'Request List',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    fontFamily: 'default',
-                  ),
-                ),
-              ],
+            title: const Text(
+              'Request List',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                fontFamily: 'default',
+              ),
             ),
+            centerTitle: true,
             actions: [
               IconButton(
                 icon: const Icon(
