@@ -115,8 +115,9 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                 Container(
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.only(left: 30, right: 30),
+                                      padding: const EdgeInsets.only(left: 20, right: 20),
                                       child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Container(
                                             width: screenWidth*0.2,
@@ -124,7 +125,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                             child: TextFormField(
                                               controller: _firstdigitcontroller,
                                               keyboardType: TextInputType.number,
-                                              maxLength: 1, // Limit to one digit
+                                              //maxLength: 1, // Limit to one digit
                                               inputFormatters: [
                                                 FilteringTextInputFormatter.digitsOnly, // Allow only digits
                                               ],
@@ -153,14 +154,14 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 15,),
+                                          SizedBox(width: 10,),
                                           Container(
                                             width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _seconddigitcontroller,
                                               keyboardType: TextInputType.number,
-                                              maxLength: 1, // Limit to one digit
+                                              //maxLength: 1, // Limit to one digit
                                               inputFormatters: [
                                                 FilteringTextInputFormatter.digitsOnly, // Allow only digits
                                               ],
@@ -187,14 +188,14 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 15,),
+                                          SizedBox(width: 10,),
                                           Container(
                                             width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _thirddigitcontroller,
                                               keyboardType: TextInputType.number,
-                                              maxLength: 1, // Limit to one digit
+                                              //maxLength: 1, // Limit to one digit
                                               inputFormatters: [
                                                 FilteringTextInputFormatter.digitsOnly, // Allow only digits
                                               ],
@@ -221,14 +222,14 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(width: 15,),
+                                          SizedBox(width: 10,),
                                           Container(
                                             width: screenWidth*0.2,
                                             height: 70,
                                             child: TextFormField(
                                               controller: _forthdigitcontroller,
                                               keyboardType: TextInputType.number,
-                                              maxLength: 1, // Limit to one digit
+                                              //maxLength: 1, // Limit to one digit
                                               inputFormatters: [
                                                 FilteringTextInputFormatter.digitsOnly, // Allow only digits
                                               ],

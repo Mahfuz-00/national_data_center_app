@@ -287,7 +287,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                           controller: _phonecontroller,
                           keyboardType: TextInputType.phone,
                           inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
+                            FilteringTextInputFormatter.digitsOnly,
+                            // Only allow digits
+                            LengthLimitingTextInputFormatter(11),
                           ],
                           validator: (input) {
                             if (input == null || input.isEmpty) {
