@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../Data/API Service (Accept or Decline)/apiServiceAcceptOrDecline.dart';
-import '../Admin Dashboard/admindashboardUI.dart';
+import '../../Data/Data Sources/API Service (Accept or Decline)/apiServiceAcceptOrDecline.dart';
+import '../Pages/Admin Dashboard/admindashboardUI.dart';
+
 
 class VisitorRequestInfoCardAdmin extends StatelessWidget {
   final String Name;
