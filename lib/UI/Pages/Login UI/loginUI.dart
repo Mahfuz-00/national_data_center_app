@@ -283,7 +283,8 @@ class _LoginState extends State<Login> {
                                           );
                                         }
                                         else{
-                                          showTopToast(context, 'User is Invalid.');
+                                          String errorMessage = 'Invalid User!, Please enter a valid email address.';
+                                          showTopToast(context, errorMessage);
                                         }
                                       }
                                     }
@@ -437,7 +438,7 @@ class _LoginState extends State<Login> {
         // Handle login error
         String errorMessage = 'Incorrect Email and Password.';
         if (e.toString().contains('Invalid User')) {
-          errorMessage = 'Please enter a valid email address.';
+          errorMessage = 'Invalid User!, Please enter a valid email address.';
         }
         else if (e.toString().contains('Invalid Credentials')) {
           errorMessage = 'Incorrect Password. Try again.';
