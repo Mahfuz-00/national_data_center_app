@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_printer/flutter_printer.dart';
 
 import 'package:rename_app/rename_app.dart';
 
+import 'UI/Bloc/auth_cubit.dart';
 import 'UI/Pages/Splashscreen UI/splashscreenUI.dart';
 
 void main() {
@@ -17,17 +19,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color.fromRGBO(13, 70, 127, 1), // Change the status bar color here
+      statusBarColor: Color.fromRGBO(
+          13, 70, 127, 1), // Change the status bar color here
     ));
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'NDC Access',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(13, 70, 127, 1)),
-        useMaterial3: true,
+    return BlocProvider(
+      create: (context) => AuthCubit(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'NDC Access',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Color.fromRGBO(13, 70, 127, 1)),
+          useMaterial3: true,
+        ),
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ndc_app/UI/Widgets/requestWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -6,13 +7,13 @@ import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
+import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Access Form(Visitor)/accessformUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
 import '../Visitor Request and Review List (Full)/VisitorRequestList.dart';
 import '../Visitor Request and Review List (Full)/VisitorReviewedList.dart';
-
 
 class VisitorDashboard extends StatefulWidget {
   final bool shouldRefresh;
@@ -38,7 +39,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   late String organizationName = '';
   late String photoUrl = '';
 
-  Future<void> loadUserProfile() async {
+/*  Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('userName') ?? '';
@@ -50,7 +51,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       print('Photo URL: $photoUrl');
       print('User profile got it!!!!');
     });
-  }
+  }*/
 
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
@@ -215,10 +216,10 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   void initState() {
     super.initState();
     print('initState called');
-    loadUserProfile();
-    Future.delayed(Duration(seconds: 5), () {
+    // loadUserProfile();
+    Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
-        loadUserProfile();
+        // loadUserProfile();
         // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
         // connectionRequests = [];
@@ -248,323 +249,338 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
               child: CircularProgressIndicator(),
             ),
           )
-        : InternetChecker(
-            child: PopScope(
-              canPop: false,
-              child: Scaffold(
-                key: _scaffoldKey,
-                appBar: AppBar(
-                  backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-                  automaticallyImplyLeading: false,
-                  title: const Text(
-                    'Visitor Dashboard',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      fontFamily: 'default',
-                    ),
-                  ),
-                  centerTitle: true,
-                  actions: [
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.notifications,
+        : BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is AuthAuthenticated) {
+                final userProfile = state.userProfile;
+                return InternetChecker(
+                  child: PopScope(
+                    canPop: false,
+                    child: Scaffold(
+                      key: _scaffoldKey,
+                      appBar: AppBar(
+                        backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                        automaticallyImplyLeading: false,
+                        title: const Text(
+                          'Visitor Dashboard',
+                          style: TextStyle(
                             color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'default',
                           ),
-                          onPressed: () async {
-                            _showNotificationsOverlay(context);
-                            var notificationApiService =
-                                await NotificationReadApiService.create();
-                            notificationApiService.readNotification();
-                          },
                         ),
-                        if (notifications.isNotEmpty)
-                          Positioned(
-                            right: 11,
-                            top: 11,
-                            child: Container(
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              constraints: BoxConstraints(
-                                minWidth: 12,
-                                minHeight: 12,
-                              ),
-                              child: Text(
-                                '${notifications.length}',
-                                style: TextStyle(
+                        centerTitle: true,
+                        actions: [
+                          Stack(
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.notifications,
                                   color: Colors.white,
-                                  fontSize: 8,
                                 ),
-                                textAlign: TextAlign.center,
+                                onPressed: () async {
+                                  _showNotificationsOverlay(context);
+                                  var notificationApiService =
+                                      await NotificationReadApiService.create();
+                                  notificationApiService.readNotification();
+                                },
                               ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.logout,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        _showLogoutDialog(context);
-                      },
-                    ),
-                  ],
-                ),
-                body: SingleChildScrollView(
-                  child: SafeArea(
-                    child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                              child: Text(
-                                'Welcome, $userName',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            const Text('Request List',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            const SizedBox(height: 5),
-                            Divider(),
-                            const SizedBox(height: 5),
-                            RequestsWidget(
-                                loading: _isLoading,
-                                fetch: _isFetched,
-                                errorText:
-                                    'You currently don\'t have any new requests pending.',
-                                listWidget: pendingRequests,
-                                fetchData: fetchConnectionRequests(),
-                                numberOfWidgets: 10,
-                                showSeeAllButton:
-                                    shouldShowSeeAllButton(pendingRequests),
-                                seeAllButtonText: 'See all pending request',
-                                nextPage: VisitorRequestList()),
-                            Divider(),
-                            const SizedBox(height: 25),
-                            Container(
-                              child: const Text('Reviewed List',
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  )),
-                            ),
-                            Divider(),
-                            const SizedBox(height: 5),
-                            RequestsWidget(
-                                loading: _isLoading,
-                                fetch: _isFetched,
-                                errorText:
-                                'No connection requests reviewed yet',
-                                listWidget: acceptedRequests,
-                                fetchData: fetchConnectionRequests(),
-                                numberOfWidgets: 10,
-                                showSeeAllButton:
-                                shouldShowSeeAllButton(
-                                    acceptedRequests),
-                                seeAllButtonText: 'See all reviewed request',
-                                nextPage: VisitorReviewedList()),
-                            Divider(),
-                            const SizedBox(height: 10),
-                            Center(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromRGBO(13, 70, 127, 1),
-                                  fixedSize: Size(
-                                      MediaQuery.of(context).size.width * 0.8,
-                                      MediaQuery.of(context).size.height * 0.1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                              if (notifications.isNotEmpty)
+                                Positioned(
+                                  right: 11,
+                                  top: 11,
+                                  child: Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    constraints: BoxConstraints(
+                                      minWidth: 12,
+                                      minHeight: 12,
+                                    ),
+                                    child: Text(
+                                      '${notifications.length}',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 8,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AccessForm()));
-                                },
-                                child: const Text('New Request',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    )),
+                            ],
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.logout,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              _showLogoutDialog(context);
+                            },
+                          ),
+                        ],
+                      ),
+                      body: SingleChildScrollView(
+                        child: SafeArea(
+                          child: Container(
+                            color: Colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Welcome, ${userProfile.name}',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Text('Request List',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      )),
+                                  const SizedBox(height: 5),
+                                  Divider(),
+                                  const SizedBox(height: 5),
+                                  RequestsWidget(
+                                      loading: _isLoading,
+                                      fetch: _isFetched,
+                                      errorText:
+                                          'You currently don\'t have any new requests pending.',
+                                      listWidget: pendingRequests,
+                                      fetchData: fetchConnectionRequests(),
+                                      numberOfWidgets: 10,
+                                      showSeeAllButton: shouldShowSeeAllButton(
+                                          pendingRequests),
+                                      seeAllButtonText:
+                                          'See all pending request',
+                                      nextPage: VisitorRequestList()),
+                                  Divider(),
+                                  const SizedBox(height: 25),
+                                  Container(
+                                    child: const Text('Reviewed List',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'default',
+                                        )),
+                                  ),
+                                  Divider(),
+                                  const SizedBox(height: 5),
+                                  RequestsWidget(
+                                      loading: _isLoading,
+                                      fetch: _isFetched,
+                                      errorText:
+                                          'No connection requests reviewed yet',
+                                      listWidget: acceptedRequests,
+                                      fetchData: fetchConnectionRequests(),
+                                      numberOfWidgets: 10,
+                                      showSeeAllButton: shouldShowSeeAllButton(
+                                          acceptedRequests),
+                                      seeAllButtonText:
+                                          'See all reviewed request',
+                                      nextPage: VisitorReviewedList()),
+                                  Divider(),
+                                  const SizedBox(height: 10),
+                                  Center(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromRGBO(
+                                            13, 70, 127, 1),
+                                        fixedSize: Size(
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
+                                            MediaQuery.of(context).size.height *
+                                                0.1),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AccessForm()));
+                                      },
+                                      child: const Text('New Request',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'default',
+                                          )),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  )
+                                ],
                               ),
                             ),
-                            SizedBox(
-                              height: 15,
-                            )
+                          ),
+                        ),
+                      ),
+                      bottomNavigationBar: Container(
+                        height: screenHeight * 0.08,
+                        color: const Color.fromRGBO(13, 70, 127, 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => VisitorDashboard(
+                                              shouldRefresh: true,
+                                            )));
+                              },
+                              child: Container(
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.home,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Home',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const AccessForm()));
+                              },
+                              behavior: HitTestBehavior.translucent,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  left: BorderSide(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                )),
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.add_circle_outline,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'New Request',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Profile(
+                                            shouldRefresh: true)));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  left: BorderSide(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                )),
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.person,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Profile',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                bottomNavigationBar: Container(
-                  height: screenHeight * 0.08,
-                  color: const Color.fromRGBO(13, 70, 127, 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => VisitorDashboard(
-                                        shouldRefresh: true,
-                                      )));
-                        },
-                        child: Container(
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.home,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Home',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const AccessForm()));
-                        },
-                        behavior: HitTestBehavior.translucent,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                            left: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          )),
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.add_circle_outline,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'New Request',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const Profile(shouldRefresh: true)));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                            left: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          )),
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.person,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Profile',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+                );
+              } else {
+                return Text('');
+              }
+            },
           );
   }
 

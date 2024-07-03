@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ndc_app/UI/Widgets/requestWidgetShowAll.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,12 +10,12 @@ import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
 import '../../../Data/Data Sources/API Service (Sorting)/apiServiceSorting.dart';
+import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/dropdownfield.dart';
 import '../../Widgets/visitorRequestInfoCardSecurityAdmin.dart';
 import '../Analytics UI/analyticsUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
-
 
 class SecurityAdminDashboard extends StatefulWidget {
   final bool shouldRefresh;
@@ -63,7 +64,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
     DropdownMenuItem(child: Text("Email"), value: "Email"),
   ];
 
-  Future<void> loadUserProfile() async {
+/*  Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('userName') ?? '';
@@ -75,7 +76,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
       print('Photo URL: $photoUrl');
       print('User profile got it!!!!');
     });
-  }
+  }*/
 
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
@@ -187,10 +188,10 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   void initState() {
     super.initState();
     print('initState called');
-    loadUserProfile();
-    Future.delayed(Duration(seconds: 5), () {
+    // loadUserProfile();
+    Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
-        loadUserProfile();
+        //   loadUserProfile();
         // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
         // connectionRequests = [];
@@ -225,425 +226,461 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
               child: CircularProgressIndicator(),
             ),
           )
-        : InternetChecker(
-            child: PopScope(
-              canPop: false,
-              child: Scaffold(
-                key: _scaffoldKey,
-                appBar: AppBar(
-                  backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-                  automaticallyImplyLeading: false,
-                  title: const Text(
-                    'Security Admin Dashboard',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      fontFamily: 'default',
-                    ),
-                  ),
-                  centerTitle: true,
-                  actions: [
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.notifications,
+        : BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is AuthAuthenticated) {
+                final userProfile = state.userProfile;
+                print('Welcome, ${userProfile.name}');
+                return InternetChecker(
+                  child: PopScope(
+                    canPop: false,
+                    child: Scaffold(
+                      key: _scaffoldKey,
+                      appBar: AppBar(
+                        backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                        automaticallyImplyLeading: false,
+                        title: const Text(
+                          'Security Admin Dashboard',
+                          style: TextStyle(
                             color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: 'default',
                           ),
-                          onPressed: () async {
-                            _showNotificationsOverlay(context);
-                            var notificationApiService =
-                                await NotificationReadApiService.create();
-                            notificationApiService.readNotification();
-                          },
                         ),
-                        if (notifications.isNotEmpty)
-                          Positioned(
-                            right: 11,
-                            top: 11,
-                            child: Container(
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              constraints: BoxConstraints(
-                                minWidth: 12,
-                                minHeight: 12,
-                              ),
-                              child: Text(
-                                '${notifications.length}',
-                                style: TextStyle(
+                        centerTitle: true,
+                        actions: [
+                          Stack(
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.notifications,
                                   color: Colors.white,
-                                  fontSize: 8,
                                 ),
-                                textAlign: TextAlign.center,
+                                onPressed: () async {
+                                  _showNotificationsOverlay(context);
+                                  var notificationApiService =
+                                      await NotificationReadApiService.create();
+                                  notificationApiService.readNotification();
+                                },
                               ),
-                            ),
+                              if (notifications.isNotEmpty)
+                                Positioned(
+                                  right: 11,
+                                  top: 11,
+                                  child: Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    constraints: BoxConstraints(
+                                      minWidth: 12,
+                                      minHeight: 12,
+                                    ),
+                                    child: Text(
+                                      '${notifications.length}',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 8,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
-                    /*     IconButton(
+                          /*     IconButton(
                 onPressed: () {
                   _showLogoutDialog(context);
                 },
                 icon: const Icon(Icons.logout, color: Colors.white,),
               ),*/
-                  ],
-                ),
-                body: SingleChildScrollView(
-                  child: SafeArea(
-                    child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Center(
-                              child: Text(
-                                'Welcome, Admin',
-                                //textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            const Text('Search Appointment',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                )),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Center(
-                                  child: Container(
-                                    width: screenWidth * 0.437,
-                                    height: screenHeight * 0.075,
-                                    child: Stack(
-                                      children: [
-                                        TextFormField(
-                                          controller: _Datecontroller,
-                                          validator: (value) {
-                                            // Check if the text field is empty or contains a valid date
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please select a date';
-                                            }
-                                            // You can add more complex validation logic if needed
-                                            return null;
-                                          },
-                                          readOnly: true,
-                                          // Make the text field readonly
-                                          enableInteractiveSelection: false,
-                                          // Disable interactive selection
-                                          style: const TextStyle(
-                                            color: Color.fromRGBO(
-                                                143, 150, 158, 1),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelText: 'Date',
-                                            labelStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              fontFamily: 'default',
-                                            ),
-                                            border: const OutlineInputBorder(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(5))),
-                                            suffixIcon: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              // Adjust the padding as needed
-                                              child: Icon(
-                                                Icons.calendar_today_outlined,
-                                                size: 25,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned.fill(
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                // Show the date picker dialog
-                                                showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(2020),
-                                                  lastDate: DateTime(2100),
-                                                ).then((selectedDate) {
-                                                  // Check if a date is selected
-                                                  if (selectedDate != null) {
-                                                    // Format the selected date as needed
-                                                    final formattedDate =
-                                                        DateFormat('dd-MM-yyyy')
-                                                            .format(
-                                                                selectedDate);
-                                                    // Set the formatted date to the controller
-                                                    _Datecontroller.text =
-                                                        formattedDate;
-                                                    print(formattedDate);
-                                                    appointmentDate =
-                                                        formattedDate;
-                                                    print(appointmentDate);
-                                                  } else {
-                                                    print('No date selected');
-                                                  }
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                        ],
+                      ),
+                      body: SingleChildScrollView(
+                        child: SafeArea(
+                          child: Container(
+                            color: Colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Welcome, ${userProfile.name}',
+                                      //textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: screenWidth * 0.026,
-                                ),
-                                Center(
-                                  child: Container(
-                                    width: screenWidth * 0.437,
-                                    height: screenHeight * 0.075,
-                                    child: Stack(
-                                      children: [
-                                        TextFormField(
-                                          controller: _Clockcontroller,
-                                          validator: (value) {
-                                            // Check if the text field is empty or contains a valid time
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please select a time';
-                                            }
-                                            // You can add more complex validation logic if needed
-                                            return null;
-                                          },
-                                          readOnly: true,
-                                          // Make the text field readonly
-                                          enableInteractiveSelection: false,
-                                          // Disable interactive selection
-                                          style: const TextStyle(
-                                            color: Color.fromRGBO(
-                                                143, 150, 158, 1),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          ),
-                                          decoration: InputDecoration(
-                                            labelText: 'Time',
-                                            labelStyle: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                              fontFamily: 'default',
-                                            ),
-                                            border: const OutlineInputBorder(
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                        Radius.circular(5))),
-                                            suffixIcon: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              // Adjust the padding as needed
-                                              child: Icon(
-                                                Icons.schedule_rounded,
-                                                size: 25,
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Text('Search Appointment',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      )),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          width: screenWidth * 0.437,
+                                          height: screenHeight * 0.075,
+                                          child: Stack(
+                                            children: [
+                                              TextFormField(
+                                                controller: _Datecontroller,
+                                                validator: (value) {
+                                                  // Check if the text field is empty or contains a valid date
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return 'Please select a date';
+                                                  }
+                                                  // You can add more complex validation logic if needed
+                                                  return null;
+                                                },
+                                                readOnly: true,
+                                                // Make the text field readonly
+                                                enableInteractiveSelection:
+                                                    false,
+                                                // Disable interactive selection
+                                                style: const TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      143, 150, 158, 1),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'default',
+                                                ),
+                                                decoration: InputDecoration(
+                                                  labelText: 'Date',
+                                                  labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    fontFamily: 'default',
+                                                  ),
+                                                  border:
+                                                      const OutlineInputBorder(
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5))),
+                                                  suffixIcon: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12.0),
+                                                    // Adjust the padding as needed
+                                                    child: Icon(
+                                                      Icons
+                                                          .calendar_today_outlined,
+                                                      size: 25,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
+                                              Positioned.fill(
+                                                child: Material(
+                                                  color: Colors.transparent,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // Show the date picker dialog
+                                                      showDatePicker(
+                                                        context: context,
+                                                        initialDate:
+                                                            DateTime.now(),
+                                                        firstDate:
+                                                            DateTime(2020),
+                                                        lastDate:
+                                                            DateTime(2100),
+                                                      ).then((selectedDate) {
+                                                        // Check if a date is selected
+                                                        if (selectedDate !=
+                                                            null) {
+                                                          // Format the selected date as needed
+                                                          final formattedDate =
+                                                              DateFormat(
+                                                                      'dd-MM-yyyy')
+                                                                  .format(
+                                                                      selectedDate);
+                                                          // Set the formatted date to the controller
+                                                          _Datecontroller.text =
+                                                              formattedDate;
+                                                          print(formattedDate);
+                                                          appointmentDate =
+                                                              formattedDate;
+                                                          print(
+                                                              appointmentDate);
+                                                        } else {
+                                                          print(
+                                                              'No date selected');
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        Positioned.fill(
-                                          child: Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                // Show the time picker dialog
-                                                showTimePicker(
-                                                  context: context,
-                                                  initialTime: TimeOfDay.now(),
-                                                ).then((selectedTime) {
-                                                  // Check if a time is selected
-                                                  if (selectedTime != null) {
-                                                    // Convert selectedTime to a formatted string
-                                                    /*String formattedTime =
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.026,
+                                      ),
+                                      Center(
+                                        child: Container(
+                                          width: screenWidth * 0.437,
+                                          height: screenHeight * 0.075,
+                                          child: Stack(
+                                            children: [
+                                              TextFormField(
+                                                controller: _Clockcontroller,
+                                                validator: (value) {
+                                                  // Check if the text field is empty or contains a valid time
+                                                  if (value == null ||
+                                                      value.isEmpty) {
+                                                    return 'Please select a time';
+                                                  }
+                                                  // You can add more complex validation logic if needed
+                                                  return null;
+                                                },
+                                                readOnly: true,
+                                                // Make the text field readonly
+                                                enableInteractiveSelection:
+                                                    false,
+                                                // Disable interactive selection
+                                                style: const TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      143, 150, 158, 1),
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'default',
+                                                ),
+                                                decoration: InputDecoration(
+                                                  labelText: 'Time',
+                                                  labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                    fontFamily: 'default',
+                                                  ),
+                                                  border:
+                                                      const OutlineInputBorder(
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          5))),
+                                                  suffixIcon: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12.0),
+                                                    // Adjust the padding as needed
+                                                    child: Icon(
+                                                      Icons.schedule_rounded,
+                                                      size: 25,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned.fill(
+                                                child: Material(
+                                                  color: Colors.transparent,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // Show the time picker dialog
+                                                      showTimePicker(
+                                                        context: context,
+                                                        initialTime:
+                                                            TimeOfDay.now(),
+                                                      ).then((selectedTime) {
+                                                        // Check if a time is selected
+                                                        if (selectedTime !=
+                                                            null) {
+                                                          // Convert selectedTime to a formatted string
+                                                          /*String formattedTime =
                                               selectedTime.hour.toString().padLeft(2, '0') +
                                                   ':' +
                                                   selectedTime.minute.toString().padLeft(2, '0');*/
-                                                    String formattedTime =
-                                                        DateFormat('h:mm a')
-                                                            .format(
-                                                      DateTime(
-                                                          2024,
-                                                          1,
-                                                          1,
-                                                          selectedTime.hour,
-                                                          selectedTime.minute),
-                                                    );
-                                                    print(formattedTime);
-                                                    // Set the formatted time to the controller
-                                                    _Clockcontroller.text =
-                                                        formattedTime;
-                                                    appointmentTime =
-                                                        formattedTime;
-                                                    print(appointmentTime);
-                                                  } else {
-                                                    print('No time selected');
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                                          String formattedTime =
+                                                              DateFormat(
+                                                                      'h:mm a')
+                                                                  .format(
+                                                            DateTime(
+                                                                2024,
+                                                                1,
+                                                                1,
+                                                                selectedTime
+                                                                    .hour,
+                                                                selectedTime
+                                                                    .minute),
+                                                          );
+                                                          print(formattedTime);
+                                                          // Set the formatted time to the controller
+                                                          _Clockcontroller
+                                                                  .text =
+                                                              formattedTime;
+                                                          appointmentTime =
+                                                              formattedTime;
+                                                          print(
+                                                              appointmentTime);
+                                                        } else {
+                                                          print(
+                                                              'No time selected');
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Center(
+                                    child: DropdownFormField(
+                                      hintText: 'Select Visiting Sector',
+                                      dropdownItems: dropdownItems,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedSector = value ?? '';
+                                          //print('New: $_selectedUserType');
+                                        });
+                                      },
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Center(
-                              child: DropdownFormField(
-                                hintText: 'Select Visiting Sector',
-                                dropdownItems: dropdownItems,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedSector = value ?? '';
-                                    //print('New: $_selectedUserType');
-                                  });
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Center(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromRGBO(13, 70, 127, 1),
-                                  fixedSize: Size(
-                                      MediaQuery.of(context).size.width * 0.9,
-                                      MediaQuery.of(context).size.height *
-                                          0.075),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
+                                  SizedBox(
+                                    height: 15,
                                   ),
-                                ),
-                                onPressed: () {
-                                  if (_Datecontroller.text.isEmpty &&
-                                      _Clockcontroller.text.isEmpty &&
-                                      _selectedSector == '') {
-                                    const snackBar = SnackBar(
-                                      content: Text('Enter atleast one filter'),
-                                    );
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                  } else {
-                                    issearchbuttonclicked = true;
-                                    String Date;
-                                    String Clock;
-                                    String Sector;
-                                    if (_Datecontroller.text.isEmpty) {
-                                      Date = ' ';
-                                    } else {
-                                      Date = _Datecontroller.text;
-                                    }
+                                  Center(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color.fromRGBO(
+                                            13, 70, 127, 1),
+                                        fixedSize: Size(
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                            MediaQuery.of(context).size.height *
+                                                0.075),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        if (_Datecontroller.text.isEmpty &&
+                                            _Clockcontroller.text.isEmpty &&
+                                            _selectedSector == '') {
+                                          const snackBar = SnackBar(
+                                            content: Text(
+                                                'Enter atleast one filter'),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                        } else {
+                                          issearchbuttonclicked = true;
+                                          String Date;
+                                          String Clock;
+                                          String Sector;
+                                          if (_Datecontroller.text.isEmpty) {
+                                            Date = ' ';
+                                          } else {
+                                            Date = _Datecontroller.text;
+                                          }
 
-                                    if (_Clockcontroller.text.isEmpty) {
-                                      Clock = ' ';
-                                    } else {
-                                      Clock = _Clockcontroller.text;
-                                    }
+                                          if (_Clockcontroller.text.isEmpty) {
+                                            Clock = ' ';
+                                          } else {
+                                            Clock = _Clockcontroller.text;
+                                          }
 
-                                    if (_selectedSector == null) {
-                                      Sector = ' ';
-                                    } else {
-                                      Sector = _selectedSector;
-                                    }
+                                          if (_selectedSector == null) {
+                                            Sector = ' ';
+                                          } else {
+                                            Sector = _selectedSector;
+                                          }
 
-                                    print('Date: $Date');
-                                    print('Time: $Clock');
-                                    print('Sector: $Sector');
+                                          print('Date: $Date');
+                                          print('Time: $Clock');
+                                          print('Sector: $Sector');
 
-                                    fetchSortedConnectionRequests(
-                                        Date, Clock, Sector);
-                                  }
-                                },
-                                child: const Text('Search',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    )),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 30,
-                            ),
-                            const SizedBox(height: 5),
-                            if (issearchbuttonclicked == false) ...[
-                              const Text('Appointment Approved List',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  )),
-                              const SizedBox(height: 5),
-                              Divider(),
-                              RequestsWidgetShowAll(
-                                  loading: _isLoading,
-                                  fetch: _isFetched,
-                                  errorText: 'No appointment found',
-                                  listWidget: acceptedRequests,
-                                  fetchData: fetchConnectionRequests()),
-                            ] else if (issearchbuttonclicked == true) ...[
-                              const Text('Sorted Appointment Approved List',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  )),
-                              const SizedBox(height: 5),
-                              Divider(),
-                              RequestsWidgetShowAll(
-                                  loading: _isLoading,
-                                  fetch: _isFetched,
-                                  errorText: 'No appointment found',
-                                  listWidget: acceptedRequests,
-                                  fetchData: fetchSortedConnectionRequests(
-                                      _Datecontroller.text,
-                                      _Clockcontroller.text,
-                                      _selectedSector)),
-                             /* Container(
+                                          fetchSortedConnectionRequests(
+                                              Date, Clock, Sector);
+                                        }
+                                      },
+                                      child: const Text('Search',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'default',
+                                          )),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  if (issearchbuttonclicked == false) ...[
+                                    const Text('Appointment Approved List',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'default',
+                                        )),
+                                    const SizedBox(height: 5),
+                                    Divider(),
+                                    RequestsWidgetShowAll(
+                                        loading: _isLoading,
+                                        fetch: _isFetched,
+                                        errorText: 'No appointment found',
+                                        listWidget: acceptedRequests,
+                                        fetchData: fetchConnectionRequests()),
+                                  ] else if (issearchbuttonclicked == true) ...[
+                                    const Text(
+                                        'Sorted Appointment Approved List',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'default',
+                                        )),
+                                    const SizedBox(height: 5),
+                                    Divider(),
+                                    RequestsWidgetShowAll(
+                                        loading: _isLoading,
+                                        fetch: _isFetched,
+                                        errorText: 'No appointment found',
+                                        listWidget: acceptedRequests,
+                                        fetchData:
+                                            fetchSortedConnectionRequests(
+                                                _Datecontroller.text,
+                                                _Clockcontroller.text,
+                                                _selectedSector)),
+                                    /* Container(
                                 //height: screenHeight*0.25,
                                 child: FutureBuilder<void>(
                                     future: _isLoading
@@ -691,9 +728,9 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                                   physics:
                                                       NeverScrollableScrollPhysics(),
                                                   itemCount:
-                                                      *//*SortedacceptedRequests.length > 10
+                                                      */ /*SortedacceptedRequests.length > 10
                                                       ? 10
-                                                      :*//*
+                                                      :*/ /*
                                                       SortedacceptedRequests
                                                           .length,
                                                   itemBuilder:
@@ -707,10 +744,10 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                                           const SizedBox(
                                                               height: 10),
                                                 ),
-                                                *//*  if (shouldShowSeeAllButton(
+                                                */ /*  if (shouldShowSeeAllButton(
                                             acceptedConnectionRequests))
                                           buildSeeAllButtonReviewedList(
-                                              context),*//*
+                                              context),*/ /*
                                               ],
                                             ),
                                           );
@@ -719,147 +756,151 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                       return SizedBox();
                                     }),
                               ),*/
-                            ],
-                            Divider(),
-                            const SizedBox(height: 10),
+                                  ],
+                                  Divider(),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      bottomNavigationBar: Container(
+                        height: screenHeight * 0.08,
+                        color: const Color.fromRGBO(13, 70, 127, 1),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SecurityAdminDashboard()));
+                              },
+                              child: Container(
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.home,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Home',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Profile()));
+                              },
+                              behavior: HitTestBehavior.translucent,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  left: BorderSide(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                )),
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.person,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Profile',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                _showLogoutDialog(context);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  left: BorderSide(
+                                    color: Colors.black,
+                                    width: 1.0,
+                                  ),
+                                )),
+                                width: screenWidth / 3,
+                                padding: EdgeInsets.all(5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.logout,
+                                      size: 30,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Log Out',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                ),
-                bottomNavigationBar: Container(
-                  height: screenHeight * 0.08,
-                  color: const Color.fromRGBO(13, 70, 127, 1),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SecurityAdminDashboard()));
-                        },
-                        child: Container(
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.home,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Home',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Profile()));
-                        },
-                        behavior: HitTestBehavior.translucent,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                            left: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          )),
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.person,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Profile',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          _showLogoutDialog(context);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                            left: BorderSide(
-                              color: Colors.black,
-                              width: 1.0,
-                            ),
-                          )),
-                          width: screenWidth / 3,
-                          padding: EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.logout,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Log Out',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+                );
+              } else {
+                return Text('');
+              }
+            },
           );
   }
-
 
   void _showLogoutDialog(BuildContext context) {
     showDialog(
