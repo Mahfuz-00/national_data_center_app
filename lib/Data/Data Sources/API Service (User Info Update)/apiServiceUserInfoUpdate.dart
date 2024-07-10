@@ -55,7 +55,6 @@ class APIServiceUpdateUser {
           'organization': userData.organization,
           'designation': userData.designation,
           'phone': userData.phone,
-          'licenseNumber': userData.licenseNumber,
         },
       );
 
@@ -83,7 +82,6 @@ class APIServiceUpdateUser {
           'organization': userData.organization,
           'designation': userData.designation,
           'phone': userData.phone,
-          'licenseNumber': userData.licenseNumber,
         },
       );
       print(response.body);

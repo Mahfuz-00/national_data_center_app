@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
+import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
 import '../../../Data/Data Sources/API Service (Sorting)/apiServiceSorting.dart';
 import '../../Bloc/auth_cubit.dart';
@@ -896,7 +897,9 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                   ),
                 );
               } else {
-                return Text('');
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
               }
             },
           );
@@ -952,9 +955,28 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                   width: 10,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const Login()));
+                  onPressed: () async {
+                    // Clear user data from SharedPreferences
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.remove('userName');
+                    await prefs.remove('organizationName');
+                    await prefs.remove('photoUrl');
+                    // Create an instance of LogOutApiService
+                    var logoutApiService = await LogOutApiService.create();
+
+                    // Wait for authToken to be initialized
+                    logoutApiService.authToken;
+
+                    // Call the signOut method on the instance
+                    if (await logoutApiService.signOut()) {
+                      Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Login())); // Close the drawer
+                    }
                   },
                   child: Text(
                     'Logout',

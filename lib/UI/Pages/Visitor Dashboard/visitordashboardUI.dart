@@ -578,7 +578,9 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                   ),
                 );
               } else {
-                return Text('');
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
               }
             },
           );
@@ -649,6 +651,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                     // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

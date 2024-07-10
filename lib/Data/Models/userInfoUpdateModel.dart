@@ -4,7 +4,6 @@ class UserProfileUpdate {
   final String organization;
   final String designation;
   final String phone;
-  final String licenseNumber;
 
   UserProfileUpdate({
     required this.userId,
@@ -12,7 +11,6 @@ class UserProfileUpdate {
     required this.organization,
     required this.designation,
     required this.phone,
-    required this.licenseNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -22,7 +20,6 @@ class UserProfileUpdate {
       'organization': organization,
       'designation': designation,
       'phone': phone,
-      'licenseNumber': licenseNumber,
     };
   }
 }

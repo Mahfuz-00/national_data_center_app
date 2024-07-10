@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +13,9 @@ import '../../../Data/Data Sources/API Service (Profile)/apiserviceprofile.dart'
 import '../../../Data/Data Sources/API Service (User Info Update)/apiServiceImageUpdate.dart';
 import '../../../Data/Data Sources/API Service (User Info Update)/apiServiceUserInfoUpdate.dart';
 import '../../../Data/Models/profileModelFull.dart';
+import '../../../Data/Models/profilemodel.dart';
 import '../../../Data/Models/userInfoUpdateModel.dart';
+import '../../Bloc/auth_cubit.dart';
 import '../Login UI/loginUI.dart';
 import 'passwordChange.dart';
 
@@ -40,8 +43,9 @@ class _ProfileState extends State<Profile> {
   late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _licenseNumberController;
+  late String userType = '';
 
-  Future<void> _fetchUserProfile() async {
+  /*Future<void> _fetchUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     print('Load Token');
@@ -68,6 +72,69 @@ class _ProfileState extends State<Profile> {
     } catch (e) {
       print('Error saving user profile: $e');
     }
+  }*/
+
+  late UserProfile userProfileCubit;
+
+  Future<void> _fetchUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    print('Load Token');
+    print(prefs.getString('token'));
+
+    final apiService = await APIProfileService();
+    final profile = await apiService.fetchUserProfile(token);
+    userProfile = UserProfileFull.fromJson(profile);
+    name = userProfile!.name;
+    print(userProfile!.name);
+    print(userProfile!.id);
+
+    final authCubit = context.read<AuthCubit>();
+    if (authCubit.state is AuthAuthenticated) {
+      final authenticatedState = authCubit.state as AuthAuthenticated;
+      final user = authenticatedState.userProfile;
+      setState(() {
+        userType = user.user;
+        print(user.user);
+      });
+    }
+
+    setState(() {
+      // Map UserProfileFull to UserProfile or use directly if they match
+      userProfileCubit = UserProfile(
+        Id: userProfile!.id,
+        name: userProfile!.name,
+        organization: userProfile!.organization,
+        photo: userProfile!.photo,
+        user: userType,
+        // Add other fields as needed
+      );
+      print(userProfileCubit.user.toString());
+    });
+
+    // Update the UserProfileCubit state using context.read
+    context.read<AuthCubit>().updateProfile(UserProfile(
+        Id: userProfile!.id,
+        name: userProfile!.name,
+        organization: userProfile!.organization,
+        photo: userProfile!.photo, user: userType)
+      // Add other fields as needed
+    );
+
+/*    try {
+      await prefs.setString('userName', userProfile!.name);
+      await prefs.setString('organizationName', userProfile!.organization);
+      await prefs.setString('photoUrl', userProfile!.photo);
+      final String? UserName = prefs.getString('userName');
+      final String? OrganizationName = prefs.getString('organizationName');
+      final String? PhotoURL = prefs.getString('photoUrl');
+      print('User Name: $UserName');
+      print('Organization Name: $OrganizationName');
+      print('Photo URL: $PhotoURL');
+      print('User profile saved successfully');
+    } catch (e) {
+      print('Error saving user profile: $e');
+    }*/
   }
 
   @override
@@ -547,6 +614,7 @@ class _ProfileState extends State<Profile> {
                     // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -597,16 +665,16 @@ class _ProfileState extends State<Profile> {
                   SizedBox(
                     height: 5,
                   ),
-                  /*_buildTextField('Organization Name',
+                  _buildTextField('Organization Name',
                       userProfile!.organization, _organizationController),
                   SizedBox(
                     height: 5,
-                  ),*/
-                  /* _buildTextField('Designation', userProfile!.designation,
+                  ),
+                   _buildTextField('Designation', userProfile!.designation,
                       _designationController),
                   SizedBox(
                     height: 5,
-                  ),*/
+                  ),
                   _buildTextField('Phone Number', userProfile!.phone as String,
                       _phoneController),
                   SizedBox(
@@ -664,13 +732,11 @@ class _ProfileState extends State<Profile> {
                     if (globalfromkey.currentState!.validate()) {
                       print(userProfile!.id.toString());
                       print(userProfile!.name);
-                      // print(userProfile!.organization);
-                      // print(userProfile!.designation);
+                      print(userProfile!.organization);
+                      print(userProfile!.designation);
                       print(userProfile!.phone);
                       //print(userProfile!.license);
 
-                      // Validate the form
-                      // If validation succeeds, update the profile
                       final userProfileUpdate = UserProfileUpdate(
                         userId: userProfile!.id.toString(),
                         // Provide the user ID here
@@ -678,7 +744,6 @@ class _ProfileState extends State<Profile> {
                         organization: _organizationController.text,
                         designation: _designationController.text,
                         phone: _phoneController.text,
-                        licenseNumber: _licenseNumberController.text,
                       );
                       final apiService = await APIServiceUpdateUser.create();
                       final result =

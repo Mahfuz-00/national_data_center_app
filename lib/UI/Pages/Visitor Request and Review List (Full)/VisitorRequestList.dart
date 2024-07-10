@@ -1,11 +1,13 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
+import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/templateerrorcontainer.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Login UI/loginUI.dart';
@@ -493,6 +495,7 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
                     // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

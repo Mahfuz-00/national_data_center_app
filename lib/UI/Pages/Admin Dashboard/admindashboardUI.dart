@@ -561,7 +561,9 @@ class _AdminDashboardState extends State<AdminDashboard>
                   ),
                 );
               } else {
-                return Text('');
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
               }
             },
           );
@@ -632,6 +634,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                     // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
