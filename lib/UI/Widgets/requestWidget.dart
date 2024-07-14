@@ -10,7 +10,7 @@ class RequestsWidget extends StatelessWidget {
   final int numberOfWidgets;
   final bool showSeeAllButton;
   final String seeAllButtonText;
-  final Widget nextPage;
+  final Widget nextView;
 
   const RequestsWidget({
     Key? key,
@@ -22,7 +22,7 @@ class RequestsWidget extends StatelessWidget {
     required this.numberOfWidgets,
     required this.showSeeAllButton,
     required this.seeAllButtonText,
-    required this.nextPage,
+    required this.nextView,
   }) : super(key: key);
 
   @override
@@ -70,7 +70,7 @@ class RequestsWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     if (showSeeAllButton)
-                      buildSeeAllButtonReviewedList(context),
+                      buildSeeAllButton(context),
                   ],
                 ),
               );
@@ -82,7 +82,7 @@ class RequestsWidget extends StatelessWidget {
     );
   }
 
-  Widget buildSeeAllButtonReviewedList(BuildContext context) {
+  Widget buildSeeAllButton(BuildContext context) {
     return Center(
       child: Material(
         elevation: 5,
@@ -99,7 +99,7 @@ class RequestsWidget extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => nextPage));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => nextView));
           },
           child: Text(
             seeAllButtonText,

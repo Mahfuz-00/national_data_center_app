@@ -371,7 +371,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                           pendingRequests),
                                       seeAllButtonText:
                                           'See all pending request',
-                                      nextPage: VisitorRequestList()),
+                                      nextView: VisitorRequestList()),
                                   Divider(),
                                   const SizedBox(height: 25),
                                   Container(
@@ -398,7 +398,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                           acceptedRequests),
                                       seeAllButtonText:
                                           'See all reviewed request',
-                                      nextPage: VisitorReviewedList()),
+                                      nextView: VisitorReviewedList()),
                                   Divider(),
                                   const SizedBox(height: 10),
                                   Center(
