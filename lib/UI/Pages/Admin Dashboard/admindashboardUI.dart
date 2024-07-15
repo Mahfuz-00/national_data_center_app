@@ -12,6 +12,7 @@ import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
+import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../../Widgets/visitorRequestInfoCardAdmin.dart';
@@ -45,6 +46,11 @@ class _AdminDashboardState extends State<AdminDashboard>
   late String organizationName = '';
   late String photoUrl = '';
   List<String> notifications = [];
+  late Pagination pendingPagination;
+  late Pagination acceptedPagination;
+
+  bool canFetchMorePending = false;
+  bool canFetchMoreAccepted = false;
 
 /*  Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
