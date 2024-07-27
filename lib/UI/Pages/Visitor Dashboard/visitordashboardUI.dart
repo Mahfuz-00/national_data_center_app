@@ -7,6 +7,7 @@ import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
+import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Access Form(Visitor)/accessformUI.dart';
@@ -38,6 +39,11 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
+  late Pagination pendingPagination;
+  late Pagination acceptedPagination;
+
+  bool canFetchMorePending = false;
+  bool canFetchMoreAccepted = false;
 
 /*  Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,6 +86,19 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
       setState(() {
         _isLoading = true;
       });
+
+      final Map<String, dynamic> pagination = records['pagination'] ?? {};
+      print(pagination);
+
+      pendingPagination = Pagination.fromJson(pagination['pending']);
+      acceptedPagination = Pagination.fromJson(pagination['accepted']);
+      print(pendingPagination.nextPage);
+      print(acceptedPagination.nextPage);
+
+      //recentPagination = Pagination.fromJson(pagination['recent']);
+
+      canFetchMorePending = pendingPagination.canFetchNext;
+      canFetchMoreAccepted = acceptedPagination.canFetchNext;
 
       // Extract notifications
       notifications = List<String>.from(records['notifications'] ?? []);
@@ -145,7 +164,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
     }
   }
 
-  // Function to check if more than 10 items are available in the list
+/*  // Function to check if more than 10 items are available in the list
   bool shouldShowSeeAllButton(List list) {
     return list.length > 10;
   }
@@ -210,12 +229,18 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         ),
       ),
     );
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
     print('initState called');
+    pendingPagination = Pagination(nextPage: null, previousPage: null);
+    acceptedPagination = Pagination(nextPage: null, previousPage: null);
+    if (!_isFetched) {
+      fetchConnectionRequests();
+      //_isFetched = true; // Set _isFetched to true after the first call
+    }
     // loadUserProfile();
     Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
@@ -223,10 +248,6 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
         // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
         // connectionRequests = [];
-        if (!_isFetched) {
-          fetchConnectionRequests();
-          //_isFetched = true; // Set _isFetched to true after the first call
-        }
       }
       // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
@@ -329,7 +350,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                             color: Colors.white,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 10),
+                                  horizontal: 10, vertical: 20),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -366,12 +387,12 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                           'You currently don\'t have any new requests pending.',
                                       listWidget: pendingRequests,
                                       fetchData: fetchConnectionRequests(),
-                                      numberOfWidgets: 10,
-                                      showSeeAllButton: shouldShowSeeAllButton(
-                                          pendingRequests),
+                                      showSeeAllButton: canFetchMorePending,
                                       seeAllButtonText:
-                                          'See all pending request',
-                                      nextView: VisitorRequestList()),
+                                          'See All Pending Request',
+                                      nextView: VisitorRequestList(
+                                        shouldRefresh: true,
+                                      )),
                                   Divider(),
                                   const SizedBox(height: 25),
                                   Container(
@@ -393,12 +414,12 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                           'No connection requests reviewed yet',
                                       listWidget: acceptedRequests,
                                       fetchData: fetchConnectionRequests(),
-                                      numberOfWidgets: 10,
-                                      showSeeAllButton: shouldShowSeeAllButton(
-                                          acceptedRequests),
+                                      showSeeAllButton: canFetchMoreAccepted,
                                       seeAllButtonText:
-                                          'See all reviewed request',
-                                      nextView: VisitorReviewedList()),
+                                          'See All Reviewed Request',
+                                      nextView: VisitorReviewedList(
+                                        shouldRefresh: true,
+                                      )),
                                   Divider(),
                                   const SizedBox(height: 10),
                                   Center(

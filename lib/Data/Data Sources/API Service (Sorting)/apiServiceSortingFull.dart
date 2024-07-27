@@ -2,14 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SortingAPIService {
-  final String baseUrl = 'https://bcc.touchandsolve.com/api';
+class SortingFullAPIService {
   late final String authToken;
 
-  SortingAPIService._();
+  SortingFullAPIService._();
 
-  static Future<SortingAPIService> create() async {
-    var apiService = SortingAPIService._();
+  static Future<SortingFullAPIService> create() async {
+    var apiService = SortingFullAPIService._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
@@ -27,14 +26,18 @@ class SortingAPIService {
     print(prefs.getString('token'));
   }
 
-  Future<Map<String, dynamic>> filterData(String date, String time, String sector) async {
+  Future<Map<String, dynamic>> filterFullData(String date, String time, String sector, String url) async {
+    print(date);
+    print(time);
+    print(sector);
+    print(url);
     try {
       if (authToken.isEmpty) {
         throw Exception('Authentication token is empty.');
       }
 
       final response = await http.post(
-        Uri.parse('$baseUrl/ndc/filter/data'),
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken',

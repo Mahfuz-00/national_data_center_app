@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Dashboard)/apiserviceDashboardFull.dart';
+import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Sorting)/apiServiceSortingFull.dart';
 import 'package:ndc_app/UI/Widgets/requestWidgetShowAll.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,8 +13,11 @@ import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.d
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
 import '../../../Data/Data Sources/API Service (Sorting)/apiServiceSorting.dart';
+import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/dropdownfield.dart';
+import '../../Widgets/templateerrorcontainer.dart';
+import '../../Widgets/templateloadingcontainer.dart';
 import '../../Widgets/visitorRequestInfoCardSecurityAdmin.dart';
 import '../Analytics UI/analyticsUI.dart';
 import '../Login UI/loginUI.dart';
@@ -43,6 +48,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   bool _isLoading = false;
   bool _pageLoading = true;
   bool _errorOccurred = false;
+  bool _buttonloading = false;
   late Map<String, dynamic> monthlyData;
   late Map<String, dynamic> dailyData;
   late String appointmentDate;
@@ -54,6 +60,10 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   List<String> notifications = [];
   String _selectedSector = '';
   bool issearchbuttonclicked = false;
+  ScrollController _scrollController = ScrollController();
+  late Pagination acceptedPagination;
+  bool canFetchMoreAccepted = false;
+  late String url = '';
 
   List<DropdownMenuItem<String>> dropdownItems = [
     DropdownMenuItem(
@@ -103,10 +113,22 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         return;
       }
 
-      // Set isLoading to true while fetching data
-      setState(() {
-        _isLoading = true;
-      });
+      print(issearchbuttonclicked);
+
+      final Map<String, dynamic> pagination = records['pagination'] ?? {};
+      print(pagination);
+
+      acceptedPagination = Pagination.fromJson(pagination);
+      print(acceptedPagination.nextPage);
+      if (acceptedPagination.nextPage != 'None' &&
+          acceptedPagination.nextPage!.isNotEmpty) {
+        url = acceptedPagination.nextPage as String;
+        print(acceptedPagination.nextPage);
+        canFetchMoreAccepted = acceptedPagination.canFetchNext;
+      } else {
+        url = '';
+        canFetchMoreAccepted = false;
+      }
 
       // Extract notifications
       notifications = List<String>.from(records['notifications'] ?? []);
@@ -164,6 +186,275 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
     }
   }
 
+  bool recordsdata = false;
+
+  Future<void> fetchSortedConnectionRequests(
+      String Date, String Clock, String Sector) async {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    setState(() {
+      _buttonloading = true;
+      _isFetchedSorted = false;
+    });
+    print('Date Sent: $Date');
+    print('Time Sent: $Clock');
+    print('Sector Sent: $Sector');
+    try {
+      final apiService = await SortingAPIService.create();
+
+      print('1');
+      // Fetch dashboard data
+      final Map<String, dynamic>? dashboardData =
+          await apiService.filterData(Date, Clock, Sector);
+      if (dashboardData == null || dashboardData.isEmpty) {
+        // No data available or an error occurred
+        print(
+            'No data available or error occurred while fetching dashboard data');
+        return;
+      }
+      print('2');
+      print(dashboardData);
+
+      final Map<String, dynamic> records = dashboardData['records'];
+      print(records);
+      if (records == null || records.isEmpty) {
+        setState(() {
+          recordsdata = true;
+          _isFetchedSorted = true;
+        });
+        // No records available
+        print('No records available');
+        return;
+      }
+
+      print('3');
+
+      final Map<String, dynamic> pagination = records['pagination'] ?? {};
+      print(pagination.toString());
+
+      acceptedPagination = Pagination.fromJson(pagination);
+      if (acceptedPagination.nextPage != 'None' &&
+          acceptedPagination.nextPage!.isNotEmpty) {
+        url = acceptedPagination.nextPage as String;
+        print(acceptedPagination.nextPage);
+        canFetchMoreAccepted = acceptedPagination.canFetchNext;
+      } else {
+        url = '';
+        canFetchMoreAccepted = false;
+      }
+
+      // Set isLoading to true while fetching data
+      setState(() {
+        _isLoading = true;
+      });
+
+      final List<dynamic> acceptedRequestsData = records['appointments'] ?? [];
+      for (var index = 0; index < acceptedRequestsData.length; index++) {
+        print(
+            'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
+      }
+
+      // Map accepted requests to widgets
+      final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
+        return VisitorRequestInfoCardSecurityAdmin(
+          Name: request['name'],
+          Organization: request['organization'],
+          Phone: request['phone'],
+          AppointmentDate: request['appointment_date_time'],
+          Purpose: request['purpose'],
+          Personnel: request['name_of_personnel'],
+          Belongs: request['belong'],
+          ApplicationID: request['appointment_id'],
+          Designation: request['designation'],
+          Email: request['email'],
+          Sector: request['sector'],
+        );
+      }).toList();
+
+      setState(() {
+        SortedacceptedRequests = acceptedWidgets;
+        _isFetchedSorted = true;
+        _buttonloading = false;
+      });
+    } catch (e) {
+      print('Error fetching connection requests: $e');
+      _isFetchedSorted = true;
+      _buttonloading = false;
+    }
+  }
+
+  Future<void> fetchMoreConnectionRequests() async {
+    setState(() {
+      _isLoading = true;
+    });
+    print(url);
+
+    try {
+      if (url != '' && url.isNotEmpty) {
+        final apiService = await DashboardAPIServiceFull.create();
+        final Map<String, dynamic> dashboardData =
+            await apiService.fetchFullItems(url);
+
+        if (dashboardData == null || dashboardData.isEmpty) {
+          print(
+              'No data available or error occurred while fetching dashboard data');
+          return;
+        }
+
+        final Map<String, dynamic> records = dashboardData['records'];
+        if (records == null || records.isEmpty) {
+          print('No records available');
+          return;
+        }
+
+        final Map<String, dynamic> pagination = records['pagination'] ?? {};
+        print(pagination);
+
+        acceptedPagination = Pagination.fromJson(pagination);
+        if (acceptedPagination.nextPage != 'None' &&
+            acceptedPagination.nextPage!.isNotEmpty) {
+          url = acceptedPagination.nextPage as String;
+          print(acceptedPagination.nextPage);
+          canFetchMoreAccepted = acceptedPagination.canFetchNext;
+        } else {
+          url = '';
+          canFetchMoreAccepted = false;
+        }
+
+        final List<dynamic> acceptedRequestsData = records['Accepted'] ?? [];
+        for (var index = 0; index < acceptedRequestsData.length; index++) {
+          print(
+              'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
+        }
+
+        // Map accepted requests to widgets
+        final List<Widget> acceptedWidgets =
+            acceptedRequestsData.map((request) {
+          return VisitorRequestInfoCardSecurityAdmin(
+            Name: request['name'],
+            Organization: request['organization'],
+            Phone: request['phone'],
+            AppointmentDate: request['appointment_date_time'],
+            Purpose: request['purpose'],
+            Personnel: request['name_of_personnel'],
+            Belongs: request['belong'],
+            ApplicationID: request['appointment_id'],
+            Designation: request['designation'],
+            Email: request['email'],
+            Sector: request['sector'],
+          );
+        }).toList();
+
+        setState(() {
+          acceptedRequests.addAll(acceptedWidgets);
+          _isLoading = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('All requests loaded')),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+    } catch (e) {
+      print('Error fetching more connection requests: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchMoreSortedConnectionRequests(
+      String Date, String Clock, String Sector) async {
+    print('Sort Date: $Date');
+    print('Sort Time: $Clock');
+    print('Sort Sector: $Sector');
+
+    setState(() {
+      _isLoading = true;
+    });
+    print(url);
+
+    try {
+      if (url != '' && url.isNotEmpty) {
+        final apiService = await SortingFullAPIService.create();
+        final Map<String, dynamic> dashboardData =
+            await apiService.filterFullData(Date, Clock, Sector, url);
+
+        if (dashboardData == null || dashboardData.isEmpty) {
+          print(
+              'No data available or error occurred while fetching dashboard data');
+          return;
+        }
+
+        final Map<String, dynamic> records = dashboardData['records'];
+        if (records == null || records.isEmpty) {
+          print('No records available');
+          return;
+        }
+
+        final Map<String, dynamic> pagination = records['pagination'] ?? {};
+        print(pagination);
+
+        acceptedPagination = Pagination.fromJson(pagination);
+        if (acceptedPagination.nextPage != 'None' &&
+            acceptedPagination.nextPage!.isNotEmpty) {
+          url = acceptedPagination.nextPage as String;
+          print(acceptedPagination.nextPage);
+          canFetchMoreAccepted = acceptedPagination.canFetchNext;
+        } else {
+          url = '';
+          canFetchMoreAccepted = false;
+        }
+
+        final List<dynamic> acceptedRequestsData =
+            records['appointments'] ?? [];
+        for (var index = 0; index < acceptedRequestsData.length; index++) {
+          print(
+              'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
+        }
+
+        // Map accepted requests to widgets
+        final List<Widget> acceptedWidgets =
+            acceptedRequestsData.map((request) {
+          return VisitorRequestInfoCardSecurityAdmin(
+            Name: request['name'],
+            Organization: request['organization'],
+            Phone: request['phone'],
+            AppointmentDate: request['appointment_date_time'],
+            Purpose: request['purpose'],
+            Personnel: request['name_of_personnel'],
+            Belongs: request['belong'],
+            ApplicationID: request['appointment_id'],
+            Designation: request['designation'],
+            Email: request['email'],
+            Sector: request['sector'],
+          );
+        }).toList();
+
+        setState(() {
+          SortedacceptedRequests.addAll(acceptedWidgets);
+          _isLoading = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('All requests loaded')),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+    } catch (e) {
+      print('Error fetching more connection requests: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
 /*// Function to save data to SharedPreferences
   Future<void> saveDailyDataToSharedPreferences(String dataJson) async {
     try {
@@ -189,6 +480,18 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
   void initState() {
     super.initState();
     print('initState called');
+    _scrollController.addListener(() {
+      print("Scroll Position: ${_scrollController.position.pixels}");
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        print('Invoking Scrolling!!');
+        fetchMoreConnectionRequests();
+      }
+    });
+    if (!_isFetched) {
+      fetchConnectionRequests();
+      //_isFetched = true; // Set _isFetched to true after the first call
+    }
     // loadUserProfile();
     Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
@@ -196,10 +499,6 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
         // connectionRequests = [];
-        if (!_isFetched) {
-          fetchConnectionRequests();
-          //_isFetched = true; // Set _isFetched to true after the first call
-        }
       }
       // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
@@ -300,6 +599,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                         ],
                       ),
                       body: SingleChildScrollView(
+                        controller: _scrollController,
                         child: SafeArea(
                           child: Container(
                             color: Colors.white,
@@ -592,6 +892,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                         if (_Datecontroller.text.isEmpty &&
                                             _Clockcontroller.text.isEmpty &&
                                             _selectedSector == '') {
+                                          print('Button not pressed');
                                           const snackBar = SnackBar(
                                             content: Text(
                                                 'Enter atleast one filter'),
@@ -621,6 +922,8 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                             Sector = _selectedSector;
                                           }
 
+                                          print('Button pressed');
+
                                           print('Date: $Date');
                                           print('Time: $Clock');
                                           print('Sector: $Sector');
@@ -629,13 +932,15 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                               Date, Clock, Sector);
                                         }
                                       },
-                                      child: const Text('Search',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          )),
+                                      child: _buttonloading
+                                          ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                          : Text('Search',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'default',
+                                              )),
                                     ),
                                   ),
                                   SizedBox(
@@ -653,12 +958,67 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                         )),
                                     const SizedBox(height: 5),
                                     Divider(),
-                                    RequestsWidgetShowAll(
-                                        loading: _isLoading,
-                                        fetch: _isFetched,
-                                        errorText: 'No appointment found',
-                                        listWidget: acceptedRequests,
-                                        fetchData: fetchConnectionRequests()),
+                                    acceptedRequests.isNotEmpty
+                                        ? NotificationListener<
+                                            ScrollNotification>(
+                                            onNotification: (scrollInfo) {
+                                              if (!scrollInfo
+                                                      .metrics.outOfRange &&
+                                                  scrollInfo.metrics.pixels ==
+                                                      scrollInfo.metrics
+                                                          .maxScrollExtent &&
+                                                  !_isLoading &&
+                                                  canFetchMoreAccepted) {
+                                                setState(() {
+                                                  _isLoading =
+                                                      true; // Ensure loading state is set before fetching
+                                                });
+                                                fetchMoreConnectionRequests()
+                                                    .then((_) {
+                                                  setState(() {
+                                                    _isLoading =
+                                                        false; // Reset loading state after fetching
+                                                  });
+                                                });
+                                              }
+                                              return true;
+                                            },
+                                            child: ListView.separated(
+                                              addAutomaticKeepAlives: false,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              // Prevent internal scrolling
+                                              itemCount:
+                                                  acceptedRequests.length + 1,
+                                              itemBuilder: (context, index) {
+                                                if (index ==
+                                                    acceptedRequests.length) {
+                                                  return Center(
+                                                    child: _isLoading
+                                                        ? Padding(
+                                                            padding: EdgeInsets
+                                                                .symmetric(
+                                                                    vertical:
+                                                                        20),
+                                                            child:
+                                                                CircularProgressIndicator(),
+                                                          )
+                                                        : SizedBox.shrink(),
+                                                  );
+                                                }
+                                                return acceptedRequests[index];
+                                              },
+                                              separatorBuilder: (context,
+                                                      index) =>
+                                                  const SizedBox(height: 10),
+                                            ),
+                                          )
+                                        : !_isLoading
+                                            ? LoadingContainer(
+                                                screenWidth: screenWidth)
+                                            : buildNoRequestsWidget(screenWidth,
+                                                'No appointment found'),
                                   ] else if (issearchbuttonclicked == true) ...[
                                     const Text(
                                         'Sorted Appointment Approved List',
@@ -671,16 +1031,87 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                         )),
                                     const SizedBox(height: 5),
                                     Divider(),
-                                    RequestsWidgetShowAll(
-                                        loading: _isLoading,
-                                        fetch: _isFetched,
-                                        errorText: 'No appointment found',
-                                        listWidget: acceptedRequests,
-                                        fetchData:
-                                            fetchSortedConnectionRequests(
-                                                _Datecontroller.text,
-                                                _Clockcontroller.text,
-                                                _selectedSector)),
+                                    _buttonloading
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(50.0),
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                          ) // Show circular progress indicator when button is clicked
+                                        : SortedacceptedRequests.isNotEmpty
+                                            ? NotificationListener<
+                                                ScrollNotification>(
+                                                onNotification: (scrollInfo) {
+                                                  if (!scrollInfo
+                                                          .metrics.outOfRange &&
+                                                      scrollInfo
+                                                              .metrics.pixels ==
+                                                          scrollInfo.metrics
+                                                              .maxScrollExtent &&
+                                                      !_isLoading &&
+                                                      canFetchMoreAccepted) {
+                                                    setState(() {
+                                                      _isLoading =
+                                                          true; // Ensure loading state is set before fetching
+                                                    });
+                                                    fetchMoreSortedConnectionRequests(
+                                                            _Datecontroller
+                                                                .text,
+                                                            _Clockcontroller
+                                                                .text,
+                                                            _selectedSector)
+                                                        .then((_) {
+                                                      setState(() {
+                                                        _isLoading =
+                                                            false; // Reset loading state after fetching
+                                                      });
+                                                    });
+                                                  }
+                                                  return true;
+                                                },
+                                                child: ListView.separated(
+                                                  addAutomaticKeepAlives: false,
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  // Prevent internal scrolling
+                                                  itemCount:
+                                                      SortedacceptedRequests
+                                                              .length +
+                                                          1,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    if (index ==
+                                                        SortedacceptedRequests
+                                                            .length) {
+                                                      return Center(
+                                                        child: _isLoading
+                                                            ? Padding(
+                                                                padding: EdgeInsets
+                                                                    .symmetric(
+                                                                        vertical:
+                                                                            20),
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              )
+                                                            : SizedBox.shrink(),
+                                                      );
+                                                    }
+                                                    return SortedacceptedRequests[
+                                                        index];
+                                                  },
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          const SizedBox(
+                                                              height: 10),
+                                                ),
+                                              )
+                                            : !_isLoading
+                                                ? LoadingContainer(
+                                                    screenWidth: screenWidth)
+                                                : buildNoRequestsWidget(
+                                                    screenWidth,
+                                                    'No appointment found'),
                                     /* Container(
                                 //height: screenHeight*0.25,
                                 child: FutureBuilder<void>(
@@ -758,7 +1189,6 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                     }),
                               ),*/
                                   ],
-                                  Divider(),
                                   const SizedBox(height: 10),
                                 ],
                               ),
@@ -1069,81 +1499,5 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         overlayEntry.remove();
       }
     });
-  }
-
-  bool recordsdata = false;
-
-  Future<void> fetchSortedConnectionRequests(
-      String Date, String Clock, String Sector) async {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    setState(() {
-      _isFetchedSorted = false;
-    });
-    print('Date Sent: $Date');
-    print('Time Sent: $Clock');
-    print('Sector Sent: $Sector');
-    try {
-      final apiService = await SortingAPIService.create();
-
-      print('1');
-      // Fetch dashboard data
-      final Map<String, dynamic>? dashboardData =
-          await apiService.filterData(Date, Clock, Sector);
-      if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
-        print(
-            'No data available or error occurred while fetching dashboard data');
-        return;
-      }
-      print('2');
-      print(dashboardData);
-
-      final List<dynamic> records = dashboardData['records'];
-      print(records);
-      if (records == null || records.isEmpty) {
-        setState(() {
-          recordsdata = true;
-          _isFetchedSorted = true;
-        });
-        // No records available
-        print('No records available');
-        return;
-      }
-
-      print('3');
-
-      // Set isLoading to true while fetching data
-      setState(() {
-        _isLoading = true;
-      });
-
-      await Future.delayed(Duration(seconds: 3));
-
-      // Map accepted requests to widgets
-      final List<Widget> acceptedWidgets = records.map((request) {
-        return VisitorRequestInfoCardSecurityAdmin(
-          Name: request['name'],
-          Organization: request['organization'],
-          Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
-          Purpose: request['purpose'],
-          Personnel: request['name_of_personnel'],
-          Belongs: request['belong'],
-          ApplicationID: request['appointment_id'],
-          Designation: request['designation'],
-          Email: request['email'],
-          Sector: request['sector'],
-        );
-      }).toList();
-
-      setState(() {
-        SortedacceptedRequests = acceptedWidgets;
-        _isFetchedSorted = true;
-      });
-    } catch (e) {
-      print('Error fetching connection requests: $e');
-      _isFetchedSorted = true;
-    }
   }
 }

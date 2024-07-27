@@ -1,14 +1,16 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Dashboard)/apiserviceDashboardFull.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
+import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/templateerrorcontainer.dart';
+import '../../Widgets/templateloadingcontainer.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Login UI/loginUI.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
@@ -40,6 +42,9 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
   late String organizationName = '';
   late String photoUrl = '';
   ScrollController _scrollController = ScrollController();
+  late Pagination pendingPagination;
+  bool canFetchMorePending = false;
+  late String url = '';
 
   Future<void> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
@@ -51,14 +56,14 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
     });
   }
 
-/*  Future<void> fetchConnectionRequests() async {
+  Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
     try {
       final apiService = await DashboardAPIService.create();
 
       // Fetch dashboard data
       final Map<String, dynamic> dashboardData =
-      await apiService.fetchDashboardItems();
+          await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
         // No data available or an error occurred
         print(
@@ -73,6 +78,20 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
         return;
       }
 
+      final Map<String, dynamic> pagination = records['pagination'] ?? {};
+      print(pagination);
+
+      pendingPagination = Pagination.fromJson(pagination['pending']);
+      if (pendingPagination.nextPage != 'None' &&
+          pendingPagination.nextPage!.isNotEmpty) {
+        url = pendingPagination.nextPage as String;
+        print(pendingPagination.nextPage);
+        canFetchMorePending = pendingPagination.canFetchNext;
+      } else {
+        url = '';
+        canFetchMorePending = false;
+      }
+
       final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
       for (var index = 0; index < pendingRequestsData.length; index++) {
         print(
@@ -80,67 +99,6 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
       }
 
       // Map pending requests to widgets
-      final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
-        return VisitorRequestInfoCard(
-          Name: request['name'],
-          Organization: request['organization'],
-          Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
-          Purpose: request['purpose'],
-          Belongs: request['belong'],
-          Status: request['status'],
-          Designation: request['designation'],
-          Email: request['email'],
-          Sector: request['sector'],
-        );
-      }).toList();
-
-
-      setState(() {
-        pendingConnectionRequests = pendingWidgets;
-        _isFetched = true;
-      });
-    } catch (e) {
-      print('Error fetching connection requests: $e');
-      // Handle error as needed
-    }
-  }*/
-
-  Future<void> fetchConnectionRequests({bool loadMore = false}) async {
-    if (_isFetched && !loadMore) return;
-
-    if (loadMore) {
-      setState(() {
-        _isFetchingMore = true;
-      });
-    } else {
-      setState(() {
-        _isLoading = true;
-      });
-    }
-
-    try {
-      final apiService = await DashboardAPIService.create();
-      final Map<String, dynamic> dashboardData =
-          await apiService.fetchDashboardItems();
-      if (dashboardData == null || dashboardData.isEmpty) {
-        print(
-            'No data available or error occurred while fetching dashboard data');
-        return;
-      }
-
-      final Map<String, dynamic> records = dashboardData['records'];
-      if (records == null || records.isEmpty) {
-        print('No records available');
-        return;
-      }
-
-      final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
-      for (var index = 0; index < pendingRequestsData.length; index++) {
-        print(
-            'Pending Request at index $index: ${pendingRequestsData[index]}\n');
-      }
-
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -158,24 +116,94 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
       }).toList();
 
       setState(() {
-        if (loadMore) {
-          pendingConnectionRequests.addAll(pendingWidgets);
-          _isFetchingMore = false;
-        } else {
-          pendingConnectionRequests = pendingWidgets;
-          _isLoading = false;
-          _isFetched = true;
-        }
-
-        if (pendingRequestsData.isEmpty) {
-          _hasMoreData = false; // No more data to fetch
-        }
+        pendingConnectionRequests = pendingWidgets;
+        _isFetched = true;
       });
     } catch (e) {
       print('Error fetching connection requests: $e');
+      // Handle error as needed
+    }
+  }
+
+  Future<void> fetchMoreConnectionRequests() async {
+    setState(() {
+      _isLoading = true;
+    });
+    print(url);
+
+    try {
+      if (url != '' && url.isNotEmpty) {
+        final apiService = await DashboardAPIServiceFull.create();
+        final Map<String, dynamic> dashboardData =
+            await apiService.fetchFullItems(url);
+
+        if (dashboardData == null || dashboardData.isEmpty) {
+          print(
+              'No data available or error occurred while fetching dashboard data');
+          return;
+        }
+
+        final Map<String, dynamic> records = dashboardData['records'];
+        if (records == null || records.isEmpty) {
+          // No records available
+          print('No records available');
+          return;
+        }
+
+        final Map<String, dynamic> pagination = records['pagination'] ?? {};
+        print(pagination);
+
+        pendingPagination = Pagination.fromJson(pagination['pending']);
+        if (pendingPagination.nextPage != 'None' &&
+            pendingPagination.nextPage!.isNotEmpty) {
+          url = pendingPagination.nextPage as String;
+          print(pendingPagination.nextPage);
+          canFetchMorePending = pendingPagination.canFetchNext;
+        } else {
+          url = '';
+          canFetchMorePending = false;
+        }
+
+        final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
+        for (var index = 0; index < pendingRequestsData.length; index++) {
+          print(
+              'Pending Request at index $index: ${pendingRequestsData[index]}\n');
+        }
+
+        // Map pending requests to widgets
+        final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
+          return VisitorRequestInfoCard(
+            Name: request['name'],
+            Organization: request['organization'],
+            Phone: request['phone'],
+            AppointmentDate: request['appointment_date_time'],
+            Purpose: request['purpose'],
+            Personnel: request['name_of_personnel'],
+            Belongs: request['belong'],
+            Status: request['status'],
+            Designation: request['designation'],
+            Email: request['email'],
+            Sector: request['sector'],
+          );
+        }).toList();
+
+        setState(() {
+          pendingConnectionRequests.addAll(pendingWidgets);
+          _isLoading = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('All requests loaded')),
+        );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+    } catch (e) {
+      print('Error fetching more connection requests: $e');
       setState(() {
         _isLoading = false;
-        _isFetchingMore = false;
       });
     }
   }
@@ -185,23 +213,24 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
     super.initState();
     print('initState called');
     _scrollController.addListener(() {
+      print("Scroll Position: ${_scrollController.position.pixels}");
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
-          !_isFetchingMore &&
-          _hasMoreData) {
-        fetchConnectionRequests(loadMore: true);
+          !_isLoading) {
+        print('Invoking Scrolling!!');
+        fetchMoreConnectionRequests();
       }
     });
-    Future.delayed(Duration(seconds: 5), () {
+    if (!_isFetched) {
+      fetchConnectionRequests();
+      //_isFetched = true; // Set _isFetched to true after the first call
+    }
+    Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh) {
         loadUserProfile();
         // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
         // connectionRequests = [];
-        if (!_isFetched) {
-          fetchConnectionRequests();
-          //_isFetched = true; // Set _isFetched to true after the first call
-        }
       }
       // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
@@ -223,210 +252,147 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return InternetChecker(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          backgroundColor: Colors.grey[100],
-          key: _scaffoldKey,
-          appBar: AppBar(
-            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-            automaticallyImplyLeading: false,
-            title: const Text(
-              'Request List',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                fontFamily: 'default',
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.logout,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  _showLogoutDialog(context);
-                },
-              ),
-            ],
-          ),
-          body: _pageLoading
-              ? Center(
-                  // Show circular loading indicator while waiting
-                  child: CircularProgressIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: SafeArea(
-                    child: Container(
-                      color: Colors.grey[100],
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 30),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                              child: Text(
-                                'Welcome ',
-                                /*$userName*/
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            Container(
-                              child: const Text('Request List',
-                                  //key: requestTextKey,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  )),
-                            ),
-                            Divider(),
-                            const SizedBox(height: 5),
-                            Container(
-                              //height: screenHeight*0.25,
-                              child: FutureBuilder<void>(
-                                  future: _isLoading
-                                      ? null
-                                      : fetchConnectionRequests(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      // Return a loading indicator while waiting for data
-                                      return Container(
-                                        height: 200, // Adjust height as needed
-                                        width:
-                                            screenWidth, // Adjust width as needed
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      // Handle errors
-                                      return buildNoRequestsWidget(screenWidth,
-                                          'Error: ${snapshot.error}');
-                                    } else if (snapshot.connectionState ==
-                                        ConnectionState.done) {
-                                      if (pendingConnectionRequests
-                                          .isNotEmpty) {
-                                        // If data is loaded successfully, display the ListView
-                                        return Container(
-                                            child: _isLoading
-                                                ? Center(
-                                                    child:
-                                                        CircularProgressIndicator())
-                                                : pendingConnectionRequests
-                                                        .isNotEmpty
-                                                    ? Column(
-                                                        children: [
-                                                          ListView.separated(
-                                                            shrinkWrap: true,
-                                                            physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                            itemCount:
-                                                                pendingConnectionRequests
-                                                                    .length,
-                                                            itemBuilder:
-                                                                (context,
-                                                                    index) {
-                                                              return pendingConnectionRequests[
-                                                                  index];
-                                                            },
-                                                            separatorBuilder:
-                                                                (context,
-                                                                        index) =>
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            10),
-                                                          ),
-                                                          if (_isFetchingMore)
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child:
-                                                                  CircularProgressIndicator(),
-                                                            ),
-                                                        ],
-                                                      )
-                                                    : buildNoRequestsWidget(
-                                                        screenWidth,
-                                                        'You currently don\'t have any new requests pending.'));
-                                      } else {
-                                        // Handle the case when there are no pending connection requests
-                                        return buildNoRequestsWidget(
-                                            screenWidth,
-                                            'You currently don\'t have any new requests pending.');
-                                      }
-                                    }
-                                    // Return a default widget if none of the conditions above are met
-                                    return SizedBox(); // You can return an empty SizedBox or any other default widget
-                                  }),
-                            ),
-                            Divider(),
-                            const SizedBox(height: 30),
-                            Center(
-                              child: Material(
-                                elevation: 5,
-                                borderRadius: BorderRadius.circular(10),
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromRGBO(25, 192, 122, 1),
-                                    fixedSize: Size(
-                                        MediaQuery.of(context).size.width * 0.8,
-                                        MediaQuery.of(context).size.height *
-                                            0.1),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                VisitorDashboard()));
-                                  },
-                                  child: const Text('Return to Home',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'default',
-                                      )),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state is AuthAuthenticated) {
+          final userProfile = state.userProfile;
+          return InternetChecker(
+            child: Scaffold(
+              backgroundColor: Colors.grey[100],
+              key: _scaffoldKey,
+              appBar: AppBar(
+                backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                automaticallyImplyLeading: false,
+                title: const Text(
+                  'Request List',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    fontFamily: 'default',
                   ),
                 ),
-        ),
-      ),
+                centerTitle: true,
+                actions: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      _showLogoutDialog(context);
+                    },
+                  ),
+                ],
+              ),
+              body: _pageLoading
+                  ? Center(
+                      // Show circular loading indicator while waiting
+                      child: CircularProgressIndicator(),
+                    )
+                  : SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SafeArea(
+                            child: Container(
+                              color: Colors.grey[100],
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      'Welcome, ${userProfile.name}',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Center(
+                                    child: Text(
+                                      'All Pending Requests',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'default',
+                                      ),
+                                    ),
+                                  ),
+                                  Divider(),
+                                ],
+                              ),
+                            ),
+                          ),
+                          pendingConnectionRequests.isNotEmpty
+                              ? NotificationListener<ScrollNotification>(
+                                  onNotification: (scrollInfo) {
+                                    if (!scrollInfo.metrics.outOfRange &&
+                                        scrollInfo.metrics.pixels ==
+                                            scrollInfo
+                                                .metrics.maxScrollExtent &&
+                                        !_isLoading &&
+                                        canFetchMorePending) {
+                                      fetchMoreConnectionRequests();
+                                    }
+                                    return true;
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0),
+                                    child: ListView.separated(
+                                      addAutomaticKeepAlives: false,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      // Prevent internal scrolling
+                                      itemCount:
+                                          pendingConnectionRequests.length + 1,
+                                      itemBuilder: (context, index) {
+                                        if (index ==
+                                            pendingConnectionRequests.length) {
+                                          return Center(
+                                            child: _isLoading
+                                                ? Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 20),
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  )
+                                                : SizedBox.shrink(),
+                                          );
+                                        }
+                                        return pendingConnectionRequests[index];
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(height: 10),
+                                    ),
+                                  ),
+                                )
+                              : !_isLoading
+                                  ? LoadingContainer(screenWidth: screenWidth)
+                                  : buildNoRequestsWidget(screenWidth,
+                                      'You currently don\'t have any new requests pending.'),
+                        ],
+                      ),
+                    ),
+            ),
+          );
+        } else {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
     );
   }
 

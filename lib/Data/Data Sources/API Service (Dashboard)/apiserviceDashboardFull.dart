@@ -2,20 +2,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SortingAPIService {
-  final String baseUrl = 'https://bcc.touchandsolve.com/api';
+
+class DashboardAPIServiceFull {
   late final String authToken;
 
-  SortingAPIService._();
+  DashboardAPIServiceFull._();
 
-  static Future<SortingAPIService> create() async {
-    var apiService = SortingAPIService._();
+  static Future<DashboardAPIServiceFull> create() async {
+    var apiService = DashboardAPIServiceFull._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
   }
 
-/*  SortingAPIService() {
+/*  APIService() {
     _loadAuthToken();
     print('triggered');
   }*/
@@ -27,36 +27,29 @@ class SortingAPIService {
     print(prefs.getString('token'));
   }
 
-  Future<Map<String, dynamic>> filterData(String date, String time, String sector) async {
+  Future<Map<String, dynamic>> fetchFullItems(String url) async {
+    final String token = await authToken;
     try {
-      if (authToken.isEmpty) {
+      if (token.isEmpty) {
         throw Exception('Authentication token is empty.');
       }
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/ndc/filter/data'),
+      final response = await http.get(
+        Uri.parse(url),
         headers: {
-          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $authToken',
         },
-        body: json.encode({
-          'date': date,
-          'time': time,
-          'sector': sector,
-        }),
       );
-      print(response.body);
-      print(response.statusCode);
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        print('Filter Data Response: $jsonData');
+        print(jsonData);
         return jsonData;
       } else {
-        throw Exception('Failed to filter data');
+        throw Exception('Failed to load dashboard items');
       }
     } catch (e) {
-      throw Exception('Error filtering data: $e');
+      throw Exception('Error fetching dashboard items: $e');
     }
   }
 }

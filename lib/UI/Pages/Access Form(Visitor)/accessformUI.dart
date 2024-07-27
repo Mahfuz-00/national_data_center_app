@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Access From)/apiserviceconnection.dart';
 import '../../../Data/Models/connectionmodel.dart';
+import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/dropdownfield.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
@@ -120,433 +122,437 @@ class _AccessFormState extends State<AccessForm> {
         child: CircularProgressIndicator(),
       ),
     )
-        : InternetChecker(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios_new_outlined,
-                  color: Colors.white,
-                )),
-            title: const Text(
-              'Access Request Form',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                fontFamily: 'default',
-              ),
-            ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 25,
-                      ),
-                      Text('Access Request Form',
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default')),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Please provide correct details in access request form.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Color.fromRGBO(143, 150, 158, 1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default')),
-                      SizedBox(height: 20),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _fullnamecontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter your full name';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Full Name',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
+        :BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state is AuthAuthenticated) {
+          final userProfile = state.userProfile;
+          return  InternetChecker(
+            child: PopScope(
+              canPop: false,
+              child: Scaffold(
+                key: _scaffoldKey,
+                appBar: AppBar(
+                  backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                  leading: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_back_ios_new_outlined,
+                        color: Colors.white,
+                      )),
+                  title: const Text(
+                    'Access Request Form',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      fontFamily: 'default',
+                    ),
+                  ),
+                  centerTitle: true,
+                ),
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 25,
                             ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _NIDcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter your NID number of your passport number';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'NID or Passport Number',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
+                            Text('Access Request Form',
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default')),
+                            SizedBox(
+                              height: 10,
                             ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _organizationnamecontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter the organization yor are representing';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Organization Name',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _designationcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter your designation in your organization';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Designation',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _phonecontroller,
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            // Only allow digits
-                            LengthLimitingTextInputFormatter(11),
-                          ],
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter your mobile number name';
-                            }
-                            if (input.length != 11) {
-                              return 'Mobile number must be 11 digits';
-                            }
-                            return null; // Return null if the input is valid
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Mobile Number',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: TextFormField(
-                          controller: _emailcontroller,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (input) {
-                            if (input!.isEmpty) {
-                              return 'Please enter your email address';
-                            }
-                            final emailRegex =
-                            RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                            if (!emailRegex.hasMatch(input)) {
-                              return 'Please enter a valid email address';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      if (userType == 'ndc_vendor' || userType == 'ndc_customer') ... [
-                        DropdownFormField(
-                          hintText: 'Select Visiting Sector',
-                          dropdownItems: dropdownItems,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedSector = value ?? '';
-                              //print('New: $_selectedUserType');
-                            });
-                          },
-                        ),
-                      ],
-                      if (userType == 'ndc_internal') ...[
-                        Container(
-                          width: screenWidth * 0.9,
-                          height: screenHeight * 0.075,
-                          child: TextFormField(
-                            initialValue: sector,
-                            readOnly: true,
-                            style: const TextStyle(
-                              color: Color.fromRGBO(143, 150, 158, 1),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default',
-                            ),
-                            decoration: InputDecoration(
-                              labelText: 'Visiting Sector',
-                              labelStyle: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                fontFamily: 'default',
-                              ),
-                              alignLabelWithHint: true,
-                              //contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: screenHeight * 0.15),
-                              border: const OutlineInputBorder(
-                                borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            Text(
+                                'Please provide correct details in access request form.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default')),
+                            SizedBox(height: 20),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _fullnamecontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your full name';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Full Name',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: 10),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.15,
-                        child: TextFormField(
-                          controller: _commentcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter your purpose of your visit';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText:
-                                'Purpose of the Visit',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
+                            SizedBox(
+                              height: 10,
                             ),
-                            alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: screenHeight * 0.18),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.15,
-                        child: TextFormField(
-                          controller: _personnelcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter the name(s) of the accompanying personnel';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText:
-                            'Name(s) of Personnel',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _NIDcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your NID number of your passport number';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'NID or Passport Number',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
                             ),
-                            alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: screenHeight * 0.18),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        //padding: EdgeInsets.all(20),
-                        /*decoration: BoxDecoration(
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _organizationnamecontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter the organization yor are representing';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Organization Name',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _designationcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your designation in your organization';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Designation',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _phonecontroller,
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  // Only allow digits
+                                  LengthLimitingTextInputFormatter(11),
+                                ],
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your mobile number name';
+                                  }
+                                  if (input.length != 11) {
+                                    return 'Mobile number must be 11 digits';
+                                  }
+                                  return null; // Return null if the input is valid
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Mobile Number',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: TextFormField(
+                                controller: _emailcontroller,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (input) {
+                                  if (input!.isEmpty) {
+                                    return 'Please enter your email address';
+                                  }
+                                  final emailRegex =
+                                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                  if (!emailRegex.hasMatch(input)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Email',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            if (userProfile.user == 'ndc_vendor' || userProfile.user == 'ndc_customer') ... [
+                              DropdownFormField(
+                                hintText: 'Select Visiting Sector',
+                                dropdownItems: dropdownItems,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedSector = value ?? '';
+                                    //print('New: $_selectedUserType');
+                                  });
+                                },
+                              ),
+                            ],
+                            if (userProfile.user == 'ndc_internal') ...[
+                              Container(
+                                width: screenWidth * 0.9,
+                                height: screenHeight * 0.075,
+                                child: TextFormField(
+                                  initialValue: sector,
+                                  readOnly: true,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Visiting Sector',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'default',
+                                    ),
+                                    alignLabelWithHint: true,
+                                    //contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: screenHeight * 0.15),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            SizedBox(height: 10),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.15,
+                              child: TextFormField(
+                                controller: _commentcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your purpose of your visit';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText:
+                                  'Purpose of the Visit',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  alignLabelWithHint: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: screenHeight * 0.18),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.15,
+                              child: TextFormField(
+                                controller: _personnelcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter the name(s) of the accompanying personnel';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText:
+                                  'Name(s) of Personnel',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  alignLabelWithHint: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: screenHeight * 0.18),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              //padding: EdgeInsets.all(20),
+                              /*decoration: BoxDecoration(
                           border: Border.all(
                             width: 1,
                             color: Colors.black,
                           ),
                           borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
-                        child: TextFormField(
-                          controller: _belongscontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter belongings';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Belongings',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
+                              child: TextFormField(
+                                controller: _belongscontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter belongings';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Belongings',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
                             ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      /*  SizedBox(
+                            /*  SizedBox(
                         height: 10,
                       ),
                       Container(
@@ -580,340 +586,348 @@ class _AccessFormState extends State<AccessForm> {
                           ),
                         ),
                       ),*/
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        //padding: EdgeInsets.all(20),
-                        /*decoration: BoxDecoration(
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              //padding: EdgeInsets.all(20),
+                              /*decoration: BoxDecoration(
                           border: Border.all(
                             width: 1,
                             color: Colors.black,
                           ),
                           borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
-                        child: TextFormField(
-                          controller: _devicemodelcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter device model';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Device Model (If any)',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        //padding: EdgeInsets.all(20),
-                        /*decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black,
-                          ),
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
-                        child: TextFormField(
-                          controller: _deviceserialcontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter device serial number';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Device Serial Number(If any)',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        //padding: EdgeInsets.all(20),
-                        /*decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.black,
-                          ),
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
-                        child: TextFormField(
-                          controller: _devicedescriptioncontroller,
-                          validator: (input) {
-                            if (input == null || input.isEmpty) {
-                              return 'Please enter the device description';
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: 'Device Description (If any)',
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              fontFamily: 'default',
-                            ),
-                            border: const OutlineInputBorder(
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(5))),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: Stack(
-                          children: [
-                            TextFormField(
-                              controller: _Datecontroller,
-                              validator: (value) {
-                                // Check if the text field is empty or contains a valid date
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select a date';
-                                }
-                                // You can add more complex validation logic if needed
-                                return null;
-                              },
-                              readOnly: true,
-                              // Make the text field readonly
-                              enableInteractiveSelection: false,
-                              // Disable interactive selection
-                              style: const TextStyle(
-                                color: Color.fromRGBO(143, 150, 158, 1),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Appointment Date',
-                                labelStyle: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                              child: TextFormField(
+                                controller: _devicemodelcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter device model';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
                                   fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                   fontFamily: 'default',
                                 ),
-                                border: const OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(5))),
-                                suffixIcon: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  // Adjust the padding as needed
-                                  child: Icon(
-                                    Icons.calendar_today_outlined,
-                                    size: 25,
+                                decoration: InputDecoration(
+                                  labelText: 'Device Model (If any)',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
                                   ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
                                 ),
                               ),
                             ),
-                            Positioned.fill(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    // Show the date picker dialog
-                                    showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2020),
-                                      lastDate: DateTime(2100),
-                                    ).then((selectedDate) {
-                                      // Check if a date is selected
-                                      if (selectedDate != null) {
-                                        // Format the selected date as needed
-                                        final formattedDate =
-                                            DateFormat('dd-MM-yyyy')
-                                                .format(selectedDate);
-                                        // Set the formatted date to the controller
-                                        _Datecontroller.text = formattedDate;
-                                        print(formattedDate);
-                                        appointmentDate = formattedDate;
-                                        print(appointmentDate);
-                                      } else {
-                                        print('No date selected');
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              //padding: EdgeInsets.all(20),
+                              /*decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          ),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
+                              child: TextFormField(
+                                controller: _deviceserialcontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter device serial number';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Device Serial Number(If any)',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              //padding: EdgeInsets.all(20),
+                              /*decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: Colors.black,
+                          ),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),),*/
+                              child: TextFormField(
+                                controller: _devicedescriptioncontroller,
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter the device description';
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: Color.fromRGBO(143, 150, 158, 1),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'default',
+                                ),
+                                decoration: InputDecoration(
+                                  labelText: 'Device Description (If any)',
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    fontFamily: 'default',
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(5))),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: Stack(
+                                children: [
+                                  TextFormField(
+                                    controller: _Datecontroller,
+                                    validator: (value) {
+                                      // Check if the text field is empty or contains a valid date
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select a date';
                                       }
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: screenWidth * 0.9,
-                        height: screenHeight * 0.075,
-                        child: Stack(
-                          children: [
-                            TextFormField(
-                              controller: _Clockcontroller,
-                              validator: (value) {
-                                // Check if the text field is empty or contains a valid time
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select a time';
-                                }
-                                // You can add more complex validation logic if needed
-                                return null;
-                              },
-                              readOnly: true,
-                              // Make the text field readonly
-                              enableInteractiveSelection: false,
-                              // Disable interactive selection
-                              style: const TextStyle(
-                                color: Color.fromRGBO(143, 150, 158, 1),
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Appointment Time',
-                                labelStyle: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  fontFamily: 'default',
-                                ),
-                                border: const OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(5))),
-                                suffixIcon: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  // Adjust the padding as needed
-                                  child: Icon(
-                                    Icons.schedule_rounded,
-                                    size: 25,
+                                      // You can add more complex validation logic if needed
+                                      return null;
+                                    },
+                                    readOnly: true,
+                                    // Make the text field readonly
+                                    enableInteractiveSelection: false,
+                                    // Disable interactive selection
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(143, 150, 158, 1),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    ),
+                                    decoration: InputDecoration(
+                                      labelText: 'Appointment Date',
+                                      labelStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        fontFamily: 'default',
+                                      ),
+                                      border: const OutlineInputBorder(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(5))),
+                                      suffixIcon: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        // Adjust the padding as needed
+                                        child: Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Positioned.fill(
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          // Show the date picker dialog
+                                          showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2020),
+                                            lastDate: DateTime(2100),
+                                          ).then((selectedDate) {
+                                            // Check if a date is selected
+                                            if (selectedDate != null) {
+                                              // Format the selected date as needed
+                                              final formattedDate =
+                                              DateFormat('dd-MM-yyyy')
+                                                  .format(selectedDate);
+                                              // Set the formatted date to the controller
+                                              _Datecontroller.text = formattedDate;
+                                              print(formattedDate);
+                                              appointmentDate = formattedDate;
+                                              print(appointmentDate);
+                                            } else {
+                                              print('No date selected');
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Positioned.fill(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    // Show the time picker dialog
-                                    showTimePicker(
-                                      context: context,
-                                      initialTime: TimeOfDay.now(),
-                                    ).then((selectedTime) {
-                                      // Check if a time is selected
-                                      if (selectedTime != null) {
-                                        // Convert selectedTime to a formatted string
-                                        /*String formattedTime =
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: screenWidth * 0.9,
+                              height: screenHeight * 0.075,
+                              child: Stack(
+                                children: [
+                                  TextFormField(
+                                    controller: _Clockcontroller,
+                                    validator: (value) {
+                                      // Check if the text field is empty or contains a valid time
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select a time';
+                                      }
+                                      // You can add more complex validation logic if needed
+                                      return null;
+                                    },
+                                    readOnly: true,
+                                    // Make the text field readonly
+                                    enableInteractiveSelection: false,
+                                    // Disable interactive selection
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(143, 150, 158, 1),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    ),
+                                    decoration: InputDecoration(
+                                      labelText: 'Appointment Time',
+                                      labelStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        fontFamily: 'default',
+                                      ),
+                                      border: const OutlineInputBorder(
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(5))),
+                                      suffixIcon: Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        // Adjust the padding as needed
+                                        child: Icon(
+                                          Icons.schedule_rounded,
+                                          size: 25,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned.fill(
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () {
+                                          // Show the time picker dialog
+                                          showTimePicker(
+                                            context: context,
+                                            initialTime: TimeOfDay.now(),
+                                          ).then((selectedTime) {
+                                            // Check if a time is selected
+                                            if (selectedTime != null) {
+                                              // Convert selectedTime to a formatted string
+                                              /*String formattedTime =
                                             selectedTime.hour.toString().padLeft(2, '0') +
                                                 ':' +
                                                 selectedTime.minute.toString().padLeft(2, '0');*/
-                                        String formattedTime =
-                                            DateFormat('h:mm a').format(
-                                          DateTime(
-                                              2020,
-                                              1,
-                                              1,
-                                              selectedTime.hour,
-                                              selectedTime.minute),
-                                        );
-                                        print(formattedTime);
-                                        // Set the formatted time to the controller
-                                        _Clockcontroller.text = formattedTime;
-                                        appointmentTime = formattedTime;
-                                        print(appointmentTime);
-                                      } else {
-                                        print('No time selected');
-                                      }
-                                    });
-                                  },
-                                ),
+                                              String formattedTime =
+                                              DateFormat('h:mm a').format(
+                                                DateTime(
+                                                    2020,
+                                                    1,
+                                                    1,
+                                                    selectedTime.hour,
+                                                    selectedTime.minute),
+                                              );
+                                              print(formattedTime);
+                                              // Set the formatted time to the controller
+                                              _Clockcontroller.text = formattedTime;
+                                              appointmentTime = formattedTime;
+                                              print(appointmentTime);
+                                            } else {
+                                              print('No time selected');
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            SizedBox(
+                              height: 60,
+                            ),
+                            Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                  const Color.fromRGBO(13, 70, 127, 1),
+                                  fixedSize: Size(
+                                      MediaQuery.of(context).size.width * 0.9,
+                                      MediaQuery.of(context).size.height * 0.1),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  _connectionRequestForm();
+                                },
+                                child: const Text('Submit',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'default',
+                                    )),
+                              ),
+                            ),
+                            SizedBox(height: 20,)
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 60,
-                      ),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(13, 70, 127, 1),
-                            fixedSize: Size(
-                                MediaQuery.of(context).size.width * 0.9,
-                                MediaQuery.of(context).size.height * 0.1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                          onPressed: () {
-                            _connectionRequestForm();
-                          },
-                          child: const Text('Submit',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                        ),
-                      ),
-                      SizedBox(height: 20,)
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
+          );
+        } else {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
     );
+
   }
 
   void _connectionRequestForm() {
