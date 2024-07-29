@@ -379,7 +379,9 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
                                   ),
                                 )
                               : !_isLoading
-                                  ? LoadingContainer(screenWidth: screenWidth)
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
                                   : buildNoRequestsWidget(screenWidth,
                                       'You currently don\'t have any new requests pending.'),
                         ],

@@ -3,7 +3,7 @@ import 'dart:io'; // Add this import for handling files
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/ConnectionGuestModel.dart';
-import 'package:path/path.dart'; // Add this import for getting the file name
+import 'package:path/path.dart';
 
 class APIServiceGuestAppointmentRequest {
   final String URL = 'https://bcc.touchandsolve.com/api';

@@ -377,7 +377,9 @@ class _VisitorReviewedListState extends State<VisitorReviewedList> {
                                   ),
                                 )
                               : !_isLoading
-                                  ? LoadingContainer(screenWidth: screenWidth)
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
                                   : buildNoRequestsWidget(screenWidth,
                                       'No connection requests reviewed yet.'),
                         ],
