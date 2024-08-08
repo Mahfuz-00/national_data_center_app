@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../Data/Data Sources/API Service (PDF Download)/apiServicePDF.dart';
 
-
 class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   final String Name;
   final String Organization;
@@ -26,7 +25,6 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   final String Purpose;
   final String Personnel;
   final String Belongs;
-
 
   VisitorRequestInfoCardSecurityAdmin({
     Key? key,
@@ -44,7 +42,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   }) : super(key: key);
 
   late String action;
-  late TextEditingController _Clockcontroller= TextEditingController();
+  late TextEditingController _Clockcontroller = TextEditingController();
   late String appointmentTime = '';
 
   @override
@@ -81,62 +79,56 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
                 Container(
                   width: screenWidth * 0.4,
                   height: screenHeight * 0.07,
-                  child: TextFormField(
-                    keyboardType: TextInputType.datetime,
-                    controller: _Clockcontroller,
-                    readOnly: true, // Make the text field readonly
-                    enableInteractiveSelection: false, // Disable interactive selection
-                    enableSuggestions: false,
-                    style: const TextStyle(
-                      color: Color.fromRGBO(143, 150, 158, 1),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'default',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Entry Time',
-                      labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        fontFamily: 'default',
-                      ),
-                      border: const OutlineInputBorder(
-                          borderRadius: const BorderRadius.all(Radius.circular(10))
-                      ),
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          ).then((selectedTime) {
-                            if (selectedTime != null) {
-                              // Convert selectedTime to a formatted string
-                              /*String formattedTime =
-                                            selectedTime.hour.toString().padLeft(2, '0') +
-                                                ':' +
-                                                selectedTime.minute.toString().padLeft(2, '0');*/
-                              String formattedTime =
-                              DateFormat('h:mm a').format(
-                                DateTime(
-                                    2020,
-                                    1,
-                                    1,
-                                    selectedTime.hour,
-                                    selectedTime.minute),
-                              );
-                              print(formattedTime);
-                              // Set the formatted time to the controller
-                              _Clockcontroller.text = formattedTime;
-                              appointmentTime = formattedTime;
-                              print(appointmentTime);
-                            }
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
-                          child: Icon(Icons.schedule_rounded, size: 30,),
+                  child: GestureDetector(
+                    onTap: () {
+                      showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      ).then((selectedTime) {
+                        if (selectedTime != null) {
+                          String formattedTime = DateFormat('h:mm a').format(
+                            DateTime(2020, 1, 1, selectedTime.hour, selectedTime.minute),
+                          );
+                          print(formattedTime);
+                          // Set the formatted time to the controller
+                          _Clockcontroller.text = formattedTime;
+                          appointmentTime = formattedTime;
+                          print(appointmentTime);
+                        }
+                      });
+                    },
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.datetime,
+                        controller: _Clockcontroller,
+                        readOnly: true, // Make the text field readonly
+                        enableInteractiveSelection: false, // Disable interactive selection
+                        enableSuggestions: false,
+                        style: const TextStyle(
+                          color: Color.fromRGBO(143, 150, 158, 1),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'default',
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Entry Time',
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontFamily: 'default',
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.all(12.0), // Adjust the padding as needed
+                            child: Icon(
+                              Icons.schedule_rounded,
+                              size: 30,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -146,7 +138,8 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(13, 70, 127, 1),
-                    fixedSize: Size(MediaQuery.of(context).size.width * 0.4, MediaQuery.of(context).size.height * 0.07),
+                    fixedSize: Size(MediaQuery.of(context).size.width * 0.4,
+                        MediaQuery.of(context).size.height * 0.07),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -157,11 +150,16 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
                   onPressed: () {
                     generatePDF(context);
                   },
-                  child:  Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.print, color: Colors.white,),
-                      SizedBox(width: 10,),
+                      Icon(
+                        Icons.print,
+                        color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Text('Print',
                           style: TextStyle(
                             color: Colors.white,
@@ -181,31 +179,43 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   }
 
   Future<void> generatePDF(BuildContext context) async {
-   if(appointmentTime.isNotEmpty){
-     final apiService = await APIServiceNDCPDF.create();
-     const snackBar = SnackBar(
-       content: Text(
-           'Printing'),
-     );
-     ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
-     print('Print Triggered!!');
-     // Example usage: Generate PDF
-     try {
-       final pdfData = await apiService.generatePDF(
-         id: ApplicationID,
-         time: appointmentTime,
-       );
-       final Uri url = Uri.parse(pdfData['download_url']);
-       var data = await http.get(url);
-       await Printing.layoutPdf(
-           onLayout: (PdfPageFormat format) async => data.bodyBytes);
-/*       await Printing.sharePdf(bytes: await doc.save(), filename: 'my-document.pdf');
+    if (appointmentTime.isNotEmpty) {
+      final apiService = await APIServiceNDCPDF.create();
+      const snackBar = SnackBar(
+        content: Text('Preparing Printing, Please wait'),
+      );
+      ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+      print('Print Triggered!!');
+
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Prevents the dialog from being dismissed
+        builder: (BuildContext context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+
+      // Example usage: Generate PDF
+      try {
+        final pdfData = await apiService.generatePDF(
+          id: ApplicationID,
+          time: appointmentTime,
+        );
+        final Uri url = Uri.parse(pdfData['download_url']);
+        var data = await http.get(url);
+        await Printing.layoutPdf(
+            onLayout: (PdfPageFormat format) async => data.bodyBytes);
+        /*       await Printing.sharePdf(bytes: await doc.save(), filename: 'my-document.pdf');
        await Printing.printPdf(bytes: data.bodyBytes, filename: 'Appointment.pdf');*/
-       //await Printer.printMapJsonLog(url: {pdfData['download_url']}, name: 'Document.pdf');
-       //await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
-       // Handle the response data
-       print('PDF generated successfully. Download URL: ${pdfData['download_url']}');
-/*       ScaffoldMessenger.of(context).showSnackBar(
+        //await Printer.printMapJsonLog(url: {pdfData['download_url']}, name: 'Document.pdf');
+        //await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
+        // Handle the response data
+        print(
+            'PDF generated successfully. Download URL: ${pdfData['download_url']}');
+        /*       ScaffoldMessenger.of(context).showSnackBar(
            SnackBar(
              content: GestureDetector( // Wrap Text with GestureDetector
                child: Text('Print Appointment: ${pdfData['download_url']}', style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
@@ -226,23 +236,20 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
              ),
            ),
        );*/
-     } catch (e) {
-       // Handle any errors
-       print('Error generating PDF: $e');
-     }
-   }
-   else if (appointmentTime.isEmpty){
-     const snackBar = SnackBar(
-       content: Text(
-           'Enter Entry Time first'),
-     );
-     ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
-   }
+      } catch (e) {
+        // Handle any errors
+        print('Error generating PDF: $e');
+      } finally {
+        // Remove the loading indicator
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    } else if (appointmentTime.isEmpty) {
+      const snackBar = SnackBar(
+        content: Text('Enter Entry Time first'),
+      );
+      ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+    }
   }
-
-
-
-
 }
 
 Widget _buildRow(String label, String value) {
@@ -365,6 +372,3 @@ Widget _buildRowTime(String label, String value) {
     ],
   );
 }
-
-
-
