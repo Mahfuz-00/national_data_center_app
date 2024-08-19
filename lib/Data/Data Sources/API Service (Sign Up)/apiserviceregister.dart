@@ -45,6 +45,7 @@ class APIService {
         var responseBody = await response.stream.bytesToString();
         var jsonResponse = jsonDecode(responseBody);
         print('User registered successfully!');
+        print(jsonResponse['message']);
         return jsonResponse['message'];
       } else {
         // Handle registration failure
@@ -59,10 +60,12 @@ class APIService {
           print(errors);
           var emailError = errors.containsKey('email') ? errors['email'][0] : '';
           var phoneError = errors.containsKey('phone') ? errors['phone'][0] : '';
+          var identificationError = errors.containsKey('identification_number') ? errors['identification_number'][0] : '';
 
           var errorMessage = '';
           if (emailError.isNotEmpty) errorMessage = emailError;
           if (phoneError.isNotEmpty) errorMessage = phoneError;
+          if (identificationError.isNotEmpty) errorMessage = identificationError;
 
           print(errorMessage);
           return errorMessage;}

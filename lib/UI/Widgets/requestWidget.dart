@@ -89,7 +89,7 @@ class RequestsWidget extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
             fixedSize: Size(
-              MediaQuery.of(context).size.width * 0.7,
+              MediaQuery.of(context).size.width * 0.85,
               MediaQuery.of(context).size.height * 0.08,
             ),
             shape: RoundedRectangleBorder(
@@ -101,6 +101,7 @@ class RequestsWidget extends StatelessWidget {
           },
           child: Text(
             seeAllButtonText,
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,

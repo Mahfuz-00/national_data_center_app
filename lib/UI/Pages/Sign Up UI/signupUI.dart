@@ -12,7 +12,6 @@ import '../../../Data/Models/registermodels.dart';
 import '../../Widgets/dropdownfield.dart';
 import '../Login UI/loginUI.dart';
 
-
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
@@ -38,6 +37,7 @@ class _SignupState extends State<Signup> {
   GlobalKey<FormState> globalfromkey = GlobalKey<FormState>();
   double _imageHeight = 0;
   double _imageWidth = 0;
+  bool _isButtonLoading = false;
 
   // Function to load image dimensions
   Future<void> _getImageDimensions() async {
@@ -142,7 +142,7 @@ class _SignupState extends State<Signup> {
                           child: Column(
                             children: [
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _fullNameController,
@@ -174,7 +174,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _organizationController,
@@ -206,7 +206,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _designationController,
@@ -236,8 +236,9 @@ class _SignupState extends State<Signup> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 5), Container(
-                                width: screenWidth*0.9,
+                              const SizedBox(height: 5),
+                              Container(
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _NIDController,
@@ -269,7 +270,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _emailController,
@@ -307,7 +308,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   controller: _phoneController,
@@ -348,7 +349,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
@@ -391,7 +392,7 @@ class _SignupState extends State<Signup> {
                               ),
                               const SizedBox(height: 5),
                               Container(
-                                width: screenWidth*0.9,
+                                width: screenWidth * 0.9,
                                 height: 70,
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
@@ -456,8 +457,9 @@ class _SignupState extends State<Signup> {
                               const SizedBox(height: 15),
                               Container(
                                 width: (_imageWidth != 0
-                                    ? (_imageWidth + 10).clamp(0, screenWidth*0.9)
-                                    : screenWidth*0.9),
+                                    ? (_imageWidth + 10)
+                                        .clamp(0, screenWidth * 0.9)
+                                    : screenWidth * 0.9),
                                 height: (_imageHeight != 0
                                     ? (_imageHeight + 10).clamp(0, 200)
                                     : 80),
@@ -498,14 +500,19 @@ class _SignupState extends State<Signup> {
                                                   size: 60, color: Colors.grey),
                                         ),
                                         SizedBox(width: 8),
-                                        VerticalDivider(thickness: 5,),
-                                        Text('Upload',
+                                        VerticalDivider(
+                                          thickness: 5,
+                                        ),
+                                        Text(
+                                          'Upload',
                                           style: TextStyle(
-                                            color: Color.fromRGBO(13, 70, 127, 1),
+                                            color:
+                                                Color.fromRGBO(13, 70, 127, 1),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20,
                                             fontFamily: 'default',
-                                          ),),
+                                          ),
+                                        ),
                                         // Customize upload text style
                                       ],
                                     ),
@@ -526,16 +533,18 @@ class _SignupState extends State<Signup> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              fixedSize: Size(screenWidth*0.9, 70),
+                              fixedSize: Size(screenWidth * 0.9, 70),
                             ),
-                            child: const Text('Register',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontFamily: 'default',
-                                ))),
+                            child: _isButtonLoading
+                                ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                : const Text('Register',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontFamily: 'default',
+                                    ))),
                       ])),
                       Footer(
                         backgroundColor: Color.fromRGBO(246, 246, 246, 255),
@@ -592,10 +601,13 @@ class _SignupState extends State<Signup> {
   }
 
   void _registerUser() {
+    setState(() {
+      _isButtonLoading =
+      true; // Validation complete, hide circular progress indicator
+    });
     if (validateAndSave() && checkConfirmPassword()) {
       const snackBar = SnackBar(
-        content: Text(
-            'Processing'),
+        content: Text('Processing'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       final registerRequest = RegisterRequestmodel(
@@ -614,20 +626,65 @@ class _SignupState extends State<Signup> {
       // Call register method passing registerRequestModel, _imageFile, and authToken
       apiService.register(registerRequest, _imageFile).then((response) {
         print("Submitted");
-        print(_selectedVisitorType);
-        if (response != null && response == "User Registration Successfully") {
+        if (response != null &&
+            response ==
+                "User Registration Successfully.") {
+          setState(() {
+            _isButtonLoading =
+                false; // Validation complete, hide circular progress indicator
+          });
           clearForm();
-          Navigator.pushAndRemoveUntil(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Login()),
-            (route) => false, // This will remove all routes from the stack
           );
           const snackBar = SnackBar(
             content: Text('Registration Submitted!'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else if (response != null &&
+            response == "The email has already been taken.") {
+          setState(() {
+            _isButtonLoading = false;
+          });
+          const snackBar = SnackBar(
+            content: Text(
+                'The Email is Taken!, Please Try entering a different Email'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else if (response != null &&
+            response == "The phone has already been taken.") {
+          setState(() {
+            _isButtonLoading = false;
+          });
+          const snackBar = SnackBar(
+            content: Text(
+                'The Phone Number is Taken!, Please Try a different Number'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }else if (response != null &&
+            response == "The identification number has already been taken.") {
+          setState(() {
+            _isButtonLoading = false;
+          });
+          const snackBar = SnackBar(
+            content: Text(
+                'The NID or Passport Number is Taken!, Please Try a different Number'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          setState(() {
+            _isButtonLoading = false;
+          });
+          const snackBar = SnackBar(
+            content: Text('Registration Failed!'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       }).catchError((error) {
+        setState(() {
+          _isButtonLoading = false;
+        });
         // Handle registration error
         print(error);
         const snackBar = SnackBar(
@@ -635,6 +692,22 @@ class _SignupState extends State<Signup> {
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       });
+    } else {
+      setState(() {
+        _isButtonLoading =
+            false; // Validation complete, hide circular progress indicator
+      });
+      if(_passwordController.text != _confirmPasswordController.text){
+        const snackBar = SnackBar(
+          content: Text('Passwords do not match'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      } else {
+        const snackBar = SnackBar(
+          content: Text('Fill all Fields'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 
