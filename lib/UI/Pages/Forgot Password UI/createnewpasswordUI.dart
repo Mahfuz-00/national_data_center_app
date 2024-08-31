@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Forgot Password)/apiServiceCreateNewPassword.dart';
+import '../../Bloc/email_cubit.dart';
 import 'passwordchangedUI.dart';
 
+// StatefulWidget to manage the state of creating a new password
 class CreateNewPassword extends StatefulWidget {
   const CreateNewPassword({super.key});
 
@@ -13,14 +14,28 @@ class CreateNewPassword extends StatefulWidget {
 }
 
 class _CreateNewPasswordState extends State<CreateNewPassword> {
-  bool _isLoading = true;
+  bool _isLoading = true; // Indicates whether data is loading
   late TextEditingController _newPasswordcontroller = TextEditingController();
-  late TextEditingController _confirmPasswordcontroller = TextEditingController();
+  late TextEditingController _confirmPasswordcontroller =
+  TextEditingController();
+  bool _pageloading = false;
+  bool _isObscuredPassword = true;
+  bool _isObscuredConfirmPassword = true;
+
+  /// Returns the icon for the new password field based on its obscurity state.
+  IconData _getIconPassword() {
+    return _isObscuredPassword ? Icons.visibility_off : Icons.visibility;
+  }
+
+  /// Returns the icon for the confirm password field based on its obscurity state.
+  IconData _getIconConfirmPassword() {
+    return _isObscuredConfirmPassword ? Icons.visibility_off : Icons.visibility;
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // Simulates a loading period before the UI is displayed
     Future.delayed(Duration(seconds: 3), () {
       setState(() {
         _isLoading = false;
@@ -28,24 +43,32 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
     });
   }
 
-  Future<void> _createNewPassword(String email, String password, String confirmPassword) async {
+  // Method to handle the creation of a new password
+  Future<void> _createNewPassword(
+      String email, String password, String confirmPassword) async {
+    setState(() {
+      _pageloading = true;
+    });
     final apiService = await APIServiceCreateNewPassword.create();
     apiService.NewPassword(email, password, confirmPassword).then((response) {
       if (response == 'Password Update Successfully') {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PasswordChanged())
-        );
+        setState(() {
+          _pageloading = false;
+        });
+        // Navigate to the PasswordChanged screen if password update is successful
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => PasswordChanged()));
       }
     }).catchError((error) {
-      // Handle registration error
+      setState(() {
+        _pageloading = false;
+      });
       print(error);
       const snackBar = SnackBar(
         content: Text('There was an error. Try again'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     });
-    // Navigate to OTP verification screen
   }
 
   @override
@@ -60,163 +83,207 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
         child: CircularProgressIndicator(),
       ),
     )
-        :InternetChecker(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-              child: Container(
-                color: Colors.grey[100],
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 100.0),
-                  child: Column(
-                    children: [
-                      /*Container(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Container(
-                            padding: EdgeInsets.only(left: 8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 2, color: Color.fromRGBO(25, 192, 122, 1)),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.arrow_back_ios,
-                                  color: Color.fromRGBO(25, 192, 122, 1)),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
+        : InternetChecker(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+            child: Container(
+              color: Colors.grey[100],
+              child: Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 30),
+                        child: Container(
+                          padding: EdgeInsets.only(left: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 2,
+                                color: Color.fromRGBO(13, 70, 127, 1)),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                      ),*/
-                      Expanded(
-                        child: Center(
-                          child: Container(
-                            child: Column(
-                              children: [
-                                Text(
-                                  'Enter new password',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Color.fromRGBO(13, 70, 127, 1),
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default'),
-                                ),
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-                                  child: Text(
-                                    'Please enter a new password. Your new password must be different from any of your previous password',
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 50),
-                                Container(
-                                  width: screenWidth*0.9,
-                                  height: 70,
-                                  child: TextFormField(
-                                    controller: _newPasswordcontroller,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    ),
-                                    decoration: const InputDecoration(
-                                      filled: true,
-                                      fillColor: Color.fromRGBO(247,248,250,1),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'Enter your new password',
-                                      labelStyle: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        fontFamily: 'default',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  width: screenWidth*0.9,
-                                  height: 70,
-                                  child: TextFormField(
-                                    controller: _confirmPasswordcontroller,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(143, 150, 158, 1),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'default',
-                                    ),
-                                    decoration: const InputDecoration(
-                                      filled: true,
-                                      fillColor: Color.fromRGBO(247,248,250,1),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'Confirm new password',
-                                      labelStyle: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        fontFamily: 'default',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 50,),
-                                ElevatedButton(
-                                    onPressed: () async {
-                                      if (_newPasswordcontroller.text.isNotEmpty &&
-                                          _confirmPasswordcontroller.text.isNotEmpty) {
-                                        if(_newPasswordcontroller.text != _confirmPasswordcontroller.text){
-                                          const snackBar = SnackBar(
-                                            content: Text('Password and Confirm Password did not Match'),
-                                          );
-                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                        } else{
-                                          final prefs =
-                                          await SharedPreferences.getInstance();
-                                          String email =
-                                              await prefs.getString('email') ?? '';
-                                          print(email);
-                                          _createNewPassword(email, _newPasswordcontroller.text, _confirmPasswordcontroller.text);
-                                        }
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(13, 70, 127, 1),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      fixedSize: Size(screenWidth*0.9, 70),
-                                    ),
-                                    child: const Text('Submit',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontFamily: 'default',
-                                        ))),
-                              ],
-                            ),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios,
+                                color: Color.fromRGBO(13, 70, 127, 1)),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pop(); // Navigate back to the previous screen
+                            },
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Enter new password',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: Color.fromRGBO(13, 70, 127, 1),
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default'),
+                              ),
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 30.0, right: 30.0),
+                                child: Text(
+                                  'Please enter a new password. Your new password must be different from any of your previous password',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 50),
+                              Container(
+                                width: screenWidth * 0.9,
+                                height: 70,
+                                child: TextFormField(
+                                  controller: _newPasswordcontroller,
+                                  obscureText: _isObscuredPassword,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:
+                                    Color.fromRGBO(247, 248, 250, 1),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Enter your new password',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'default',
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_getIconPassword()),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isObscuredPassword = !_isObscuredPassword;
+                                          _newPasswordcontroller.text = _newPasswordcontroller.text;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10,),
+                              Container(
+                                width: screenWidth * 0.9,
+                                height: 70,
+                                child: TextFormField(
+                                  controller: _confirmPasswordcontroller,
+                                  obscureText: _isObscuredConfirmPassword,
+                                  style: const TextStyle(
+                                    color: Color.fromRGBO(143, 150, 158, 1),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'default',
+                                  ),
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor:
+                                    Color.fromRGBO(247, 248, 250, 1),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Confirm new password',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      fontFamily: 'default',
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_getIconConfirmPassword()),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isObscuredConfirmPassword =
+                                          !_isObscuredConfirmPassword;
+                                          _confirmPasswordcontroller.text =
+                                              _confirmPasswordcontroller.text;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 50,
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    // Check if both password fields are not empty
+                                    if (_newPasswordcontroller
+                                        .text.isNotEmpty &&
+                                        _confirmPasswordcontroller
+                                            .text.isNotEmpty) {
+                                      if (_newPasswordcontroller.text !=
+                                          _confirmPasswordcontroller.text) {
+                                        const snackBar = SnackBar(
+                                          content: Text(
+                                              'Password and Confirm Password did not Match'),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      } else {
+                                        final email = (context
+                                            .read<EmailCubit>()
+                                            .state as EmailSaved)
+                                            .email;
+                                        print(
+                                            'Retrieved email from Cubit: $email');
+                                        print(email);
+                                        _createNewPassword(
+                                            email,
+                                            _newPasswordcontroller.text,
+                                            _confirmPasswordcontroller.text);
+                                      }
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                    Color.fromRGBO(13, 70, 127, 1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    fixedSize: Size(screenWidth * 0.9, 70),
+                                  ),
+                                  child: _pageloading
+                                      ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                      : const Text('Submit',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: 'default',
+                                      ))),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              )),
-        ),
+              ),
+            )),
       ),
     );
   }

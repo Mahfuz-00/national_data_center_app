@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:footer/footer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Forgot Password)/apiServiceForgotPassword.dart';
+import '../../Bloc/email_cubit.dart';
 import '../Login UI/loginUI.dart';
 import 'otpverficationUI.dart';
 
+// StatefulWidget to manage the state of the Forgot Password screen
 class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({super.key});
+  const ForgotPassword({Key? key}) : super(key: key);
 
   @override
   State<ForgotPassword> createState() => _ForgotPasswordState();
@@ -16,37 +17,52 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   late TextEditingController _emailController = TextEditingController();
-
-  bool _isLoading = false;
+  bool _isloading = false;
 
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController();
+    _emailController = TextEditingController(); // Initialize email controller
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _emailController
+        .dispose(); // Dispose of email controller to free up resources
     super.dispose();
   }
 
+  // Method to send OTP for password reset
   Future<void> _sendCode(String email) async {
+    setState(() {
+      _isloading = true;
+    });
     final apiService = await APIServiceForgotPassword.create();
     apiService.sendForgotPasswordOTP(email).then((response) {
       if (response == 'Forget password otp send successfully') {
+        // Navigate to OTP verification screen if OTP is sent successfully
+        setState(() {
+          _isloading = false;
+        });
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => OPTVerfication()),
         );
       } else if (response == 'validation error') {
+        setState(() {
+          _isloading = false;
+        });
+        // Show snackbar if there is a validation error
         const snackBar = SnackBar(
           content: Text('Invalid Email'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }).catchError((error) {
-      // Handle registration error
+      setState(() {
+        _isloading = false;
+      });
+      // Handle any errors that occur during the API call
       print(error);
       const snackBar = SnackBar(
         content: Text('Invalid Email'),
@@ -61,47 +77,47 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return InternetChecker(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-              child: Container(
-                color: Colors.grey[100],
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 30.0),
-                              child: Container(
-                                padding: EdgeInsets.only(left: 8),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color.fromRGBO(13, 70, 127, 1), width: 2),
-                                  // Border properties
-                                  borderRadius:
-                                  BorderRadius.circular(10), // Optional: Rounded border
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    // Handle back button press here
-                                    Navigator.pop(
-                                        context); // This will pop the current route off the navigator stack
-                                  },
-                                  icon: Icon(Icons.arrow_back_ios),
-                                  iconSize: 30,
-                                  padding: EdgeInsets.all(10),
-                                  splashRadius: 30,
-                                  color: Color.fromRGBO(13, 70, 127, 1),
-                                  splashColor: Colors.grey,
-                                  highlightColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                ),
-                              ),
-                            ),
-                  SizedBox(height: 30,),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Container(
+            color: Colors.grey[100],
+            child: Padding(
+              padding: const EdgeInsets.only(top: 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 30.0),
+                    child: Container(
+                      padding: EdgeInsets.only(left: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Color.fromRGBO(13, 70, 127, 1), width: 2),
+                        // Border properties
+                        borderRadius: BorderRadius.circular(
+                            10), // Optional: Rounded border
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pop(
+                              context); // Navigate back to the previous screen
+                        },
+                        icon: Icon(Icons.arrow_back_ios),
+                        iconSize: 30,
+                        padding: EdgeInsets.all(10),
+                        splashRadius: 30,
+                        color: Color.fromRGBO(13, 70, 127, 1),
+                        splashColor: Colors.grey,
+                        highlightColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
                   Expanded(
                     child: Center(
                       child: Container(
@@ -111,14 +127,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               'Forgot Password?',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  color: Color.fromRGBO(13, 70, 127, 1),
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'default'),
+                                color: Color.fromRGBO(13, 70, 127, 1),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Padding(
-                              padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+                              padding: const EdgeInsets.only(
+                                  left: 30.0, right: 30.0),
                               child: Text(
                                 'Don\'t worry! it occurs. Please Enter the Email address linked with your account',
                                 textAlign: TextAlign.center,
@@ -132,7 +150,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                             const SizedBox(height: 50),
                             Container(
-                              width: screenWidth*0.9,
+                              width: screenWidth * 0.9,
                               height: 70,
                               child: TextFormField(
                                 controller: _emailController,
@@ -156,29 +174,35 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 50,),
+                            SizedBox(height: 50),
                             ElevatedButton(
-                                onPressed: () async {
-                                  String email = _emailController.text;
-                                  _sendCode(email);
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('email', email);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromRGBO(13, 70, 127, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  fixedSize: Size(screenWidth*0.9, 70),
+                              onPressed: () async {
+                                String email = _emailController.text;
+                                _sendCode(email);
+                                final emailCubit = context.read<EmailCubit>();
+                                emailCubit.saveEmail(email);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                Color.fromRGBO(13, 70, 127, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Text('Send Code',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: 'default',
-                                    ))),
+                                fixedSize: Size(screenWidth * 0.9, 70),
+                              ),
+                              child: _isloading
+                                  ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                  : const Text(
+                                'Send Code',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontFamily: 'default',
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -206,8 +230,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ),
                             InkWell(
                               onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => Login()));
+                                // Navigate to login screen
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Login()));
                               },
                               child: Text(
                                 'Login',
@@ -225,10 +252,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       ],
                     ),
                   ),
-                          ],
-                        ),
-                ),
-              )),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
