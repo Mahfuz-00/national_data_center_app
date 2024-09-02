@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
+import '../../Bloc/email_cubit.dart';
 import '../Login UI/loginUI.dart';
 
+/// A screen displayed after a user's password has been successfully changed.
+///
+/// This screen informs the user that their password change was successful
+/// and provides a button to navigate back to the login screen. The screen
+/// includes a success image, a title, and a message indicating the
+/// password change status.
+///
+/// ## Key Variables:
+/// - [screenWidth]: The width of the current screen, used to set the button size.
+/// - [screenHeight]: The height of the current screen (not directly used in this implementation).
+///
+/// ## Actions:
+/// - Navigate back to the login screen when the "Back to Login" button is pressed.
 class PasswordChanged extends StatefulWidget {
   const PasswordChanged({super.key});
 
@@ -59,6 +72,8 @@ class _PasswordChangedState extends State<PasswordChanged> {
                   SizedBox(height: 50,),
                   ElevatedButton(
                     onPressed: () {
+                      final emailCubit = EmailCubit();
+                      emailCubit.clearEmail();
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => Login()));
                     },
