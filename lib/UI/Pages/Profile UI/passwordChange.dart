@@ -1,5 +1,4 @@
 import '../../../Data/Data Sources/API Service (User Info Update)/apiServicePasswordUpdate.dart';
-import 'profileUI.dart';
 import 'package:flutter/material.dart';
 
 class PasswordChange extends StatefulWidget {
@@ -80,8 +79,6 @@ class _PasswordChangeState extends State<PasswordChange> {
               SizedBox(height: 10),
               TextFormField(
                 keyboardType: TextInputType.text,
-                /* onSaved: (input) =>
-                _registerRequest.password = input!,*/
                 validator: (input) =>
                 input!.length < 8
                     ? "Password should be more than 7 characters"
@@ -122,8 +119,6 @@ class _PasswordChangeState extends State<PasswordChange> {
               SizedBox(height: 10),
               TextFormField(
                 keyboardType: TextInputType.text,
-                /* onSaved: (input) =>
-                _registerRequest.password = input!,*/
                 validator: (input) =>
                 input!.length < 8
                     ? "Password should be more than 7 characters"

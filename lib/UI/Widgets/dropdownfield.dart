@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+/// A custom dropdown form field widget that provides a dropdown menu
+/// with validation support, wrapped inside a form. This widget allows
+/// users to select a value from a list of [dropdownItems] and performs
+/// an action defined by [onChanged] when the selection changes.
+///
+/// Actions:
+/// - Displays a dropdown menu using [DropdownButtonFormField].
+/// - Calls [onChanged] when a new value is selected.
 class DropdownFormField extends StatefulWidget {
   late final String hintText;
   late final List<DropdownMenuItem<String>> dropdownItems;

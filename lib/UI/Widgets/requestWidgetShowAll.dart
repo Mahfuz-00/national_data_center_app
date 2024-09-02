@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'templateerrorcontainer.dart';
 
+/// A widget that displays a list of requests and handles various states, including loading,
+/// error, and successful data fetch. This widget is intended for cases where all items should
+/// be displayed.
+///
+/// Variables:
+/// - [loading]: A boolean indicating whether the widget should display a loading state.
+/// - [fetch]: A boolean indicating whether the data-fetching process is complete.
+/// - [errorText]: A string that contains the error message to display if the data-fetching fails.
+/// - [fetchData]: A future that represents the data-fetching operation.
+/// - [listWidget]: A list of widgets representing the items to display.
+///
+/// Actions:
+/// - Uses [FutureBuilder] to manage and display different states of data fetching.
+/// - Displays a loading indicator if [loading] is true.
+/// - Shows an error message using [errorText] if the fetching process encounters an error.
+/// - Renders the list of widgets from [listWidget] if the fetching is successful.
+/// - Handles empty list scenarios by showing a corresponding message.
 class RequestsWidgetShowAll extends StatelessWidget {
   final bool loading;
   final bool fetch;
   final String errorText;
   final Future<void> fetchData;
   final List<Widget> listWidget;
-
 
   const RequestsWidgetShowAll({
     Key? key,
@@ -27,10 +43,9 @@ class RequestsWidgetShowAll extends StatelessWidget {
         future: loading ? null : fetchData,
         builder: (context, snapshot) {
           if (!fetch) {
-            // Return a loading indicator while waiting for data
             return Container(
-              height: 200, // Adjust height as needed
-              width: screenWidth, // Adjust width as needed
+              height: 200,
+              width: screenWidth,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -40,14 +55,11 @@ class RequestsWidgetShowAll extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasError) {
-            // Handle errors
             return buildNoRequestsWidget(screenWidth, 'Error: $errorText');
           } else if (fetch) {
             if (listWidget.isEmpty) {
-              // Handle the case when there are no pending connection requests
               return buildNoRequestsWidget(screenWidth, errorText);
             } else if (listWidget.isNotEmpty) {
-              // If data is loaded successfully, display the ListView
               return Container(
                 child: Column(
                   children: [
@@ -56,7 +68,6 @@ class RequestsWidgetShowAll extends StatelessWidget {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: listWidget.length,
                       itemBuilder: (context, index) {
-                        // Display each connection request using the listWidget
                         return listWidget[index];
                       },
                       separatorBuilder: (context, index) => const SizedBox(height: 10),
@@ -67,7 +78,7 @@ class RequestsWidgetShowAll extends StatelessWidget {
               );
             }
           }
-          return SizedBox(); // Return a default widget if none of the conditions above are met
+          return SizedBox();
         },
       ),
     );

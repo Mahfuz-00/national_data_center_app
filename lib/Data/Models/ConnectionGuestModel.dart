@@ -1,3 +1,23 @@
+/// Represents a guest appointment request model.
+///
+/// This class encapsulates all the necessary information required to create
+/// an appointment request for a guest.
+///
+/// **Variables:**
+/// - [FullName]: A string representing the full name of the guest.
+/// - [NID]: A string representing the National Identification Number of the guest.
+/// - [OrganizationName]: A string representing the name of the organization the guest is associated with.
+/// - [Designation]: A string representing the guest's designation or job title.
+/// - [Mobile]: A string representing the mobile phone number of the guest.
+/// - [Email]: A string representing the email address of the guest.
+/// - [Purpose]: A string describing the purpose of the appointment.
+/// - [Belongs]: A string indicating to whom or what the guest belongs (e.g., department, group).
+/// - [Sector]: A string representing the sector related to the appointment.
+/// - [DeviceModel]: A string representing the model of the device the guest is using.
+/// - [DeviceSerial]: A string representing the serial number of the device.
+/// - [DeviceDescription]: A string providing a description of the device.
+/// - [AppointmentDate]: A string representing the date of the appointment.
+/// - [AppointmentTime]: A string representing the time of the appointment.
 class GuestAppointmentRequestModel {
   final String FullName;
   final String NID;
