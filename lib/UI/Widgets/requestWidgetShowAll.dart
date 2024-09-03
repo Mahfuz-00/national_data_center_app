@@ -18,14 +18,14 @@ import 'templateerrorcontainer.dart';
 /// - Shows an error message using [errorText] if the fetching process encounters an error.
 /// - Renders the list of widgets from [listWidget] if the fetching is successful.
 /// - Handles empty list scenarios by showing a corresponding message.
-class RequestsWidgetShowAll extends StatelessWidget {
+class AllRequestsWidget extends StatelessWidget {
   final bool loading;
   final bool fetch;
   final String errorText;
   final Future<void> fetchData;
   final List<Widget> listWidget;
 
-  const RequestsWidgetShowAll({
+  const AllRequestsWidget({
     Key? key,
     required this.loading,
     required this.fetch,

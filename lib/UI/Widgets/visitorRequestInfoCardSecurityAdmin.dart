@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Data/Data Sources/API Service (PDF Download)/apiServicePDF.dart';
 
-/// A [VisitorRequestInfoCardSecurityAdmin] widget that displays visitor request details
+/// A [SecurityAdminVisitorRequestInfoCard] widget that displays visitor request details
 /// and provides options to select [Entry Time] and print a [PDF] document.
 ///
 /// This widget includes several visitor details such as:
@@ -35,7 +35,7 @@ import '../../Data/Data Sources/API Service (PDF Download)/apiServicePDF.dart';
 /// - [onTap] on the time picker: Allows users to select [Entry Time], which is then stored in [_Clockcontroller].
 ///
 /// The widget also handles error scenarios like missing [Entry Time] and displays appropriate messages to the user.
-class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
+class SecurityAdminVisitorRequestInfoCard extends StatelessWidget {
   final String Name;
   final String Organization;
   final String Designation;
@@ -48,7 +48,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
   final String Personnel;
   final String Belongs;
 
-  VisitorRequestInfoCardSecurityAdmin({
+  SecurityAdminVisitorRequestInfoCard({
     Key? key,
     required this.Name,
     required this.Organization,
@@ -200,7 +200,7 @@ class VisitorRequestInfoCardSecurityAdmin extends StatelessWidget {
 
   Future<void> generatePDF(BuildContext context) async {
     if (appointmentTime.isNotEmpty) {
-      final apiService = await APIServiceNDCPDF.create();
+      final apiService = await PDFGenerateAPIService.create();
       const snackBar = SnackBar(
         content: Text('Preparing Printing, Please wait'),
       );

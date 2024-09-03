@@ -2,6 +2,22 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A service class for handling full data filtering through the API.
+///
+/// This class provides functionality to filter full data based on specified
+/// criteria such as date, time, sector, and a specific URL for the request.
+///
+/// **Actions:**
+/// - [filterFullData]: Sends a POST request to the specified [url] with the
+///   provided [date], [time], and [sector], returning the filtered data as a
+///   map if successful.
+///
+/// **Variables:**
+/// - [authToken]: The authentication token required for making API requests.
+/// - [response]: The HTTP response received from the API after sending the
+///   filter request.
+/// - [jsonData]: The decoded JSON response body containing the filtered data
+///   returned by the API.
 class SortingFullAPIService {
   late final String authToken;
 
@@ -13,11 +29,6 @@ class SortingFullAPIService {
     print('triggered API');
     return apiService;
   }
-
-/*  SortingAPIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();

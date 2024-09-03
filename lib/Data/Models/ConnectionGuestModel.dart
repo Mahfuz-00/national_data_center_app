@@ -18,7 +18,7 @@
 /// - [DeviceDescription]: A string providing a description of the device.
 /// - [AppointmentDate]: A string representing the date of the appointment.
 /// - [AppointmentTime]: A string representing the time of the appointment.
-class GuestAppointmentRequestModel {
+class GuestAppointmentModel {
   final String FullName;
   final String NID;
   final String OrganizationName;
@@ -34,7 +34,7 @@ class GuestAppointmentRequestModel {
   final String AppointmentDate;
   final String AppointmentTime;
 
-  GuestAppointmentRequestModel({
+  GuestAppointmentModel({
     required this.FullName,
     required this.NID,
     required this.OrganizationName,

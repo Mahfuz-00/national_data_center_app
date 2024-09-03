@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Profile)/apiserviceprofile.dart';
@@ -20,16 +18,43 @@ import '../../Bloc/auth_cubit.dart';
 import '../Login UI/loginUI.dart';
 import 'passwordChange.dart';
 
-class Profile extends StatefulWidget {
+/// A [ProfileUI] widget that displays the user's profile information.
+///
+/// This widget is responsible for fetching and displaying the user's profile data
+/// and managing the state for profile loading, editing, and logout actions.
+///
+/// **Variables:**
+/// - [shouldRefresh]: Indicates whether the profile should be refreshed.
+/// - [globalKey]: A [GlobalKey] used for the scaffold state.
+/// - [globalfromkey]: A [GlobalKey] used for the form state.
+/// - [_isLoading]: Indicates whether data is currently loading.
+/// - [name]: Stores the user's name.
+/// - [isloaded]: Indicates whether the profile has been loaded.
+/// - [_pageLoading]: Indicates whether the page is loading.
+/// - [userProfile]: Stores the fetched user's profile data of type [UserProfileFull].
+/// - [_imageFile]: Stores the selected image file for the profile picture.
+/// - [_fullNameController]: A [TextEditingController] for the full name input field.
+/// - [_phoneController]: A [TextEditingController] for the phone number input field.
+/// - [_passwordController]: A [TextEditingController] for the password input field.
+/// - [userProfileCubit]: An instance of [UserProfile] to manage user profile state in the application.
+///
+/// **Actions:**
+/// - [_fetchUserProfile]: Asynchronously fetches the user's profile data and updates the state.
+/// - [initState]: Initializes the profile state and fetches the user profile on widget creation.
+/// - [dispose]: Cleans up the controllers when the widget is removed from the widget tree.
+/// - [build]: Builds the UI for the profile, including loading indicators and profile details.
+/// - [_buildDataCouple]: Builds a UI component displaying an icon, label, and value.
+/// - [_showLogoutDialog]: Displays a confirmation dialog for logging out.
+class ProfileUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const Profile({Key? key, this.shouldRefresh = false}) : super(key: key);
+  const ProfileUI({Key? key, this.shouldRefresh = false}) : super(key: key);
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<ProfileUI> createState() => _ProfileUIState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileUIState extends State<ProfileUI> {
   var globalKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> globalfromkey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -45,36 +70,6 @@ class _ProfileState extends State<Profile> {
   late TextEditingController _passwordController;
   late TextEditingController _licenseNumberController;
   late String userType = '';
-
-  /*Future<void> _fetchUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token') ?? '';
-    print('Load Token');
-    print(prefs.getString('token'));
-
-    final apiService = await APIProfileService();
-    final profile = await apiService.fetchUserProfile(token);
-    userProfile = UserProfileFull.fromJson(profile);
-    name = userProfile!.name;
-    print(userProfile!.name);
-    print(userProfile!.id);
-
-    try {
-      await prefs.setString('userName', userProfile!.name);
-      await prefs.setString('organizationName', userProfile!.organization);
-      await prefs.setString('photoUrl', userProfile!.photo);
-      final String? UserName = prefs.getString('userName');
-      final String? OrganizationName = prefs.getString('organizationName');
-      final String? PhotoURL = prefs.getString('photoUrl');
-      print('User Name: $UserName');
-      print('Organization Name: $OrganizationName');
-      print('Photo URL: $PhotoURL');
-      print('User profile saved successfully');
-    } catch (e) {
-      print('Error saving user profile: $e');
-    }
-  }*/
-
   late UserProfile userProfileCubit;
 
   Future<void> _fetchUserProfile() async {
@@ -83,7 +78,7 @@ class _ProfileState extends State<Profile> {
     print('Load Token');
     print(prefs.getString('token'));
 
-    final apiService = await APIProfileService();
+    final apiService = await ProfileAPIService();
     final profile = await apiService.fetchUserProfile(token);
     userProfile = UserProfileFull.fromJson(profile);
     name = userProfile!.name;
@@ -101,41 +96,22 @@ class _ProfileState extends State<Profile> {
     }
 
     setState(() {
-      // Map UserProfileFull to UserProfile or use directly if they match
       userProfileCubit = UserProfile(
         Id: userProfile!.id,
         name: userProfile!.name,
         organization: userProfile!.organization,
         photo: userProfile!.photo,
         user: userType,
-        // Add other fields as needed
       );
       print(userProfileCubit.user.toString());
     });
 
-    // Update the UserProfileCubit state using context.read
     context.read<AuthCubit>().updateProfile(UserProfile(
         Id: userProfile!.id,
         name: userProfile!.name,
         organization: userProfile!.organization,
         photo: userProfile!.photo, user: userType)
-      // Add other fields as needed
     );
-
-/*    try {
-      await prefs.setString('userName', userProfile!.name);
-      await prefs.setString('organizationName', userProfile!.organization);
-      await prefs.setString('photoUrl', userProfile!.photo);
-      final String? UserName = prefs.getString('userName');
-      final String? OrganizationName = prefs.getString('organizationName');
-      final String? PhotoURL = prefs.getString('photoUrl');
-      print('User Name: $UserName');
-      print('Organization Name: $OrganizationName');
-      print('Photo URL: $PhotoURL');
-      print('User profile saved successfully');
-    } catch (e) {
-      print('Error saving user profile: $e');
-    }*/
   }
 
   @override
@@ -171,12 +147,11 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return InternetChecker(
+    return InternetConnectionChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
           backgroundColor: Colors.grey[100],
-          //resizeToAvoidBottomInset: false,
           appBar: AppBar(
               backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
               title: Text(
@@ -233,8 +208,8 @@ class _ProfileState extends State<Profile> {
                               Stack(
                                 children: [
                                   Container(
-                                    width: 120, // Adjust width as needed
-                                    height: 120, // Adjust height as needed
+                                    width: 120,
+                                    height: 120,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white,
@@ -250,7 +225,6 @@ class _ProfileState extends State<Profile> {
                                     child: Container(
                                       height: 35,
                                       width: 35,
-                                      //padding: EdgeInsets.all(5),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         shape: BoxShape.circle,
@@ -261,7 +235,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       child: IconButton(
                                         onPressed: () {
-                                          // _showImagePicker();
+                                           _showImagePicker();
                                         },
                                         alignment: Alignment.center,
                                         icon: Icon(
@@ -341,7 +315,7 @@ class _ProfileState extends State<Profile> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    PasswordChange(),
+                                                    PasswordChangeUI(),
                                               ));
                                         },
                                         child: Container(
@@ -452,12 +426,8 @@ class _ProfileState extends State<Profile> {
                     size: 30,
                   ),
                   backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-                  // Change the background color as needed
                   elevation: 8,
-                  // Increase the elevation to make it appear larger
                   highlightElevation: 12,
-                  // Increase the highlight elevation for the pressed state
-
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
                         30), // Adjust the border radius as needed
@@ -582,7 +552,7 @@ class _ProfileState extends State<Profile> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -599,18 +569,13 @@ class _ProfileState extends State<Profile> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
 
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
@@ -618,7 +583,7 @@ class _ProfileState extends State<Profile> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI()));
                     }
                   },
                   child: Text(
@@ -655,7 +620,7 @@ class _ProfileState extends State<Profile> {
               )),
           content: SingleChildScrollView(
             child: Form(
-              key: globalfromkey, // Use the global form key
+              key: globalfromkey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -679,11 +644,6 @@ class _ProfileState extends State<Profile> {
                   SizedBox(
                     height: 5,
                   ),
-                  /* _buildTextField('License Number', userProfile!.license,
-                      _licenseNumberController),
-                  SizedBox(
-                    height: 5,
-                  ),*/
                 ],
               ),
             ),
@@ -703,7 +663,7 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.of(context).pop();
                       print('Dialog closed');
                     },
                     child: Text('Cancel',
@@ -734,17 +694,14 @@ class _ProfileState extends State<Profile> {
                       print(userProfile!.organization);
                       print(userProfile!.designation);
                       print(userProfile!.phone);
-                      //print(userProfile!.license);
-
-                      final userProfileUpdate = UserProfileUpdate(
+                      final userProfileUpdate = UserProfileUpdateModel(
                         userId: userProfile!.id.toString(),
-                        // Provide the user ID here
                         name: _fullNameController.text,
                         organization: _organizationController.text,
                         designation: _designationController.text,
                         phone: _phoneController.text,
                       );
-                      final apiService = await APIServiceUpdateUser.create();
+                      final apiService = await UpdateUserAPIService.create();
                       final result =
                           await apiService.updateUserProfile(userProfileUpdate);
                       Navigator.of(context).pop();
@@ -756,8 +713,7 @@ class _ProfileState extends State<Profile> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Profile(shouldRefresh: true)));
-                      // Handle the result as needed, e.g., show a toast message
+                                  ProfileUI(shouldRefresh: true)));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(result)),
                       ); // Close the dialog
@@ -781,17 +737,12 @@ class _ProfileState extends State<Profile> {
 
   Widget _buildTextField(
       String label, String initialValue, TextEditingController controller) {
-    // Initialize the controller with the initial value if provided
     if (initialValue != null && controller != null) {
       controller.text = initialValue;
     }
 
-    // Add a listener to the controller to track changes in the text field
     controller.addListener(() {
-      // This function will be called whenever the text changes
       String updatedValue = controller.text;
-
-      // Do something with the updated value
       print("Updated value: $updatedValue");
     });
 
@@ -800,7 +751,6 @@ class _ProfileState extends State<Profile> {
       height: 70,
       child: TextFormField(
         controller: controller,
-        // Use the provided controller
         validator: (input) {
           if (input == null || input.isEmpty) {
             return 'Please enter your $label';
@@ -903,7 +853,7 @@ class _ProfileState extends State<Profile> {
         content: Text('Profile Picture Updating ....'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      final apiService = await APIProfilePictureUpdate.create();
+      final apiService = await ProfilePictureUpdateAPIService.create();
       print(imageFile.path);
       print(imageFile);
       final response = await apiService.updateProfilePicture(image: imageFile);
@@ -916,7 +866,7 @@ class _ProfileState extends State<Profile> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => Profile(shouldRefresh: true)));
+              builder: (context) => ProfileUI(shouldRefresh: true)));
     } catch (e) {
       print('Error updating profile picture: $e');
     }

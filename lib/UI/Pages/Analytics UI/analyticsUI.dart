@@ -103,7 +103,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
 
       // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
-        return VisitorRequestInfoCardAdmin(
+        return AdminVisitorRequestInfoCard(
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
@@ -196,7 +196,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
         child: CircularProgressIndicator(),
       ),
     )
-        : InternetChecker(
+        : InternetConnectionChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -491,7 +491,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

@@ -5,14 +5,14 @@ import '../Access Form (Guest)/accessFormGuestUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Sign Up UI/signupUI.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class SplashScreenUI extends StatefulWidget {
+  const SplashScreenUI({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashScreenUI> createState() => _SplashScreenUIState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenUIState extends State<SplashScreenUI>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<double> FadeAnimation;
@@ -129,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Login()));
+                                    builder: (context) => const LoginUI()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
@@ -156,7 +156,7 @@ class _SplashScreenState extends State<SplashScreen>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const Signup()));
+                                    builder: (context) => const SignupUI()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,

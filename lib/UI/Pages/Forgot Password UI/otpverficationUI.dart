@@ -9,7 +9,7 @@ import '../../Bloc/email_cubit.dart';
 import '../../Widgets/forgotpasswordotpbox.dart';
 import 'createnewpasswordUI.dart';
 
-/// The [OPTVerification] widget is responsible for displaying the OTP
+/// The [OPTVerificationUI] widget is responsible for displaying the OTP
 /// (One-Time Password) verification screen. It allows users to enter
 /// the OTP sent to their email address and verify it.
 ///
@@ -31,14 +31,14 @@ import 'createnewpasswordUI.dart';
 /// - [_focusNodes]: A list of focus nodes for managing input field focus.
 /// - [_sendCode(String email)]: Sends the OTP to the user's email.
 /// - [_sendOTP(String email, String OTP)]: Verifies the entered OTP.
-class OPTVerfication extends StatefulWidget {
-  const OPTVerfication({super.key});
+class OPTVerificationUI extends StatefulWidget {
+  const OPTVerificationUI({super.key});
 
   @override
-  State<OPTVerfication> createState() => _OPTVerficationState();
+  State<OPTVerificationUI> createState() => _OPTVerificationUIState();
 }
 
-class _OPTVerficationState extends State<OPTVerfication> {
+class _OPTVerificationUIState extends State<OPTVerificationUI> {
   bool _isLoading = true;
   bool _pageloading = false;
   final List<TextEditingController> _controllers =
@@ -56,7 +56,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
   }
 
   Future<void> _sendCode(String email) async {
-    final apiService = await APIServiceForgotPassword();
+    final apiService = await ForgotPasswordAPIService();
     apiService.sendForgotPasswordOTP(email).then((response) {
       if (response == 'Forget password otp send successfully') {
         const snackBar = SnackBar(
@@ -82,14 +82,14 @@ class _OPTVerficationState extends State<OPTVerfication> {
     setState(() {
       _pageloading = true;
     });
-    final apiService = await APIServiceOTPVerification.create();
+    final apiService = await OTPVerificationAPIService.create();
     apiService.OTPVerification(email, OTP).then((response) {
       if (response == 'Otp Verified Successfully') {
         setState(() {
           _pageloading = false;
         });
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CreateNewPassword()));
+            MaterialPageRoute(builder: (context) => CreateNewPasswordUI()));
       } else if (response ==
           'Otp not match. Please resend forget password otp') {
         setState(() {
@@ -124,7 +124,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
         child: CircularProgressIndicator(),
       ),
     )
-        : InternetChecker(
+        : InternetConnectionChecker(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
@@ -206,7 +206,7 @@ class _OPTVerficationState extends State<OPTVerfication> {
                                   children: List.generate(4, (index) {
                                     return Row(
                                       children: [
-                                        ForgotPasswordCustomTextFormField(
+                                        CustomTextBox(
                                           textController: _controllers[index],
                                           currentFocusNode:
                                           _focusNodes[index],

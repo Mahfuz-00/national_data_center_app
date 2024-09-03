@@ -22,17 +22,17 @@ import '../../Widgets/visitorRequestInfoCardAdmin.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
 
-class AdminDashboard extends StatefulWidget {
+class AdminDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const AdminDashboard({Key? key, this.shouldRefresh = false})
+  const AdminDashboardUI({Key? key, this.shouldRefresh = false})
       : super(key: key);
 
   @override
-  State<AdminDashboard> createState() => _AdminDashboardState();
+  State<AdminDashboardUI> createState() => _AdminDashboardUIState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard>
+class _AdminDashboardUIState extends State<AdminDashboardUI>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -140,7 +140,7 @@ class _AdminDashboardState extends State<AdminDashboard>
 
       // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
-        return VisitorRequestInfoCardAdmin(
+        return AdminVisitorRequestInfoCard(
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
@@ -195,7 +195,7 @@ class _AdminDashboardState extends State<AdminDashboard>
 
     try {
       if (url != '' && url.isNotEmpty) {
-        final apiService = await DashboardAPIServiceFull.create();
+        final apiService = await FullDashboardAPIService.create();
         final Map<String, dynamic> dashboardData =
             await apiService.fetchFullItems(url);
 
@@ -261,7 +261,7 @@ class _AdminDashboardState extends State<AdminDashboard>
 
         // Map pending requests to widgets
         final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
-          return VisitorRequestInfoCardAdmin(
+          return AdminVisitorRequestInfoCard(
             Name: request['name'],
             Organization: request['organization'],
             Phone: request['phone'],
@@ -478,7 +478,7 @@ class _AdminDashboardState extends State<AdminDashboard>
             builder: (context, state) {
               if (state is AuthAuthenticated) {
                 final userProfile = state.userProfile;
-                return InternetChecker(
+                return InternetConnectionChecker(
                   child: PopScope(
                     canPop: false,
                     child: Scaffold(
@@ -614,7 +614,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => AdminDashboard(
+                                        builder: (context) => AdminDashboardUI(
                                               shouldRefresh: true,
                                             )));
                               },
@@ -651,7 +651,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const Profile(
+                                        builder: (context) => const ProfileUI(
                                               shouldRefresh: true,
                                             )));
                               },
@@ -814,7 +814,7 @@ class _AdminDashboardState extends State<AdminDashboard>
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

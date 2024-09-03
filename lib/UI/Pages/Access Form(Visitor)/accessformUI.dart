@@ -12,14 +12,14 @@ import '../../Widgets/dropdownfield.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
 
-class AccessForm extends StatefulWidget {
-  const AccessForm({super.key});
+class AccessFormUI extends StatefulWidget {
+  const AccessFormUI({super.key});
 
   @override
-  State<AccessForm> createState() => _AccessFormState();
+  State<AccessFormUI> createState() => _AccessFormUIState();
 }
 
-class _AccessFormState extends State<AccessForm> {
+class _AccessFormUIState extends State<AccessFormUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController _Clockcontroller = TextEditingController();
   late TextEditingController _Datecontroller = TextEditingController();
@@ -126,7 +126,7 @@ class _AccessFormState extends State<AccessForm> {
       builder: (context, state) {
         if (state is AuthAuthenticated) {
           final userProfile = state.userProfile;
-          return  InternetChecker(
+          return  InternetConnectionChecker(
             child: PopScope(
               canPop: false,
               child: Scaffold(
@@ -972,7 +972,7 @@ class _AccessFormState extends State<AccessForm> {
 
       // Perform any additional actions before sending the request
       // Send the connection request using API service
-      APIServiceAppointmentRequest()
+      AppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest)
           .then((response) {
         // Handle successful request
@@ -980,7 +980,7 @@ class _AccessFormState extends State<AccessForm> {
         if (response == 'Visitor Request Already Exist') {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true,)),
+            MaterialPageRoute(builder: (context) => VisitorDashboardUI(shouldRefresh: true,)),
             (route) => false, // This will remove all routes from the stack
           );
           const snackBar = SnackBar(
@@ -1000,7 +1000,7 @@ class _AccessFormState extends State<AccessForm> {
             response == "Appointment Request Successfully") {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => VisitorDashboard()),
+            MaterialPageRoute(builder: (context) => VisitorDashboardUI()),
             (route) => false, // This will remove all routes from the stack
           );
           const snackBar = SnackBar(

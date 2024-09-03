@@ -1,25 +1,45 @@
 import 'dart:convert';
-import 'dart:io'; // Add this import for handling files
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/ConnectionGuestModel.dart';
 import 'package:path/path.dart';
 
-class APIServiceGuestAppointmentRequest {
+/// A service class for handling guest appointment requests via API.
+///
+/// This class manages the authentication token and provides a method
+/// to send guest appointment requests along with a document file.
+///
+/// **Actions:**
+/// - [create]: Initializes the service and loads the authentication token.
+/// - [_loadAuthToken]: Loads the authentication token from shared preferences.
+/// - [postConnectionRequest]: Sends a guest appointment request to the API
+///   with the provided request data and optional document file.
+///
+/// **Variables:**
+/// - [URL]: The base URL for the API endpoint.
+/// - [authToken]: The authentication token required for authorized API requests.
+/// - [token]: The authentication token used for making requests.
+/// - [uri]: The URI for the guest appointment API endpoint.
+/// - [requestMultipart]: The multipart request object for sending data.
+/// - [streamedResponse]: The streamed response received from the API after sending the request.
+/// - [response]: The HTTP response received from the API after sending the appointment request.
+/// - [jsonResponse]: The decoded JSON response body containing the result of the appointment request.
+class GuestAppointmentRequestAPIService {
   final String URL = 'https://bcc.touchandsolve.com/api';
   late final Future<String> authToken;
 
-  APIServiceGuestAppointmentRequest._();
+  GuestAppointmentRequestAPIService._();
 
-  static Future<APIServiceGuestAppointmentRequest> create() async {
-    var apiService = APIServiceGuestAppointmentRequest._();
+  static Future<GuestAppointmentRequestAPIService> create() async {
+    var apiService = GuestAppointmentRequestAPIService._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
   }
 
-  APIServiceGuestAppointmentRequest() {
-    authToken = _loadAuthToken(); // Assigning the future here
+  GuestAppointmentRequestAPIService() {
+    authToken = _loadAuthToken();
     print('triggered');
   }
 
@@ -31,11 +51,10 @@ class APIServiceGuestAppointmentRequest {
     return token;
   }
 
-  Future<String> postConnectionRequest(GuestAppointmentRequestModel request, File? documentFile) async {
-    final String token = await authToken; // Wait for the authToken to complete
+  Future<String> postConnectionRequest(GuestAppointmentModel request, File? documentFile) async {
+    final String token = await authToken;
     try {
       if (token.isEmpty) {
-        // Wait for authToken to be initialized
         await _loadAuthToken();
         throw Exception('Authentication token is empty.');
       }
@@ -46,16 +65,14 @@ class APIServiceGuestAppointmentRequest {
       requestMultipart.headers['Authorization'] = 'Bearer $token';
       requestMultipart.headers['Content-Type'] = 'multipart/form-data';
 
-      // Add text fields
       request.toJson().forEach((key, value) {
         requestMultipart.fields[key] = value.toString();
       });
 
-      // Add file
       requestMultipart.files.add(await http.MultipartFile.fromPath(
-        'document_file', // The field name for the file parameter
+        'document_file',
         documentFile!.path,
-        filename: basename(documentFile.path), // Optional: you can specify the file name
+        filename: basename(documentFile.path),
       ));
 
       var streamedResponse = await requestMultipart.send();

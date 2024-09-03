@@ -16,17 +16,17 @@ import '../Profile UI/profileUI.dart';
 import '../Visitor Request and Review List (Full)/VisitorRequestList.dart';
 import '../Visitor Request and Review List (Full)/VisitorReviewedList.dart';
 
-class VisitorDashboard extends StatefulWidget {
+class VisitorDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const VisitorDashboard({Key? key, this.shouldRefresh = false})
+  const VisitorDashboardUI({Key? key, this.shouldRefresh = false})
       : super(key: key);
 
   @override
-  State<VisitorDashboard> createState() => _VisitorDashboardState();
+  State<VisitorDashboardUI> createState() => _VisitorDashboardUIState();
 }
 
-class _VisitorDashboardState extends State<VisitorDashboard> {
+class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> pendingRequests = [];
   List<Widget> acceptedRequests = [];
@@ -274,7 +274,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
             builder: (context, state) {
               if (state is AuthAuthenticated) {
                 final userProfile = state.userProfile;
-                return InternetChecker(
+                return InternetConnectionChecker(
                   child: PopScope(
                     canPop: false,
                     child: Scaffold(
@@ -390,7 +390,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                       showSeeAllButton: canFetchMorePending,
                                       seeAllButtonText:
                                           'See All Pending Request',
-                                      nextView: VisitorRequestList(
+                                      nextView: VisitorRequestListUI(
                                         shouldRefresh: true,
                                       )),
                                   Divider(),
@@ -417,7 +417,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                       showSeeAllButton: canFetchMoreAccepted,
                                       seeAllButtonText:
                                           'See All Reviewed Request',
-                                      nextView: VisitorReviewedList(
+                                      nextView: VisitorReviewedListUI(
                                         shouldRefresh: true,
                                       )),
                                   Divider(),
@@ -442,7 +442,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    AccessForm()));
+                                                    AccessFormUI()));
                                       },
                                       child: const Text('New Request',
                                           style: TextStyle(
@@ -474,7 +474,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => VisitorDashboard(
+                                        builder: (context) => VisitorDashboardUI(
                                               shouldRefresh: true,
                                             )));
                               },
@@ -512,7 +512,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const AccessForm()));
+                                            const AccessFormUI()));
                               },
                               behavior: HitTestBehavior.translucent,
                               child: Container(
@@ -555,7 +555,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const Profile(
+                                        builder: (context) => const ProfileUI(
                                             shouldRefresh: true)));
                               },
                               child: Container(
@@ -677,7 +677,7 @@ class _VisitorDashboardState extends State<VisitorDashboard> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

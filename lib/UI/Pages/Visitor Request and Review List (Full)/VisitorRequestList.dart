@@ -16,17 +16,17 @@ import '../Login UI/loginUI.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 import 'VisitorReviewedList.dart';
 
-class VisitorRequestList extends StatefulWidget {
+class VisitorRequestListUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const VisitorRequestList({Key? key, this.shouldRefresh = false})
+  const VisitorRequestListUI({Key? key, this.shouldRefresh = false})
       : super(key: key);
 
   @override
-  State<VisitorRequestList> createState() => _VisitorRequestListState();
+  State<VisitorRequestListUI> createState() => _VisitorRequestListUIState();
 }
 
-class _VisitorRequestListState extends State<VisitorRequestList> {
+class _VisitorRequestListUIState extends State<VisitorRequestListUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //late List<ISPConnectionDetails> connectionRequests;
@@ -133,7 +133,7 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
 
     try {
       if (url != '' && url.isNotEmpty) {
-        final apiService = await DashboardAPIServiceFull.create();
+        final apiService = await FullDashboardAPIService.create();
         final Map<String, dynamic> dashboardData =
             await apiService.fetchFullItems(url);
 
@@ -256,7 +256,7 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
       builder: (context, state) {
         if (state is AuthAuthenticated) {
           final userProfile = state.userProfile;
-          return InternetChecker(
+          return InternetConnectionChecker(
             child: Scaffold(
               backgroundColor: Colors.grey[100],
               key: _scaffoldKey,
@@ -468,7 +468,7 @@ class _VisitorRequestListState extends State<VisitorRequestList> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

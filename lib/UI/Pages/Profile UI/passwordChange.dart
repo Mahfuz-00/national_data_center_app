@@ -1,12 +1,27 @@
 import '../../../Data/Data Sources/API Service (User Info Update)/apiServicePasswordUpdate.dart';
 import 'package:flutter/material.dart';
 
-class PasswordChange extends StatefulWidget {
+/// The [PasswordChangeUI] class represents a user interface for updating the password.
+///
+/// This class handles the following:
+/// - [TextEditingController] variables to manage user input for current password, new password, and confirm password fields.
+/// - [bool] variables to manage the obscurity state (whether the password is visible or hidden) for the password fields.
+/// - [_isButtonClicked] [bool] to track if the update button has been clicked, which is used to show a loading indicator.
+/// - Methods to get the appropriate icons for visibility toggling: [_getIconCurrentPassword], [_getIconPassword],
+/// and [_getIconConfirmPassword].
+/// - [initState] method initializes the text controllers when the state is created.
+/// - [build] method constructs the user interface, including [TextFormField] widgets for password
+/// inputs and an [ElevatedButton] for submitting the update.
+/// - [checkConfirmPassword] method checks if the new password and confirm password fields match,
+/// displaying an error message if they do not.
+/// - [_updatePassword] method handles the password update process by interacting with the [PasswordUpdateAPIService] and
+/// displaying appropriate feedback to the user.
+class PasswordChangeUI extends StatefulWidget {
   @override
-  State<PasswordChange> createState() => _PasswordChangeState();
+  State<PasswordChangeUI> createState() => _PasswordChangeUIState();
 }
 
-class _PasswordChangeState extends State<PasswordChange> {
+class _PasswordChangeUIState extends State<PasswordChangeUI> {
   late TextEditingController _currentPasswordController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
@@ -212,7 +227,7 @@ class _PasswordChangeState extends State<PasswordChange> {
                       _updatePassword();
                     },
                     child: _isButtonClicked
-                        ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                        ? CircularProgressIndicator()
                         : Text(
                       'Update',
                       style: TextStyle(
@@ -236,22 +251,22 @@ class _PasswordChangeState extends State<PasswordChange> {
     if (_passwordController.text != _confirmPasswordController.text) {
       setState(() {
         _isButtonClicked =
-        false; // Validation complete, hide circular progress indicator
+        false;
       });
       const snackBar = SnackBar(
         content: Text('New Password and Confirm Password are not Matched!'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return false;  // Return false if passwords do not match
+      return false;
     } else {
-      return true;  // Return true if passwords match
+      return true;
     }
   }
 
   void _updatePassword() async {
     setState(() {
       _isButtonClicked =
-      true; // Validation complete, hide circular progress indicator
+      true;
     });
    if(checkConfirmPassword()){
      String currentPassword = _currentPasswordController.text;
@@ -259,7 +274,7 @@ class _PasswordChangeState extends State<PasswordChange> {
      String confirmPassword = _confirmPasswordController.text;
 
      try {
-       APIServicePasswordUpdate apiService = await APIServicePasswordUpdate
+       PasswordUpdateAPIService apiService = await PasswordUpdateAPIService
            .create();
        final response = await apiService.updatePassword(
          currentPassword: currentPassword,
@@ -268,7 +283,7 @@ class _PasswordChangeState extends State<PasswordChange> {
        ).then((response) {
          setState(() {
            _isButtonClicked =
-           false; // Validation complete, hide circular progress indicator
+           false;
          });
          print("Submitted");
          print(response);
@@ -286,7 +301,6 @@ class _PasswordChangeState extends State<PasswordChange> {
            ScaffoldMessenger.of(context).showSnackBar(snackBar);
          }
        }).catchError((error) {
-         // Handle registration error
          print(error);
          const snackBar = SnackBar(
            content: Text('Password Change failed!'),
@@ -298,6 +312,4 @@ class _PasswordChangeState extends State<PasswordChange> {
      }
    }
   }
-
-
 }

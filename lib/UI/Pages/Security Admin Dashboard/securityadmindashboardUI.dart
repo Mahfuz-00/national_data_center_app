@@ -23,17 +23,17 @@ import '../Analytics UI/analyticsUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
 
-class SecurityAdminDashboard extends StatefulWidget {
+class SecurityAdminDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const SecurityAdminDashboard({Key? key, this.shouldRefresh = false})
+  const SecurityAdminDashboardUI({Key? key, this.shouldRefresh = false})
       : super(key: key);
 
   @override
-  State<SecurityAdminDashboard> createState() => _SecurityAdminDashboardState();
+  State<SecurityAdminDashboardUI> createState() => _SecurityAdminDashboardUIState();
 }
 
-class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
+class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController _Clockcontroller = TextEditingController();
   late TextEditingController _Datecontroller = TextEditingController();
@@ -159,7 +159,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
 
       // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
-        return VisitorRequestInfoCardSecurityAdmin(
+        return SecurityAdminVisitorRequestInfoCard(
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
@@ -256,7 +256,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
 
       // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
-        return VisitorRequestInfoCardSecurityAdmin(
+        return SecurityAdminVisitorRequestInfoCard(
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
@@ -291,7 +291,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
 
     try {
       if (url != '' && url.isNotEmpty) {
-        final apiService = await DashboardAPIServiceFull.create();
+        final apiService = await FullDashboardAPIService.create();
         final Map<String, dynamic> dashboardData =
             await apiService.fetchFullItems(url);
 
@@ -330,7 +330,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
-          return VisitorRequestInfoCardSecurityAdmin(
+          return SecurityAdminVisitorRequestInfoCard(
             Name: request['name'],
             Organization: request['organization'],
             Phone: request['phone'],
@@ -419,7 +419,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
         // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
-          return VisitorRequestInfoCardSecurityAdmin(
+          return SecurityAdminVisitorRequestInfoCard(
             Name: request['name'],
             Organization: request['organization'],
             Phone: request['phone'],
@@ -531,7 +531,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
               if (state is AuthAuthenticated) {
                 final userProfile = state.userProfile;
                 print('Welcome, ${userProfile.name}');
-                return InternetChecker(
+                return InternetConnectionChecker(
                   child: PopScope(
                     canPop: false,
                     child: Scaffold(
@@ -1209,7 +1209,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SecurityAdminDashboard()));
+                                            SecurityAdminDashboardUI()));
                               },
                               child: Container(
                                 width: screenWidth / 3,
@@ -1244,7 +1244,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const Profile()));
+                                        builder: (context) => const ProfileUI()));
                               },
                               behavior: HitTestBehavior.translucent,
                               child: Container(
@@ -1405,7 +1405,7 @@ class _SecurityAdminDashboardState extends State<SecurityAdminDashboard> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

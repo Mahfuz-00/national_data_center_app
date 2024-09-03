@@ -12,14 +12,14 @@ import '../../../Data/Models/registermodels.dart';
 import '../../Widgets/dropdownfield.dart';
 import '../Login UI/loginUI.dart';
 
-class Signup extends StatefulWidget {
-  const Signup({super.key});
+class SignupUI extends StatefulWidget {
+  const SignupUI({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  State<SignupUI> createState() => _SignupUIState();
 }
 
-class _SignupState extends State<Signup> {
+class _SignupUIState extends State<SignupUI> {
   bool _isObscuredPassword = true;
   bool _isObscuredConfirmPassword = true;
   late RegisterRequestmodel _registerRequest;
@@ -99,7 +99,7 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return InternetChecker(
+    return InternetConnectionChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -571,7 +571,7 @@ class _SignupState extends State<Signup> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => Login()));
+                                            builder: (context) => LoginUI()));
                                   },
                                   child: const Text(
                                     'Login now',
@@ -622,7 +622,7 @@ class _SignupState extends State<Signup> {
         userType: _selectedVisitorType,
       );
 
-      final apiService = APIService();
+      final apiService = UserRegistrationAPIService();
       // Call register method passing registerRequestModel, _imageFile, and authToken
       apiService.register(registerRequest, _imageFile).then((response) {
         print("Submitted");
@@ -636,7 +636,7 @@ class _SignupState extends State<Signup> {
           clearForm();
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Login()),
+            MaterialPageRoute(builder: (context) => LoginUI()),
           );
           const snackBar = SnackBar(
             content: Text('Registration Submitted!'),

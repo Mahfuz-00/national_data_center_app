@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 /// - [status]: A String that reflects the current status of the appointment.
 /// - [isExpanded]: A bool indicating whether the user's details are expanded in the UI (default is false).
 
-class User {
+class UserModel {
   late String name;
   late String orgName;
   late String appointmentWith;
@@ -27,7 +27,7 @@ class User {
   late String status;
   bool isExpanded;
 
-  User({
+  UserModel({
   required this.name,
   required this.orgName,
   required this.appointmentWith,

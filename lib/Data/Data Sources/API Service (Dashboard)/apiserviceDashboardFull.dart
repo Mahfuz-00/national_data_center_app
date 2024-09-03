@@ -2,23 +2,32 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-class DashboardAPIServiceFull {
+/// A service class for fetching full items from a specified API endpoint.
+///
+/// This class manages the authentication token and provides a method
+/// to fetch full items from the given URL.
+///
+/// **Actions:**
+/// - [create]: Initializes the service and loads the authentication token.
+/// - [_loadAuthToken]: Loads the authentication token from shared preferences.
+/// - [fetchFullItems]: Fetches full items by making an API call to the specified URL.
+///
+/// **Variables:**
+/// - [authToken]: The authentication token required for authorized API requests.
+/// - [token]: The authentication token used for making requests.
+/// - [response]: The HTTP response received from the API after fetching full items.
+/// - [jsonData]: The decoded JSON response body containing the full items.
+class FullDashboardAPIService {
   late final String authToken;
 
-  DashboardAPIServiceFull._();
+  FullDashboardAPIService._();
 
-  static Future<DashboardAPIServiceFull> create() async {
-    var apiService = DashboardAPIServiceFull._();
+  static Future<FullDashboardAPIService> create() async {
+    var apiService = FullDashboardAPIService._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
   }
-
-/*  APIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();

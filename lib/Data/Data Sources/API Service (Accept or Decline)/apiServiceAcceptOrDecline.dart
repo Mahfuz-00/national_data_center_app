@@ -2,23 +2,36 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ConnectionAcceptRejectAPIService {
+/// A service class for managing access acceptance and rejection requests.
+///
+/// This class handles accepting or rejecting connection requests through the API.
+/// It manages the authentication token required for authorized requests.
+///
+/// **Actions:**
+/// - [create]: Initializes the service and loads the authentication token.
+/// - [_loadAuthToken]: Loads the authentication token from shared preferences.
+/// - [acceptOrRejectConnection]: Sends a request to accept or reject a connection
+///   based on the specified type and application ID.
+///
+/// **Variables:**
+/// - [URL]: The base URL for the API.
+/// - [authToken]: The authentication token used for authorized API requests.
+/// - [type]: The type of action being performed (accepted or rejected).
+/// - [ApplicationId]: The ID of the application being accepted or rejected.
+/// - [url]: The endpoint URL for accepting or rejecting appointments.
+/// - [response]: The HTTP response received from the API after processing the request.
+class AccessAcceptRejectAPIService {
   static const String URL = 'https://bcc.touchandsolve.com/api';
   late final String authToken;
 
-  ConnectionAcceptRejectAPIService._();
+  AccessAcceptRejectAPIService._();
 
-  static Future<ConnectionAcceptRejectAPIService> create() async {
-    var apiService = ConnectionAcceptRejectAPIService._();
+  static Future<AccessAcceptRejectAPIService> create() async {
+    var apiService = AccessAcceptRejectAPIService._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
   }
-
-/*  APIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -26,7 +39,6 @@ class ConnectionAcceptRejectAPIService {
     print('Load Token');
     print(prefs.getString('token'));
   }
-
 
   Future<void> acceptOrRejectConnection({required String type, required int ApplicationId,}) async {
     final String url = '$URL/ndc/appointment/accept/or/reject';
@@ -52,7 +64,6 @@ class ConnectionAcceptRejectAPIService {
 
       if (response.statusCode == 200) {
         print(response.body);
-        // Request successful
         print('Application accepted/rejected successfully');
         if (type.toLowerCase() == 'accepted') {
           print('Application accepted');
@@ -60,11 +71,9 @@ class ConnectionAcceptRejectAPIService {
           print('Application declined');
         }
       } else {
-        // Request failed
         print('Failed to accept/reject Application. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      // Error occurred
       print('Error accepting/rejecting Application: $e');
     }
   }

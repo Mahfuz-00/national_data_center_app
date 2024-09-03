@@ -2,6 +2,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A service class for handling data filtering through the API.
+///
+/// This class provides functionality to filter data based on specified
+/// criteria such as date, time, and sector.
+///
+/// **Actions:**
+/// - [filterData]: Sends a POST request to the API with the specified
+///   [date], [time], and [sector], returning the filtered data as a
+///   map if successful.
+///
+/// **Variables:**
+/// - [baseUrl]: The base URL for the API endpoint.
+/// - [authToken]: The authentication token required for making API requests.
+/// - [response]: The HTTP response received from the API after sending the filter request.
+/// - [jsonData]: The decoded JSON response body containing the filtered data returned by the API.
 class SortingAPIService {
   final String baseUrl = 'https://bcc.touchandsolve.com/api';
   late final String authToken;
@@ -14,11 +29,6 @@ class SortingAPIService {
     print('triggered API');
     return apiService;
   }
-
-/*  SortingAPIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();

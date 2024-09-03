@@ -11,14 +11,14 @@
 ///
 /// **Actions:**
 /// - [toJson]: Converts the UserProfileUpdate object to a JSON map for API submission.
-class UserProfileUpdate {
+class UserProfileUpdateModel {
   final String userId;
   final String name;
   final String organization;
   final String designation;
   final String phone;
 
-  UserProfileUpdate({
+  UserProfileUpdateModel({
     required this.userId,
     required this.name,
     required this.organization,

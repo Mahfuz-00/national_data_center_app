@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:footer/footer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Login)/apiservicelogin.dart';
 import '../../../Data/Data Sources/API Service (Profile)/apiserviceprofile.dart';
@@ -16,17 +15,36 @@ import '../Security Admin Dashboard/securityadmindashboardUI.dart';
 import '../Sign Up UI/signupUI.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
-
-
-
-class Login extends StatefulWidget {
-  const Login({super.key});
+/// This [LoginUI] class represents the user interface for logging into the application.
+///
+/// Variables:
+/// * [bool _isObscured] - Controls the visibility of the password text field.
+/// * [TextEditingController _passwordController] - Manages the text input for the password.
+/// * [TextEditingController _emailController] - Manages the text input for the email.
+/// * [LoginRequestmodel _loginRequest] - Holds the email and password for the login request.
+/// * [GlobalKey<ScaffoldState> globalKey] - Key for the [Scaffold] widget, used for accessing the scaffold.
+/// * [GlobalKey<FormState> globalfromkey] - Key for the [Form] widget, used for validating the form.
+/// * [String userType] - Stores the type of user after a successful login.
+/// * [bool _isLoading] - Indicates whether a login request is in progress.
+/// * [bool _isButtonClicked] - Tracks if the login button has been clicked to display a loading indicator.
+/// * [AuthCubit authCubit] - Manages the authentication state of the application.
+///
+/// Actions:
+/// * [_getIcon()] - Returns the appropriate icon based on the [_isObscured] value.
+/// * [_checkLoginRequest()] - Verifies the [LoginRequestmodel] to ensure email and password are set.
+/// * [initState()] - Initializes the login request model, controllers, and checks the login request.
+/// * [dispose()] - Disposes of the controllers to free up resources.
+/// * [build()] - Builds the login UI, including form fields for email and password, and a login button.
+/// * [validateAndSave()] - Validates the form, sends the login request, handles the response, and manages the navigation based on the user type.
+/// * [showTopToast()] - Displays a toast message at the top of the screen with the provided [message].
+class LoginUI extends StatefulWidget {
+  const LoginUI({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<LoginUI> createState() => _LoginUIState();
 }
 
-class _LoginState extends State<Login> {
+class _LoginUIState extends State<LoginUI> {
   bool _isObscured = true;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -44,8 +62,8 @@ class _LoginState extends State<Login> {
 
   void _checkLoginRequest() {
     if (_loginRequest != null) {
-      _loginRequest.Email; // no error
-      _loginRequest.Password; // no error
+      _loginRequest.Email;
+      _loginRequest.Password;
     }
   }
 
@@ -69,7 +87,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return InternetChecker(
+    return InternetConnectionChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -86,7 +104,6 @@ class _LoginState extends State<Login> {
                     Expanded(
                       child: Center(
                         child: Container(
-                          //alignment: Alignment.center,
                           child: Column(
                             children: [
                               const Text(
@@ -115,13 +132,12 @@ class _LoginState extends State<Login> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: screenWidth*0.9,
+                                      width: screenWidth * 0.9,
                                       height: 70,
                                       child: TextFormField(
                                         controller: _emailController,
-                                        keyboardType: TextInputType.emailAddress,
-                                        /*onSaved: (input) =>
-                                        _loginRequest.Email = input!,*/
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         validator: (input) {
                                           if (input!.isEmpty) {
                                             return 'Please enter your email address';
@@ -134,14 +150,16 @@ class _LoginState extends State<Login> {
                                           return null;
                                         },
                                         style: const TextStyle(
-                                          color: Color.fromRGBO(143, 150, 158, 1),
+                                          color:
+                                              Color.fromRGBO(143, 150, 158, 1),
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'default',
                                         ),
                                         decoration: const InputDecoration(
                                           filled: true,
-                                          fillColor: Color.fromRGBO(247, 248, 250, 1),
+                                          fillColor:
+                                              Color.fromRGBO(247, 248, 250, 1),
                                           border: OutlineInputBorder(),
                                           labelText: 'Enter your Email',
                                           labelStyle: TextStyle(
@@ -155,16 +173,17 @@ class _LoginState extends State<Login> {
                                     ),
                                     const SizedBox(height: 15),
                                     Container(
-                                      width: screenWidth*0.9,
+                                      width: screenWidth * 0.9,
                                       height: 85,
                                       child: Column(
                                         children: [
                                           TextFormField(
                                             keyboardType: TextInputType.text,
                                             onSaved: (input) =>
-                                            _loginRequest.Password = input!,
-                                            validator: (input) =>
-                                            input!.length < 8
+                                                _loginRequest.Password = input!,
+                                            validator: (input) => input!
+                                                        .length <
+                                                    8
                                                 ? "Password should be more than 7 characters"
                                                 : null,
                                             controller: _passwordController,
@@ -180,7 +199,8 @@ class _LoginState extends State<Login> {
                                               filled: true,
                                               fillColor: const Color.fromRGBO(
                                                   247, 248, 250, 1),
-                                              border: const OutlineInputBorder(),
+                                              border:
+                                                  const OutlineInputBorder(),
                                               labelText: 'Enter your password',
                                               labelStyle: TextStyle(
                                                 color: Colors.black87,
@@ -194,21 +214,25 @@ class _LoginState extends State<Login> {
                                                   setState(() {
                                                     _isObscured = !_isObscured;
                                                     _passwordController.text =
-                                                        _passwordController.text;
+                                                        _passwordController
+                                                            .text;
                                                   });
                                                 },
                                               ),
                                               errorStyle: TextStyle(height: 0),
                                             ),
                                           ),
-                                          if (_passwordController.text.isNotEmpty &&
-                                              _passwordController.text.length < 8)
+                                          if (_passwordController
+                                                  .text.isNotEmpty &&
+                                              _passwordController.text.length <
+                                                  8)
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   left: 8.0),
                                               child: Text(
                                                 "Password should be more than 8 characters",
-                                                style: TextStyle(color: Colors.red),
+                                                style: TextStyle(
+                                                    color: Colors.red),
                                               ),
                                             ),
                                         ],
@@ -219,7 +243,8 @@ class _LoginState extends State<Login> {
                               ),
                               Container(
                                 child: Padding(
-                                  padding: EdgeInsets.only(right: (screenWidth*0.1-20)),
+                                  padding: EdgeInsets.only(
+                                      right: (screenWidth * 0.1 - 20)),
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: InkWell(
@@ -227,13 +252,15 @@ class _LoginState extends State<Login> {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => const ForgotPassword()));
+                                                builder: (context) =>
+                                                    const ForgotPasswordUI()));
                                       },
                                       child: const Text(
                                         'Forgot Password?',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: Color.fromRGBO(143, 150, 158, 1),
+                                          color:
+                                              Color.fromRGBO(143, 150, 158, 1),
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'default',
@@ -249,70 +276,82 @@ class _LoginState extends State<Login> {
                               ElevatedButton(
                                   onPressed: () async {
                                     setState(() {
-                                      _isButtonClicked = true; // Button clicked, show circular progress indicator
+                                      _isButtonClicked = true;
                                     });
                                     if (await validateAndSave(
                                         globalfromkey, context)) {
-                                      //print(_loginRequest.toJSON());
                                       print('Checking $userType');
-                                      if(userType != null){
+                                      if (userType != null) {
                                         if (userType == 'ndc_internal') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    VisitorDashboardUI(
+                                                        shouldRefresh: true)),
                                           );
-                                        }
-                                        else if (userType == 'ndc_vendor') {
+                                        } else if (userType == 'ndc_vendor') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    VisitorDashboardUI(
+                                                        shouldRefresh: true)),
                                           );
-                                        }
-                                        else if (userType == 'ndc_customer') {
+                                        } else if (userType == 'ndc_customer') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => VisitorDashboard(shouldRefresh: true)),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    VisitorDashboardUI(
+                                                        shouldRefresh: true)),
                                           );
-                                        }
-                                        else if (userType == 'ndc_admin') {
+                                        } else if (userType == 'ndc_admin') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => AdminDashboard(shouldRefresh: true)),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AdminDashboardUI(
+                                                        shouldRefresh: true)),
                                           );
-                                        }
-                                        else if (userType == 'ndc_security_admin') {
+                                        } else if (userType ==
+                                            'ndc_security_admin') {
                                           Navigator.pushReplacement(
                                             context,
-                                            MaterialPageRoute(builder: (context) => SecurityAdminDashboard(shouldRefresh: true)),
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SecurityAdminDashboardUI(
+                                                        shouldRefresh: true)),
                                           );
-                                        }
-                                        else{
-                                          String errorMessage = 'Invalid User!, Please enter a valid email address.';
+                                        } else {
+                                          String errorMessage =
+                                              'Invalid User!, Please enter a valid email address.';
                                           showTopToast(context, errorMessage);
                                         }
                                       }
                                     }
                                     setState(() {
-                                      _isButtonClicked = false; // Validation complete, hide circular progress indicator
+                                      _isButtonClicked = false;
                                     });
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                                    backgroundColor:
+                                        const Color.fromRGBO(13, 70, 127, 1),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    fixedSize: Size(screenWidth*0.9, 70),
+                                    fixedSize: Size(screenWidth * 0.9, 70),
                                   ),
                                   child: _isButtonClicked
-                                      ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                      ? CircularProgressIndicator()
                                       : const Text('Login',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontFamily: 'default',
-                                      ))),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontFamily: 'default',
+                                          ))),
                             ],
                           ),
                         ),
@@ -346,7 +385,8 @@ class _LoginState extends State<Login> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => const AccessFormGuestUI()));
+                                              builder: (context) =>
+                                                  const AccessFormGuestUI()));
                                     },
                                     child: const Text(
                                       'Physical Accesss Request Form',
@@ -361,7 +401,9 @@ class _LoginState extends State<Login> {
                                   )
                                 ],
                               ),
-                              SizedBox(height: 5,),
+                              SizedBox(
+                                height: 5,
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -380,7 +422,8 @@ class _LoginState extends State<Login> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => const Signup()));
+                                              builder: (context) =>
+                                                  const SignupUI()));
                                     },
                                     child: const Text(
                                       'Register now',
@@ -410,11 +453,12 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<bool> validateAndSave(GlobalKey<FormState> formKey, BuildContext context) async {
+  Future<bool> validateAndSave(
+      GlobalKey<FormState> formKey, BuildContext context) async {
     final form = formKey.currentState;
     if (form != null && form.validate()) {
       form.save();
-      final apiService = APIService();
+      final apiService = LoginAPIService();
       final loginRequestModel = LoginRequestmodel(
         Email: _emailController.text,
         Password: _passwordController.text,
@@ -422,44 +466,30 @@ class _LoginState extends State<Login> {
       try {
         final response = await apiService.login(loginRequestModel);
         if (response != null) {
-          // Handle successful login
           storeTokenLocally(response.token);
           userType = response.userType;
           print('UserType :: $userType');
           _fetchUserProfile(response.token);
           return true;
         } else {
-          // Handle unsuccessful login
           showTopToast(context, 'Email or password is not valid.');
-         /* ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Email or password is not valid.'),
-            ),
-          );*/
           return false;
         }
       } catch (e) {
-        // Handle login error
         String errorMessage = 'Incorrect Email and Password.';
         if (e.toString().contains('Invalid User')) {
           errorMessage = 'Invalid User!, Please enter a valid email address.';
-        }
-        else if (e.toString().contains('Invalid Credentials')) {
+        } else if (e.toString().contains('Invalid Credentials')) {
           errorMessage = 'Incorrect Password. Try again.';
-        }
-        else if (e.toString().contains('The email field is required') || e.toString().contains('The password field is required')) {
-          errorMessage = 'Email or password is empty. Please fill in both fields.';
+        } else if (e.toString().contains('The email field is required') ||
+            e.toString().contains('The password field is required')) {
+          errorMessage =
+              'Email or password is empty. Please fill in both fields.';
         }
         showTopToast(context, errorMessage);
-       /* ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-          ),
-        );*/
         return false;
       }
     }
-    // Return false if form validation fails
     return false;
   }
 
@@ -467,7 +497,7 @@ class _LoginState extends State<Login> {
     OverlayState? overlayState = Overlay.of(context);
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: MediaQuery.of(context).padding.top + 10, // 10 is for a little margin from the top
+        top: MediaQuery.of(context).padding.top + 10,
         left: 20,
         right: 20,
         child: Material(
@@ -489,7 +519,6 @@ class _LoginState extends State<Login> {
 
     overlayState?.insert(overlayEntry);
 
-    // Remove the overlay entry after some time (e.g., 3 seconds)
     Future.delayed(Duration(seconds: 3)).then((_) {
       overlayEntry.remove();
     });
@@ -509,9 +538,8 @@ class _LoginState extends State<Login> {
 
   Future<void> _fetchUserProfile(String token) async {
     try {
-      final apiService = await APIProfileService();
+      final apiService = await ProfileAPIService();
 
-      // Check if the widget is still mounted
       if (!mounted) return;
 
       print('Mounted');
@@ -522,36 +550,8 @@ class _LoginState extends State<Login> {
       print('Mounted Again');
 
       authCubit.login(userProfile, token);
-
-     /*
-      final apiService = await APIProfileService();
-      final profile = await apiService.fetchUserProfile(token);
-      final userProfile = UserProfile.fromJson(profile);
-
-      // Save user profile data in SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      try {
-        await prefs.setString('userName', userProfile.name);
-        await prefs.setString('organizationName', userProfile.organization);
-        await prefs.setString('photoUrl', userProfile.photo);
-        await prefs.setString('user', userProfile.user);
-        UserName = prefs.getString('userName');
-        OrganizationName = prefs.getString('organizationName');
-        PhotoURL = prefs.getString('photoUrl');
-        User = prefs.getString('user');
-        print('User Name: $UserName');
-        print('Organization Name: $OrganizationName');
-        print('Photo URL: $PhotoURL');
-        print('User Type: $User');
-        print('User profile saved successfully');
-      } catch (e) {
-        print('Error saving user profile: $e');
-      }*/
-
     } catch (e) {
       print('Error fetching user profile: $e');
-      // Handle error as needed
     }
   }
-
 }

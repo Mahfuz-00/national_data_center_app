@@ -16,17 +16,17 @@ import '../Login UI/loginUI.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 import 'VisitorRequestList.dart';
 
-class VisitorReviewedList extends StatefulWidget {
+class VisitorReviewedListUI extends StatefulWidget {
   final bool shouldRefresh;
 
-  const VisitorReviewedList({Key? key, this.shouldRefresh = false})
+  const VisitorReviewedListUI({Key? key, this.shouldRefresh = false})
       : super(key: key);
 
   @override
-  State<VisitorReviewedList> createState() => _VisitorReviewedListState();
+  State<VisitorReviewedListUI> createState() => _VisitorReviewedListUIState();
 }
 
-class _VisitorReviewedListState extends State<VisitorReviewedList> {
+class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   //late List<ISPConnectionDetails> connectionRequests;
@@ -134,7 +134,7 @@ class _VisitorReviewedListState extends State<VisitorReviewedList> {
 
     try {
       if (url != '' && url.isNotEmpty) {
-        final apiService = await DashboardAPIServiceFull.create();
+        final apiService = await FullDashboardAPIService.create();
         final Map<String, dynamic> dashboardData =
             await apiService.fetchFullItems(url);
 
@@ -253,7 +253,7 @@ class _VisitorReviewedListState extends State<VisitorReviewedList> {
       builder: (context, state) {
         if (state is AuthAuthenticated) {
           final userProfile = state.userProfile;
-          return InternetChecker(
+          return InternetConnectionChecker(
             child: Scaffold(
               backgroundColor: Colors.grey[100],
               key: _scaffoldKey,
@@ -466,7 +466,7 @@ class _VisitorReviewedListState extends State<VisitorReviewedList> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Login())); // Close the drawer
+                                  LoginUI())); // Close the drawer
                     }
                   },
                   child: Text(

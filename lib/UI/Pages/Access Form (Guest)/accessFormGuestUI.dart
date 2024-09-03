@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
-import '../../../Data/Data Sources/API Service (Guest Access Form)/apiserviceconnection.dart';
+import '../../../Data/Data Sources/API Service (Guest Access Form)/apiserviceguestappointment.dart';
 import '../../../Data/Models/ConnectionGuestModel.dart';
 import '../Splashscreen UI/splashscreenUI.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
@@ -35,7 +35,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   late TextEditingController _devicemodelcontroller;
   late TextEditingController _deviceserialcontroller;
   late TextEditingController _devicedescriptioncontroller;
-  late GuestAppointmentRequestModel _connectionRequest;
+  late GuestAppointmentModel _connectionRequest;
   late String appointmentDate;
   late String appointmentTime;
   String _selectedSector = 'Physical Security & Infrastructure';
@@ -57,7 +57,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     _devicemodelcontroller = TextEditingController();
     _deviceserialcontroller = TextEditingController();
     _devicedescriptioncontroller = TextEditingController();
-    _connectionRequest = GuestAppointmentRequestModel(
+    _connectionRequest = GuestAppointmentModel(
       FullName: '',
       NID: '',
       OrganizationName: '',
@@ -87,7 +87,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return InternetChecker(
+    return InternetConnectionChecker(
       child: PopScope(
         canPop: false,
         child: Scaffold(
@@ -890,7 +890,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       // Initialize connection request model
-      _connectionRequest = GuestAppointmentRequestModel(
+      _connectionRequest = GuestAppointmentModel(
           FullName: _fullnamecontroller.text,
           NID: _NIDcontroller.text,
           OrganizationName: _organizationnamecontroller.text,
@@ -908,7 +908,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
 
       // Perform any additional actions before sending the request
       // Send the connection request using API service
-      APIServiceGuestAppointmentRequest()
+      GuestAppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest, _file)
           .then((response) {
         // Handle successful request
@@ -916,7 +916,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
         if (response == 'Visitor Request Already Exist') {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => VisitorDashboard()),
+            MaterialPageRoute(builder: (context) => VisitorDashboardUI()),
             (route) => false, // This will remove all routes from the stack
           );
           const snackBar = SnackBar(
@@ -928,7 +928,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
             response == "Appointment Request Successfully") {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => SplashScreen()),
+            MaterialPageRoute(builder: (context) => SplashScreenUI()),
             (route) => false, // This will remove all routes from the stack
           );
           const snackBar = SnackBar(

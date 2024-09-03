@@ -2,7 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-
+/// A service class for fetching dashboard items from the API.
+///
+/// This class manages the authentication token and provides a method
+/// to fetch items for the dashboard.
+///
+/// **Actions:**
+/// - [create]: Initializes the service and loads the authentication token.
+/// - [_loadAuthToken]: Loads the authentication token from shared preferences.
+/// - [fetchDashboardItems]: Fetches the dashboard items by making an API call
+///   to the specified endpoint.
+///
+/// **Variables:**
+/// - [baseUrl]: The base URL for the API.
+/// - [authToken]: The authentication token required for authorized API requests.
+/// - [token]: The authentication token used for making requests.
+/// - [response]: The HTTP response received from the API after fetching the dashboard items.
+/// - [jsonData]: The decoded JSON response body containing the dashboard items.
 class DashboardAPIService {
   final String baseUrl = 'https://bcc.touchandsolve.com/api';
   late final String authToken;
@@ -15,11 +31,6 @@ class DashboardAPIService {
     print('triggered API');
     return apiService;
   }
-
-/*  APIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();

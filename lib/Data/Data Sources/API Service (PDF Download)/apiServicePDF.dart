@@ -2,23 +2,35 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class APIServiceNDCPDF {
+/// A service class for generating PDF documents via the API.
+///
+/// This class manages the authentication token and provides a method
+/// to generate PDFs based on the provided parameters.
+///
+/// **Actions:**
+/// - [create]: Initializes the service and loads the authentication token.
+/// - [_loadAuthToken]: Loads the authentication token from shared preferences.
+/// - [generatePDF]: Sends a request to the API to generate a PDF with the given
+///   [id] and [time], returning the response data as a map.
+///
+/// **Variables:**
+/// - [baseURL]: The base URL for the PDF generation API endpoint.
+/// - [authToken]: The authentication token required for authorized API requests.
+/// - [token]: The authentication token used for making requests.
+/// - [response]: The HTTP response received from the API after sending the PDF generation request.
+/// - [responseData]: The decoded JSON response body containing the result of the PDF generation request.
+class PDFGenerateAPIService {
   static const String baseURL = 'https://bcc.touchandsolve.com/api/ndc/pdf';
   late final String authToken;
 
-  APIServiceNDCPDF._();
+  PDFGenerateAPIService._();
 
-  static Future<APIServiceNDCPDF> create() async {
-    var apiService = APIServiceNDCPDF._();
+  static Future<PDFGenerateAPIService> create() async {
+    var apiService = PDFGenerateAPIService._();
     await apiService._loadAuthToken();
     print('triggered API');
     return apiService;
   }
-
-/*  APIService() {
-    _loadAuthToken();
-    print('triggered');
-  }*/
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -50,11 +62,9 @@ class APIServiceNDCPDF {
       );
 
       if (response.statusCode == 200) {
-        // Request successful, parse response data if needed
         final responseData = jsonDecode(response.body);
         return responseData;
       } else {
-        // Request failed
         throw Exception('Failed to generate PDF: ${response.reasonPhrase}');
       }
     } catch (e) {
@@ -72,7 +82,6 @@ class APIServiceNDCPDF {
       );
       print(response.statusCode);
       print(response.body);
-      // Error during HTTP request
       throw Exception('Failed to generate PDF: $e');
     }
   }

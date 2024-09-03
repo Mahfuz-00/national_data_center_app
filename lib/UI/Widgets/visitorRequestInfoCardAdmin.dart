@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../../Data/Data Sources/API Service (Accept or Decline)/apiServiceAcceptOrDecline.dart';
 import '../Pages/Admin Dashboard/admindashboardUI.dart';
 
-/// [VisitorRequestInfoCardAdmin] is a [StatelessWidget] that represents a detailed information card
+/// [AdminVisitorRequestInfoCard] is a [StatelessWidget] that represents a detailed information card
 /// for visitor requests in an admin panel. It displays various details such as the [Name], [Organization],
 /// [Designation], [Phone], [Email], [Sector], [AppointmentDate], [ApplicationID], [Purpose],
 /// [Personnel], [Belongs], and [Status] of the visitor request.
@@ -11,13 +11,13 @@ import '../Pages/Admin Dashboard/admindashboardUI.dart';
 /// The widget provides options for the admin to [Accept] or [Decline] the request using two buttons.
 /// Upon pressing one of these buttons, the appropriate [action] ('accepted' or 'rejected') is taken,
 /// which triggers the [handleAcceptOrReject] method. This method interacts with the
-/// [ConnectionAcceptRejectAPIService] to update the request's status via an API call.
+/// [AccessAcceptRejectAPIService] to update the request's status via an API call.
 ///
 /// The [handleAcceptOrReject] method makes an API call to accept or reject the visitor request based on
-/// the [Action] provided, and then navigates back to the [AdminDashboard] with a success message.
+/// the [Action] provided, and then navigates back to the [AdminDashboardUI] with a success message.
 ///
 /// The UI is built using [Material] and [Container] widgets with styling for the layout, buttons, and text.
-class VisitorRequestInfoCardAdmin extends StatelessWidget {
+class AdminVisitorRequestInfoCard extends StatelessWidget {
   final String Name;
   final String Organization;
   final String Designation;
@@ -31,7 +31,7 @@ class VisitorRequestInfoCardAdmin extends StatelessWidget {
   final String Belongs;
   final String Status;
 
-  VisitorRequestInfoCardAdmin({
+  AdminVisitorRequestInfoCard({
     Key? key,
     required this.Name,
     required this.Organization,
@@ -103,7 +103,7 @@ class VisitorRequestInfoCardAdmin extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  AdminDashboard(shouldRefresh: true)),
+                                  AdminDashboardUI(shouldRefresh: true)),
                         );
                         const snackBar = SnackBar(
                           content: Text('Request Accepted!'),
@@ -143,7 +143,7 @@ class VisitorRequestInfoCardAdmin extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  AdminDashboard(shouldRefresh: true)),
+                                  AdminDashboardUI(shouldRefresh: true)),
                         );
                         const snackBar = SnackBar(
                           content: Text('Request Rejected!'),
@@ -169,7 +169,7 @@ class VisitorRequestInfoCardAdmin extends StatelessWidget {
   }
 
   Future<void> handleAcceptOrReject(String Action) async {
-    final apiService = await ConnectionAcceptRejectAPIService.create();
+    final apiService = await AccessAcceptRejectAPIService.create();
 
     print(Action);
     print(ApplicationID);
