@@ -337,7 +337,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                 ),
                               ),
                             ],
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             CustomTextFormField(
                               height: true,
                               controller: _commentcontroller,
@@ -349,7 +349,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                 return null;
                               },
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
                             CustomTextFormField(
                               height: true,
                               controller: _personnelcontroller,
@@ -362,7 +362,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
                               },
                             ),
                             SizedBox(
-                              height: 20,
+                              height: 10,
                             ),
                             CustomTextFormField(
                               controller: _belongscontroller,

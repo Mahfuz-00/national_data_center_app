@@ -276,7 +276,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                                   const SizedBox(
                                     height: 15,
                                   ),
-                                  const Text('Request List',
+                                  const Text('Appointment Pending List',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         color: Colors.black,
@@ -303,7 +303,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                                   Divider(),
                                   const SizedBox(height: 25),
                                   Container(
-                                    child: const Text('Reviewed List',
+                                    child: const Text('Appointment Accepted List',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(
                                           color: Colors.black,
