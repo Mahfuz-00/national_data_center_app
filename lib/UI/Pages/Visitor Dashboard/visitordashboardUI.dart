@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ndc_app/UI/Widgets/requestWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
@@ -16,6 +15,19 @@ import '../Profile UI/profileUI.dart';
 import '../Visitor Request and Review List (Full)/VisitorRequestList.dart';
 import '../Visitor Request and Review List (Full)/VisitorReviewedList.dart';
 
+/// [VisitorDashboardUI] is a stateful widget that displays the visitor dashboard.
+/// It shows the pending and accepted visitor requests along with the user's notifications.
+///
+/// [shouldRefresh] is a boolean that determines whether to refresh the dashboard on load.
+///
+/// [fetchConnectionRequests] is a method that fetches the pending and accepted requests from the API,
+/// processes the data, and updates the state with the fetched requests.
+///
+/// [pendingRequests] stores the list of pending request widgets.
+/// [acceptedRequests] stores the list of accepted request widgets.
+/// [userName], [organizationName], [photoUrl] are strings that store user information.
+/// [pendingPagination], [acceptedPagination] are instances of [Pagination] that manage pagination for requests.
+/// [canFetchMorePending], [canFetchMoreAccepted] are booleans that indicate whether more requests can be fetched.
 class VisitorDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
@@ -35,40 +47,21 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
   bool _pageLoading = true;
   bool _errorOccurred = false;
   List<String> notifications = [];
-
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
   late Pagination pendingPagination;
   late Pagination acceptedPagination;
-
   bool canFetchMorePending = false;
   bool canFetchMoreAccepted = false;
-
-/*  Future<void> loadUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? '';
-      organizationName = prefs.getString('organizationName') ?? '';
-      photoUrl = prefs.getString('photoUrl') ?? '';
-      photoUrl = 'https://bcc.touchandsolve.com' + photoUrl;
-      print('User Name: $userName');
-      print('Organization Name: $organizationName');
-      print('Photo URL: $photoUrl');
-      print('User profile got it!!!!');
-    });
-  }*/
 
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
     try {
       final apiService = await DashboardAPIService.create();
-
-      // Fetch dashboard data
       final Map<String, dynamic> dashboardData =
           await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
@@ -77,12 +70,10 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
 
       final Map<String, dynamic>? records = dashboardData['records'];
       if (records == null || records.isEmpty) {
-        // No records available
         print('No records available');
         return;
       }
 
-      // Set isLoading to true while fetching data
       setState(() {
         _isLoading = true;
       });
@@ -94,16 +85,10 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
       acceptedPagination = Pagination.fromJson(pagination['accepted']);
       print(pendingPagination.nextPage);
       print(acceptedPagination.nextPage);
-
-      //recentPagination = Pagination.fromJson(pagination['recent']);
-
       canFetchMorePending = pendingPagination.canFetchNext;
       canFetchMoreAccepted = acceptedPagination.canFetchNext;
-
-      // Extract notifications
       notifications = List<String>.from(records['notifications'] ?? []);
 
-      // Simulate fetching data for 5 seconds
       await Future.delayed(Duration(seconds: 5));
 
       final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
@@ -117,7 +102,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
             'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
       }
 
-      // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -134,7 +118,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
         );
       }).toList();
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -159,77 +142,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
     } catch (e) {
       print('Error fetching connection requests: $e');
       _isFetched = true;
-      //_errorOccurred = true;
-      // Handle error as needed
     }
   }
-
-/*  // Function to check if more than 10 items are available in the list
-  bool shouldShowSeeAllButton(List list) {
-    return list.length > 10;
-  }
-
-  // Build the button to navigate to the page showing all data
-  Widget buildSeeAllButtonRequestList(BuildContext context) {
-    return Center(
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(10),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-            fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
-                MediaQuery.of(context).size.height * 0.08),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => VisitorRequestList()));
-          },
-          child: Text('See all pending request',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'default',
-              )),
-        ),
-      ),
-    );
-  }
-
-  // Build the button to navigate to the page showing all data
-  Widget buildSeeAllButtonReviewedList(BuildContext context) {
-    return Center(
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(10),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-            fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
-                MediaQuery.of(context).size.height * 0.08),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => VisitorReviewedList()));
-          },
-          child: Text('See all reviewed request',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'default',
-              )),
-        ),
-      ),
-    );
-  }*/
 
   @override
   void initState() {
@@ -239,17 +153,11 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
     acceptedPagination = Pagination(nextPage: null, previousPage: null);
     if (!_isFetched) {
       fetchConnectionRequests();
-      //_isFetched = true; // Set _isFetched to true after the first call
     }
-    // loadUserProfile();
     Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
-        // loadUserProfile();
-        // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
-        // connectionRequests = [];
       }
-      // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
         print('Page Loading');
         _pageLoading = false;
@@ -266,7 +174,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
-              // Show circular loading indicator while waiting
               child: CircularProgressIndicator(),
             ),
           )
@@ -641,7 +548,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -658,18 +565,12 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
-
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
@@ -677,7 +578,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  LoginUI())); // Close the drawer
+                                  LoginUI()));
                     }
                   },
                   child: Text(
@@ -764,8 +665,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
     );
 
     overlay?.insert(overlayEntry);
-
-    // Remove the overlay when tapping outside
     Future.delayed(Duration(seconds: 5), () {
       if (overlayEntry.mounted) {
         overlayEntry.remove();

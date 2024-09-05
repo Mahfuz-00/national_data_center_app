@@ -1,17 +1,39 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:footer/footer.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:connectivity/connectivity.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Sign Up)/apiserviceregister.dart';
 import '../../../Data/Models/registermodels.dart';
+import '../../Widgets/CustomTextField.dart';
 import '../../Widgets/dropdownfield.dart';
 import '../Login UI/loginUI.dart';
 
+/// The [SignupUI] class represents the user interface for the registration screen,
+/// allowing users to input their personal information and register an account.
+///
+/// This class includes:
+/// - [globalfromkey]: A [GlobalKey<FormState>] used to manage the form state.
+/// - [dropdownItems]: A list of [DropdownMenuItem<String>] for selecting visitor type.
+/// - [_registerRequest]: An instance of [RegisterRequestmodel] that holds the registration data.
+/// - [_fullNameController]: A [TextEditingController] for the full name input.
+/// - [_organizationController]: A [TextEditingController] for the organization input.
+/// - [_designationController]: A [TextEditingController] for the designation input.
+/// - [_NIDController]: A [TextEditingController] for the NID or passport number input.
+/// - [_emailController]: A [TextEditingController] for the email input.
+/// - [_phoneController]: A [TextEditingController] for the mobile number input.
+/// - [_passwordController]: A [TextEditingController] for the password input.
+/// - [_confirmPasswordController]: A [TextEditingController] for the confirm password input.
+/// - [_selectedVisitorType]: A [String] to store the selected visitor type.
+/// - [_imageFile]: A [File] to hold the profile image file.
+/// - [_imageHeight]: A [double] for the height of the profile image.
+/// - [_imageWidth]: A [double] for the width of the profile image.
+/// - [_isButtonLoading]: A [bool] indicating whether the registration button is loading.
+/// - [_isObscuredPassword]: A [bool] to toggle the visibility of the password field.
+/// - [_isObscuredConfirmPassword]: A [bool] to toggle the visibility of the confirm password field.
+///
+/// This class handles user input validation, image selection, and user registration functionality.
 class SignupUI extends StatefulWidget {
   const SignupUI({super.key});
 
@@ -39,7 +61,6 @@ class _SignupUIState extends State<SignupUI> {
   double _imageWidth = 0;
   bool _isButtonLoading = false;
 
-  // Function to load image dimensions
   Future<void> _getImageDimensions() async {
     if (_imageFile != null) {
       final data = await _imageFile!.readAsBytes();
@@ -103,7 +124,6 @@ class _SignupUIState extends State<SignupUI> {
       child: PopScope(
         canPop: false,
         child: Scaffold(
-          //resizeToAvoidBottomInset: false,
           body: SingleChildScrollView(
             child: SafeArea(
               child: Container(
@@ -141,299 +161,124 @@ class _SignupUIState extends State<SignupUI> {
                           key: globalfromkey,
                           child: Column(
                             children: [
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _fullNameController,
-                                  validator: (input) {
-                                    if (input == null || input.isEmpty) {
-                                      return 'Please enter your full name';
-                                    }
-                                    return null;
+                              CustomTextFormField(
+                                controller: _fullNameController,
+                                labelText: 'Full Name',
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your full name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _organizationController,
+                                labelText: 'Organization',
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your organization name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _designationController,
+                                labelText: 'Designation',
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your designation';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _NIDController,
+                                labelText: 'NID or Passport Number',
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your NID or Passport Number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (input) {
+                                  if (input!.isEmpty) {
+                                    return 'Please enter your email address';
+                                  }
+                                  final emailRegex = RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                  if (!emailRegex.hasMatch(input)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                labelText: 'Email address',
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _phoneController,
+                                labelText: 'Mobile Number',
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(11),
+                                ],
+                                validator: (input) {
+                                  if (input == null || input.isEmpty) {
+                                    return 'Please enter your mobile number';
+                                  }
+                                  if (input.length != 11) {
+                                    return 'Mobile number must be 11 digits';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _passwordController,
+                                labelText: 'Password',
+                                validator: (input) => input!.length < 8
+                                    ? "Password should be more than 7 characters"
+                                    : null,
+                                keyboardType: TextInputType.text,
+                                obscureText: _isObscuredPassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(_getIconPassword()),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isObscuredPassword = !_isObscuredPassword;
+                                      _passwordController.text = _passwordController.text;
+                                    });
                                   },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Full Name',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _organizationController,
-                                  validator: (input) {
-                                    if (input == null || input.isEmpty) {
-                                      return 'Please enter your organization name';
-                                    }
-                                    return null;
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                controller: _confirmPasswordController,
+                                labelText: 'Confirm Password',
+                                validator: (input) => input!.length < 8
+                                    ? "Password should be more than 7 characters"
+                                    : null,
+                                keyboardType: TextInputType.text,
+                                obscureText: _isObscuredConfirmPassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(_getIconConfirmPassword()),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isObscuredConfirmPassword = !_isObscuredConfirmPassword;
+                                      _confirmPasswordController.text = _confirmPasswordController.text;
+                                    });
                                   },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Organization Name',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _designationController,
-                                  validator: (input) {
-                                    if (input == null || input.isEmpty) {
-                                      return 'Please enter your designation';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Designation',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _NIDController,
-                                  validator: (input) {
-                                    if (input == null || input.isEmpty) {
-                                      return 'Please enter your NID number or your passport number';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'NID or Passport Number',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  validator: (input) {
-                                    if (input!.isEmpty) {
-                                      return 'Please enter your email address';
-                                    }
-                                    final emailRegex = RegExp(
-                                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                                    if (!emailRegex.hasMatch(input)) {
-                                      return 'Please enter a valid email address';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Email',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  controller: _phoneController,
-                                  keyboardType: TextInputType.phone,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    // Only allow digits
-                                    LengthLimitingTextInputFormatter(11),
-                                  ],
-                                  validator: (input) {
-                                    if (input == null || input.isEmpty) {
-                                      return 'Please enter your mobile number name';
-                                    }
-                                    if (input.length != 11) {
-                                      return 'Mobile number must be 11 digits';
-                                    }
-                                    return null; // Return null if the input is valid
-                                  },
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Mobile Number',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  keyboardType: TextInputType.text,
-                                  //onSaved: (input)=> _registerRequest.Password = input!,
-                                  validator: (input) => input!.length < 8
-                                      ? "Password should be more than 7 characters"
-                                      : null,
-                                  controller: _passwordController,
-                                  obscureText: _isObscuredPassword,
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Password',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(_getIconPassword()),
-                                      onPressed: () {
-                                        setState(() {
-                                          _isObscuredPassword =
-                                              !_isObscuredPassword;
-                                          _passwordController.text =
-                                              _passwordController.text;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Container(
-                                width: screenWidth * 0.9,
-                                height: 70,
-                                child: TextFormField(
-                                  keyboardType: TextInputType.text,
-                                  //onSaved: (input)=> _registerRequest.Password = input!,
-                                  validator: (input) => input!.length < 8
-                                      ? "Password should be more than 7 characters"
-                                      : null,
-                                  controller: _confirmPasswordController,
-                                  obscureText: _isObscuredConfirmPassword,
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(143, 150, 158, 1),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'default',
-                                  ),
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Confirm Password',
-                                    labelStyle: TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      fontFamily: 'default',
-                                    ),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(_getIconConfirmPassword()),
-                                      onPressed: () {
-                                        setState(() {
-                                          _isObscuredConfirmPassword =
-                                              !_isObscuredConfirmPassword;
-                                          _confirmPasswordController.text =
-                                              _confirmPasswordController.text;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              //const SizedBox(height: 5),
+                              const SizedBox(height: 10),
                               DropdownFormField(
                                 hintText: 'Visitor Type',
                                 dropdownItems: dropdownItems,
@@ -450,7 +295,6 @@ class _SignupUIState extends State<SignupUI> {
                                     if (value == 'Vendor') {
                                       _selectedVisitorType = 'ndc_vendor' ?? '';
                                     }
-                                    //print('New: $_selectedUserType');
                                   });
                                 },
                               ),
@@ -481,9 +325,8 @@ class _SignupUIState extends State<SignupUI> {
                                       ),
                                       errorMaxLines: null,
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors
-                                                .red), // Customize error border color
+                                        borderSide:
+                                            BorderSide(color: Colors.red),
                                       ),
                                     ),
                                     child: Row(
@@ -513,7 +356,6 @@ class _SignupUIState extends State<SignupUI> {
                                             fontFamily: 'default',
                                           ),
                                         ),
-                                        // Customize upload text style
                                       ],
                                     ),
                                   ),
@@ -536,7 +378,7 @@ class _SignupUIState extends State<SignupUI> {
                               fixedSize: Size(screenWidth * 0.9, 70),
                             ),
                             child: _isButtonLoading
-                                ? CircularProgressIndicator() // Show circular progress indicator when button is clicked
+                                ? CircularProgressIndicator()
                                 : const Text('Register',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -602,8 +444,7 @@ class _SignupUIState extends State<SignupUI> {
 
   void _registerUser() {
     setState(() {
-      _isButtonLoading =
-      true; // Validation complete, hide circular progress indicator
+      _isButtonLoading = true;
     });
     if (validateAndSave() && checkConfirmPassword()) {
       const snackBar = SnackBar(
@@ -623,15 +464,11 @@ class _SignupUIState extends State<SignupUI> {
       );
 
       final apiService = UserRegistrationAPIService();
-      // Call register method passing registerRequestModel, _imageFile, and authToken
       apiService.register(registerRequest, _imageFile).then((response) {
         print("Submitted");
-        if (response != null &&
-            response ==
-                "User Registration Successfully.") {
+        if (response != null && response == "User Registration Successfully.") {
           setState(() {
-            _isButtonLoading =
-                false; // Validation complete, hide circular progress indicator
+            _isButtonLoading = false;
           });
           clearForm();
           Navigator.pushReplacement(
@@ -662,7 +499,7 @@ class _SignupUIState extends State<SignupUI> {
                 'The Phone Number is Taken!, Please Try a different Number'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }else if (response != null &&
+        } else if (response != null &&
             response == "The identification number has already been taken.") {
           setState(() {
             _isButtonLoading = false;
@@ -685,7 +522,6 @@ class _SignupUIState extends State<SignupUI> {
         setState(() {
           _isButtonLoading = false;
         });
-        // Handle registration error
         print(error);
         const snackBar = SnackBar(
           content: Text('Registration failed!'),
@@ -694,10 +530,9 @@ class _SignupUIState extends State<SignupUI> {
       });
     } else {
       setState(() {
-        _isButtonLoading =
-            false; // Validation complete, hide circular progress indicator
+        _isButtonLoading = false;
       });
-      if(_passwordController.text != _confirmPasswordController.text){
+      if (_passwordController.text != _confirmPasswordController.text) {
         const snackBar = SnackBar(
           content: Text('Passwords do not match'),
         );

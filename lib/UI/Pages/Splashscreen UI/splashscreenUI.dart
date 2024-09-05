@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
-
 import '../Access Form (Guest)/accessFormGuestUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Sign Up UI/signupUI.dart';
 
+/// [SplashScreenUI] is a StatefulWidget that represents the splash screen
+/// of the application. It displays a logo, a title, and buttons for
+/// navigating to different screens: login, signup, and guest access form.
+///
+/// The splash screen features animations for transitioning the UI elements.
+///
+/// Variables:
+/// - [animationController]: Controller for managing animation effects.
+/// - [FadeAnimation]: Animation for fading elements in and out.
+/// - [SlideAnimation]: Animation for sliding elements vertically.
+/// - [animatedpadding]: Animation for applying padding transitions.
+///
+/// Actions:
+/// - [initState()]: Initializes the animation controller and animations.
+/// - [dispose()]: Disposes of the animation controller.
 class SplashScreenUI extends StatefulWidget {
   const SplashScreenUI({super.key});
 
@@ -19,23 +33,23 @@ class _SplashScreenUIState extends State<SplashScreenUI>
   late Animation<Offset> SlideAnimation;
   late Animation<Offset> animatedpadding;
 
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1500));
-
-    SlideAnimation = Tween(begin: const Offset(0, 3), end: const Offset(0, 0)).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeInOutCirc));
-    FadeAnimation = Tween(begin: 1.0, end: 0.0).animate(CurvedAnimation(parent: animationController, curve: Curves.easeInOut));
-    animatedpadding = Tween(begin: const Offset(0, 0.3), end:Offset.zero).animate(CurvedAnimation(parent: animationController, curve: Curves.easeIn));
+    SlideAnimation = Tween(begin: const Offset(0, 3), end: const Offset(0, 0))
+        .animate(CurvedAnimation(
+            parent: animationController, curve: Curves.easeInOutCirc));
+    FadeAnimation = Tween(begin: 1.0, end: 0.0).animate(
+        CurvedAnimation(parent: animationController, curve: Curves.easeInOut));
+    animatedpadding = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(
+            CurvedAnimation(parent: animationController, curve: Curves.easeIn));
 
     Future.delayed(const Duration(seconds: 5), () {
       animationController.forward();
     });
-
   }
 
   @override
@@ -89,17 +103,12 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                     fontFamily: 'default',
                   ),
                 ),
-                /*Image(
-                  image: AssetImage('Assets/Images/NDC Logo.png'),
-                  height: 100,
-                  width: 150,)*/
               ),
             ),
             const SizedBox(
               height: 50,
             ),
             Stack(
-              //fit: StackFit.expand,
               alignment: Alignment.bottomCenter,
               children: [
                 FadeTransition(
@@ -113,14 +122,6 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                 ),
                 SlideTransition(
                   position: SlideAnimation,
-                  /*CurvedAnimation(
-                    parent: animationController,
-                    curve: Curves.easeInOutCirc, // Adjust values for desired timing
-                  ).drive(Tween<Offset>(
-                    begin: Offset(0, 2), // Start beyond the bottom edge
-                    end: Offset(0, 0),
-                  )),*/
-                  //position: SlideAnimation,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -132,13 +133,13 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                                     builder: (context) => const LoginUI()));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+                            backgroundColor:
+                                const Color.fromRGBO(13, 70, 127, 1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              //side: BorderSide(color: Colors.black, width: 2),
                             ),
                             //elevation: 3,
-                            fixedSize: Size(screenWidth*0.9, 70),
+                            fixedSize: Size(screenWidth * 0.9, 70),
                           ),
                           child: const Text('Login',
                               textAlign: TextAlign.center,
@@ -162,10 +163,11 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: Colors.black, width: 2),
+                              side: const BorderSide(
+                                  color: Colors.black, width: 2),
                             ),
                             //elevation: 3,
-                            fixedSize: Size(screenWidth*0.9, 70),
+                            fixedSize: Size(screenWidth * 0.9, 70),
                           ),
                           child: const Text('Register',
                               textAlign: TextAlign.center,
@@ -183,16 +185,18 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const AccessFormGuestUI()));
+                                    builder: (context) =>
+                                        const AccessFormGuestUI()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(color: const Color.fromRGBO(13, 70, 127, 1), width: 2),
+                              side: const BorderSide(
+                                  color: const Color.fromRGBO(13, 70, 127, 1),
+                                  width: 2),
                             ),
-                            //elevation: 3,
-                            fixedSize: Size(screenWidth*0.9, 70),
+                            fixedSize: Size(screenWidth * 0.9, 70),
                           ),
                           child: const Text('Access Form (Only Guest)',
                               textAlign: TextAlign.center,

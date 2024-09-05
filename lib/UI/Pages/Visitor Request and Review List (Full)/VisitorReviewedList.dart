@@ -1,8 +1,6 @@
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboardFull.dart';
@@ -10,12 +8,34 @@ import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/templateerrorcontainer.dart';
-import '../../Widgets/templateloadingcontainer.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Login UI/loginUI.dart';
-import '../Visitor Dashboard/visitordashboardUI.dart';
-import 'VisitorRequestList.dart';
 
+/// The [VisitorReviewedListUI] class represents the user interface for displaying
+/// a list of reviewed visitor requests. It extends [StatefulWidget] to maintain
+/// its state across rebuilds.
+///
+/// Variables:
+/// - [shouldRefresh]: A boolean indicating whether the list should refresh on load.
+/// - [_scaffoldKey]: A global key for the scaffold, allowing for snack bars and other operations.
+/// - [acceptedConnectionRequests]: A list of widgets representing accepted connection requests.
+/// - [_isFetched]: A boolean indicating whether the data has been fetched from the API.
+/// - [_isLoading]: A boolean indicating whether data is currently being loaded.
+/// - [_pageLoading]: A boolean indicating whether the page is in a loading state.
+/// - [_hasMoreData]: A boolean indicating whether more data is available for loading.
+/// - [_isFetchingMore]: A boolean indicating whether more data is currently being fetched.
+/// - [_scrollController]: A controller for the scroll view, handling scroll actions.
+/// - [userName]: A string representing the user's name.
+/// - [organizationName]: A string representing the user's organization name.
+/// - [photoUrl]: A string representing the user's profile photo URL.
+/// - [acceptedPagination]: An instance of [Pagination] to manage pagination for accepted requests.
+/// - [canFetchMoreAccepted]: A boolean indicating whether more accepted requests can be fetched.
+/// - [url]: A string representing the URL for fetching the next page of accepted requests.
+///
+/// Actions:
+/// - [fetchConnectionRequests]: Fetches the initial connection requests from the API.
+/// - [fetchMoreConnectionRequests]: Fetches more connection requests when scrolled to the bottom.
+/// - [_showLogoutDialog]: Displays a dialog for confirming logout actions.
 class VisitorReviewedListUI extends StatefulWidget {
   final bool shouldRefresh;
 
@@ -29,8 +49,6 @@ class VisitorReviewedListUI extends StatefulWidget {
 class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  //late List<ISPConnectionDetails> connectionRequests;
-  // Declare variables to hold connection requests data
   List<Widget> acceptedConnectionRequests = [];
   bool _isFetched = false;
   bool _isLoading = false;
@@ -38,35 +56,21 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
   bool _hasMoreData = true;
   bool _isFetchingMore = false;
   ScrollController _scrollController = ScrollController();
-
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
-
   late Pagination acceptedPagination;
   bool canFetchMoreAccepted = false;
   late String url = '';
-
-  Future<void> loadUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? '';
-      organizationName = prefs.getString('organizationName') ?? '';
-      photoUrl = prefs.getString('photoUrl') ?? '';
-      photoUrl = 'https://bcc.touchandsolve.com' + photoUrl;
-    });
-  }
 
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
     try {
       final apiService = await DashboardAPIService.create();
 
-      // Fetch dashboard data
       final Map<String, dynamic> dashboardData =
           await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
@@ -74,7 +78,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
 
       final Map<String, dynamic> records = dashboardData['records'];
       if (records == null || records.isEmpty) {
-        // No records available
         print('No records available');
         return;
       }
@@ -99,7 +102,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
             'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
       }
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -122,7 +124,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
       });
     } catch (e) {
       print('Error fetching connection requests: $e');
-      // Handle error as needed
     }
   }
 
@@ -146,7 +147,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
 
         final Map<String, dynamic> records = dashboardData['records'];
         if (records == null || records.isEmpty) {
-          // No records available
           print('No records available');
           return;
         }
@@ -171,7 +171,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
               'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
         }
 
-        // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
           return VisitorRequestInfoCard(
@@ -214,7 +213,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
   void initState() {
     super.initState();
     print('initState called');
-
     _scrollController.addListener(() {
       print("Scroll Position: ${_scrollController.position.pixels}");
       if (_scrollController.position.pixels ==
@@ -227,16 +225,11 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
 
     if (!_isFetched) {
       fetchConnectionRequests();
-      //_isFetched = true; // Set _isFetched to true after the first call
     }
     Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
-        loadUserProfile();
-        // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
-        // connectionRequests = [];
       }
-      // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
         print('Page Loading');
         _pageLoading = false;
@@ -284,7 +277,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
               ),
               body: _pageLoading
                   ? Center(
-                      // Show circular loading indicator while waiting
                       child: CircularProgressIndicator(),
                     )
                   : SingleChildScrollView(
@@ -350,7 +342,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
                                       addAutomaticKeepAlives: false,
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
-                                      // Prevent internal scrolling
                                       itemCount:
                                           acceptedConnectionRequests.length + 1,
                                       itemBuilder: (context, index) {
@@ -430,7 +421,7 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -447,18 +438,12 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
-
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
@@ -466,7 +451,7 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  LoginUI())); // Close the drawer
+                                  LoginUI()));
                     }
                   },
                   child: Text(

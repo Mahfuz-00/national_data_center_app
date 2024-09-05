@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_charts/flutter_charts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_charts/flutter_charts.dart' as charts;
@@ -12,8 +11,36 @@ import '../../Widgets/visitorRequestInfoCard.dart';
 import '../../Widgets/visitorRequestInfoCardAdmin.dart';
 import '../Login UI/loginUI.dart';
 
-
-
+/// [AnalyticsUI] is a [StatefulWidget] that represents the analytics interface of the application.
+///
+/// - [shouldRefresh] is a [boolean] that indicates whether the UI should refresh data upon loading.
+///
+/// The [AnalyticsUI] class manages the following:
+///
+/// - [_tabController]: A [TabController] that manages the tabs in the UI.
+/// - [_scaffoldKey]: A [GlobalKey] for the scaffold, which allows the opening of the drawer or displaying of snack bars.
+/// - [pendingRequests]: A List of Widget that holds the pending connection requests.
+/// - [acceptedRequests]: A List of Widget that holds the accepted connection requests.
+/// - [_isFetched]: A boolean that indicates whether the data has been fetched.
+/// - [_isLoading]: A boolean that indicates whether the data is currently being loaded.
+/// - [_pageLoading]: A boolean that indicates whether the page is still in the loading phase.
+/// - [_errorOccurred]: A boolean that indicates whether an error occurred while fetching data.
+/// - [monthlyData]: A Map that holds the data for monthly analytics.
+/// - [dailyData]: A Map that holds the data for daily analytics.
+/// - [userName]: A String that holds the user’s name.
+/// - [organizationName]: A String that holds the name of the user’s organization.
+/// - [photoUrl]: A String that holds the URL for the user’s profile photo.
+///
+/// The class performs the following actions:
+///
+/// - [loadUserProfile]: Fetches the user's profile from [SharedPreferences] and updates the state with user details.
+/// - [fetchConnectionRequests]: Fetches connection requests and analytics data using the [DashboardAPIService].
+///
+/// The [initState] method initializes the [TabController], fetches the user profile, and optionally fetches data based on the [shouldRefresh] parameter.
+/// The [dispose] method disposes of the [TabController].
+///
+/// The [build] method constructs the UI based on the loading state and displays analytics data.
+/// The [_showLogoutDialog] method displays a confirmation dialog for logging out.
 class AnalyticsUI extends StatefulWidget {
   final bool shouldRefresh;
 
@@ -60,11 +87,9 @@ class _AnalyticsUIState extends State<AnalyticsUI>
     try {
       final apiService = await DashboardAPIService.create();
 
-      // Fetch dashboard data
       final Map<String, dynamic>? dashboardData =
       await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
@@ -74,19 +99,15 @@ class _AnalyticsUIState extends State<AnalyticsUI>
       final Map<String, dynamic>? records = dashboardData['records'] ?? [];
       print(records);
       if (records == null || records.isEmpty) {
-        // No records available
         print('No records available');
         return;
       }
 
-      // Set isLoading to true while fetching data
       setState(() {
         _isLoading = true;
       });
 
-      // Simulate fetching data for 5 seconds
       await Future.delayed(Duration(seconds: 5));
-
       final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
       for (var index = 0; index < pendingRequestsData.length; index++) {
         print(
@@ -101,7 +122,6 @@ class _AnalyticsUIState extends State<AnalyticsUI>
       monthlyData = records['Monthly'] ?? [];
       dailyData = records['Weekly'] ?? [];
 
-      // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
         return AdminVisitorRequestInfoCard(
           Name: request['name'],
@@ -119,7 +139,6 @@ class _AnalyticsUIState extends State<AnalyticsUI>
         );
       }).toList();
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -130,7 +149,6 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
-          //ApplicationID: request['appointment_id'],
           Designation: request['status'],
           Email: request['status'],
           Sector: request['status'],
@@ -145,8 +163,6 @@ class _AnalyticsUIState extends State<AnalyticsUI>
     } catch (e) {
       print('Error fetching connection requests: $e');
       _isFetched = true;
-      //_errorOccurred = true;
-      // Handle error as needed
     }
   }
 
@@ -162,15 +178,11 @@ class _AnalyticsUIState extends State<AnalyticsUI>
     Future.delayed(Duration(seconds: 5), () {
       if (widget.shouldRefresh && !_isFetched) {
         loadUserProfile();
-        // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
-        // connectionRequests = [];
         if (!_isFetched) {
           final data = fetchConnectionRequests();
-          //_isFetched = true; // Set _isFetched to true after the first call
         }
       }
-      // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
         print('Page Loading');
         _pageLoading = false;
@@ -192,7 +204,6 @@ class _AnalyticsUIState extends State<AnalyticsUI>
         ? Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        // Show circular loading indicator while waiting
         child: CircularProgressIndicator(),
       ),
     )
@@ -456,7 +467,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -473,25 +484,19 @@ class _AnalyticsUIState extends State<AnalyticsUI>
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
-
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  LoginUI())); // Close the drawer
+                                  LoginUI()));
                     }
                   },
                   child: Text(

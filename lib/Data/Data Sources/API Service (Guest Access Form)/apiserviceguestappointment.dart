@@ -85,6 +85,17 @@ class GuestAppointmentRequestAPIService {
         return jsonResponse['message'];
       } else {
         print('Failed to send connection request. Status code: ${response.statusCode}');
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse.containsKey('errors')) {
+          var errors = jsonResponse['errors'];
+          print(errors);
+          var documentFileError = errors.containsKey('document_file') ? errors['document_file'][0] : '';
+
+          var errorMessage = '';
+          if (documentFileError.isNotEmpty) errorMessage = documentFileError;
+
+          print(errorMessage);
+          return errorMessage;}
         return 'Failed to send connection request';
       }
     } catch (e) {

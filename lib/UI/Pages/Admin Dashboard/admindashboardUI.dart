@@ -1,13 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_charts/flutter_charts.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_charts/flutter_charts.dart' as charts;
 import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Dashboard)/apiserviceDashboardFull.dart';
-import 'package:ndc_app/UI/Widgets/requestWidgetShowAll.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
@@ -15,13 +11,39 @@ import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
 import '../../../Data/Models/paginationModel.dart';
 import '../../Bloc/auth_cubit.dart';
-import '../../Widgets/templateerrorcontainer.dart';
-import '../../Widgets/templateloadingcontainer.dart';
+import '../../Widgets/RequestBody.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../../Widgets/visitorRequestInfoCardAdmin.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
 
+/// [AdminDashboardUI] is a [StatefulWidget] that provides the user interface for
+/// the admin dashboard. It displays connection requests, handles pagination, and
+/// manages the fetching of additional data based on user interactions.
+///
+/// The widget accepts the following [parameters]:
+/// - [shouldRefresh]: A bool that indicates whether the page should refresh data when loaded.
+///
+/// Key variables and actions include:
+/// - [_tabController]: Manages tab navigation within the dashboard.
+/// - [_scaffoldKey]: A [GlobalKey] to access the scaffold state for displaying snack bars and other UI elements.
+/// - [pendingRequests]: A list of Widgets that displays pending connection requests.
+/// - [acceptedRequests]: A list of Widgets that displays accepted connection requests.
+/// - [_isFetched]: A bool indicating whether the initial data has been fetched.
+/// - [_isLoading]: A bool indicating whether more data is being fetched.
+/// - [_pageLoading]: A bool controlling whether the entire page is loading initially.
+/// - [_errorOccurred]: A bool tracking if an error occurred during data fetching.
+/// - [monthlyData]: A [Map<String, dynamic>] containing the monthly data fetched from the API.
+/// - [dailyData]: A [Map<String, dynamic>] containing the daily data fetched from the API.
+/// - [userName], [organizationName], [photoUrl]: Strings storing user-specific information.
+/// - [notifications]: A [List<String>] holding the notifications fetched from the API.
+/// - [_scrollController]: A [ScrollController] to monitor the scroll position and trigger data fetching when needed.
+/// - [pendingPagination], [acceptedPagination]: Instances of [Pagination] managing pagination for pending and accepted requests.
+/// - [canFetchMore], [canFetchMoreAccepted]: bool values indicating whether more pending or accepted requests can be fetched.
+/// - [url]: A String storing the URL for fetching additional data.
+///
+/// [fetchConnectionRequests]: A [Future<void>] method that fetches the initial set of connection requests from the API.
+/// [fetchMoreConnectionRequests]: A [Future<void>] method that fetches additional connection requests when the user scrolls to the bottom of the list.
 class AdminDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
@@ -57,30 +79,14 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
   bool canFetchMoreAccepted = false;
   late String url = '';
 
-/*  Future<void> loadUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? '';
-      organizationName = prefs.getString('organizationName') ?? '';
-      photoUrl = prefs.getString('photoUrl') ?? '';
-      photoUrl = 'https://bcc.touchandsolve.com' + photoUrl;
-      print('User Name: $userName');
-      print('Organization Name: $organizationName');
-      print('Photo URL: $photoUrl');
-      print('User profile got it!!!!');
-    });
-  }*/
-
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
     try {
       final apiService = await DashboardAPIService.create();
 
-      // Fetch dashboard data
       final Map<String, dynamic> dashboardData =
           await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
@@ -89,12 +95,10 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
 
       final Map<String, dynamic>? records = dashboardData['records'];
       if (records == null || records.isEmpty) {
-        // No records available
         print('No records available');
         return;
       }
 
-      // Set isLoading to true while fetching data
       setState(() {
         _isLoading = true;
       });
@@ -124,7 +128,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
         canFetchMoreAccepted = false;
       }
 
-      // Extract notifications
       notifications = List<String>.from(records['notifications'] ?? []);
 
       final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
@@ -138,7 +141,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
       }
 
-      // Map pending requests to widgets
       final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
         return AdminVisitorRequestInfoCard(
           Name: request['name'],
@@ -156,7 +158,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
         );
       }).toList();
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return VisitorRequestInfoCard(
           Name: request['name'],
@@ -167,7 +168,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           Personnel: request['name_of_personnel'],
           Belongs: request['belong'],
           Status: request['status'],
-          // ApplicationID: request['appointment_id'],
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
@@ -182,8 +182,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
     } catch (e) {
       print('Error fetching connection requests: $e');
       _isFetched = true;
-      //_errorOccurred = true;
-      // Handle error as needed
     }
   }
 
@@ -207,12 +205,10 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
 
         final Map<String, dynamic>? records = dashboardData['records'];
         if (records == null || records.isEmpty) {
-          // No records available
           print('No records available');
           return;
         }
 
-        // Set isLoading to true while fetching data
         setState(() {
           _isLoading = true;
         });
@@ -242,10 +238,7 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           canFetchMoreAccepted = false;
         }
 
-        // Extract notifications
         notifications = List<String>.from(records['notifications'] ?? []);
-
-        // Simulate fetching data for 5 seconds
         await Future.delayed(Duration(seconds: 5));
 
         final List<dynamic> pendingRequestsData = records['Pending'] ?? [];
@@ -259,7 +252,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
               'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
         }
 
-        // Map pending requests to widgets
         final List<Widget> pendingWidgets = pendingRequestsData.map((request) {
           return AdminVisitorRequestInfoCard(
             Name: request['name'],
@@ -277,7 +269,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           );
         }).toList();
 
-        // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
           return VisitorRequestInfoCard(
@@ -289,7 +280,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             Personnel: request['name_of_personnel'],
             Belongs: request['belong'],
             Status: request['status'],
-            // ApplicationID: request['appointment_id'],
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
@@ -352,73 +342,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
     }
   }*/
 
-/*  // Function to check if more than 10 items are available in the list
-  bool shouldShowSeeAllButton(List list) {
-    return list.length > 10;
-  }
-
-  // Build the button to navigate to the page showing all data
-  Widget buildSeeAllButtonRequestList(BuildContext context) {
-    return Center(
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(10),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-            fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
-                MediaQuery.of(context).size.height * 0.08),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
-            */ /*   Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ISPRequestList()));*/ /*
-          },
-          child: Text('See all pending request',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'default',
-              )),
-        ),
-      ),
-    );
-  }
-
-  // Build the button to navigate to the page showing all data
-  Widget buildSeeAllButtonReviewedList(BuildContext context) {
-    return Center(
-      child: Material(
-        elevation: 5,
-        borderRadius: BorderRadius.circular(10),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-            fixedSize: Size(MediaQuery.of(context).size.width * 0.9,
-                MediaQuery.of(context).size.height * 0.08),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          onPressed: () {
-            */ /*    Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ISPReviewedList()));*/ /*
-          },
-          child: Text('See all reviewed request',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'default',
-              )),
-        ),
-      ),
-    );
-  }*/
-
   @override
   void initState() {
     super.initState();
@@ -438,17 +361,11 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
     print('initState called');
     if (!_isFetched) {
       fetchConnectionRequests();
-      //_isFetched = true; // Set _isFetched to true after the first call
     }
-    // loadUserProfile();
     Future.delayed(Duration(seconds: 5), () {
       if (widget.shouldRefresh && !_isFetched) {
-        //  loadUserProfile();
-        // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
-        // connectionRequests = [];
       }
-      // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
         print('Page Loading');
         _pageLoading = false;
@@ -470,7 +387,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
-              // Show circular loading indicator while waiting
               child: CircularProgressIndicator(),
             ),
           )
@@ -537,16 +453,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
                                 ),
                             ],
                           ),
-
-                          /*IconButton(
-                      onPressed: () {
-                        _showLogoutDialog(context);
-                      },
-                      icon: const Icon(
-                        Icons.logout,
-                        color: Colors.white,
-                      ),
-                    ),*/
                         ],
                         bottom: PreferredSize(
                           preferredSize: Size.fromHeight(kToolbarHeight),
@@ -596,10 +502,24 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
                       body: TabBarView(
                         controller: _tabController,
                         children: [
-                          // Widget for Pending Requests tab
-                          buildPendingRequests(context),
-                          // Widget for Accepted Requests tab
-                          buildAcceptedRequests(context),
+                          AdminRequestsBody(
+                            scrollController: _scrollController,
+                            Requests: pendingRequests,
+                            isLoading: _isLoading,
+                            canFetchMore: canFetchMorePending,
+                            fetchMoreConnectionRequests:
+                                fetchMoreConnectionRequests,
+                            Type: 'Pending',
+                          ),
+                          AdminRequestsBody(
+                            scrollController: _scrollController,
+                            Requests: acceptedRequests,
+                            isLoading: _isLoading,
+                            canFetchMore: canFetchMorePending,
+                            fetchMoreConnectionRequests:
+                                fetchMoreConnectionRequests,
+                            Type: 'Accepted',
+                          ),
                         ],
                       ),
                       bottomNavigationBar: Container(
@@ -778,7 +698,7 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -795,18 +715,12 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
-
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
@@ -831,218 +745,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             )
           ],
         );
-      },
-    );
-  }
-
-  // Function to build the list of pending requests
-  Widget buildPendingRequests(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthAuthenticated) {
-          final userProfile = state.userProfile;
-          return SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SafeArea(
-                  child: Container(
-                    color: Colors.grey[100],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Text(
-                            'Welcome, ${userProfile.name}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: Text(
-                            'All Pending Requests',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default',
-                            ),
-                          ),
-                        ),
-                        Divider(),
-                      ],
-                    ),
-                  ),
-                ),
-                pendingRequests.isNotEmpty
-                    ? NotificationListener<ScrollNotification>(
-                        onNotification: (scrollInfo) {
-                          if (!scrollInfo.metrics.outOfRange &&
-                              scrollInfo.metrics.pixels ==
-                                  scrollInfo.metrics.maxScrollExtent &&
-                              !_isLoading &&
-                              canFetchMorePending) {
-                            fetchMoreConnectionRequests();
-                          }
-                          return true;
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: ListView.separated(
-                            addAutomaticKeepAlives: false,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            // Prevent internal scrolling
-                            itemCount: pendingRequests.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == pendingRequests.length) {
-                                return Center(
-                                  child: _isLoading
-                                      ? Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          child: CircularProgressIndicator(),
-                                        )
-                                      : SizedBox.shrink(),
-                                );
-                              }
-                              return pendingRequests[index];
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
-                          ),
-                        ),
-                      )
-                    : !_isLoading
-                        ? LoadingContainer(screenWidth: screenWidth)
-                        : buildNoRequestsWidget(screenWidth,
-                            'You currently don\'t have any new requests pending.'),
-              ],
-            ),
-          );
-        } else {
-          return Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
-    );
-  }
-
-// Function to build the list of accepted requests
-  Widget buildAcceptedRequests(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthAuthenticated) {
-          final userProfile = state.userProfile;
-          return SingleChildScrollView(
-            controller: _scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SafeArea(
-                  child: Container(
-                    color: Colors.grey[100],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Text(
-                            'Welcome, ${userProfile.name}',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Center(
-                          child: const Text(
-                            'All Accepted Requests',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default',
-                            ),
-                          ),
-                        ),
-                        Divider(),
-                      ],
-                    ),
-                  ),
-                ),
-                acceptedRequests.isNotEmpty
-                    ? NotificationListener<ScrollNotification>(
-                        onNotification: (scrollInfo) {
-                          if (!scrollInfo.metrics.outOfRange &&
-                              scrollInfo.metrics.pixels ==
-                                  scrollInfo.metrics.maxScrollExtent &&
-                              !_isLoading &&
-                              canFetchMoreAccepted) {
-                            fetchMoreConnectionRequests();
-                          }
-                          return true;
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: ListView.separated(
-                            addAutomaticKeepAlives: false,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            // Prevent internal scrolling
-                            itemCount: acceptedRequests.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index == acceptedRequests.length) {
-                                return Center(
-                                  child: _isLoading
-                                      ? Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 20),
-                                          child: CircularProgressIndicator(),
-                                        )
-                                      : SizedBox.shrink(),
-                                );
-                              }
-                              return acceptedRequests[index];
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
-                          ),
-                        ),
-                      )
-                    : !_isLoading
-                        ? LoadingContainer(screenWidth: screenWidth)
-                        : buildNoRequestsWidget(screenWidth,
-                            'No connection requests reviewed yet.'),
-              ],
-            ),
-          );
-        } else {
-          return Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
       },
     );
   }
@@ -1113,8 +815,6 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
     );
 
     overlay?.insert(overlayEntry);
-
-    // Remove the overlay when tapping outside
     Future.delayed(Duration(seconds: 5), () {
       if (overlayEntry.mounted) {
         overlayEntry.remove();

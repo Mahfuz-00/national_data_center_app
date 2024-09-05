@@ -1,13 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Dashboard)/apiserviceDashboardFull.dart';
 import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Sorting)/apiServiceSortingFull.dart';
-import 'package:ndc_app/UI/Widgets/requestWidgetShowAll.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
@@ -19,10 +16,61 @@ import '../../Widgets/dropdownfield.dart';
 import '../../Widgets/templateerrorcontainer.dart';
 import '../../Widgets/templateloadingcontainer.dart';
 import '../../Widgets/visitorRequestInfoCardSecurityAdmin.dart';
-import '../Analytics UI/analyticsUI.dart';
 import '../Login UI/loginUI.dart';
 import '../Profile UI/profileUI.dart';
 
+/// [SecurityAdminDashboardUI] is a StatefulWidget that represents the dashboard for security administrators.
+/// It fetches, displays, and manages connection requests, providing functionalities for sorting, searching,
+/// and pagination of data. The dashboard enhances user experience by allowing administrators to monitor
+/// appointment requests effectively.
+///
+/// **Constructor Parameters:**
+/// - [shouldRefresh]: A boolean that determines if the dashboard should refresh its content upon initialization. Defaults to false.
+///
+/// **State Variables:**
+/// - [scaffoldKey]: A GlobalKey used to manage the scaffold state.
+/// - [_Clockcontroller]: A TextEditingController for managing time input for appointments.
+/// - [_Datecontroller]: A TextEditingController for managing date input for appointments.
+/// - [_EntryTimeClockcontroller]: A TextEditingController for managing entry time input.
+/// - [pendingRequests]: A list of widgets representing pending connection requests.
+/// - [acceptedRequests]: A list of widgets representing accepted connection requests.
+/// - [SortedpendingRequests]: A list of widgets for sorted pending connection requests.
+/// - [SortedacceptedRequests]: A list of widgets for sorted accepted connection requests.
+/// - [_isFetched]: A boolean indicating if the connection requests have been fetched.
+/// - [_isFetchedSorted]: A boolean indicating if sorted requests have been fetched.
+/// - [_isLoading]: A boolean indicating if data is currently being loaded.
+/// - [_pageLoading]: A boolean indicating if the initial page is loading.
+/// - [_errorOccurred]: A boolean indicating if an error has occurred during data fetching.
+/// - [_buttonloading]: A boolean indicating if a button is currently in a loading state.
+/// - [monthlyData]: A map to store monthly data retrieved from the API.
+/// - [dailyData]: A map to store daily data retrieved from the API.
+/// - [appointmentDate]: A string representing the date of the appointment.
+/// - [appointmentTime]: A string representing the time of the appointment.
+/// - [userName]: A string for the name of the user.
+/// - [organizationName]: A string for the organization name.
+/// - [photoUrl]: A string for the URL of the user's photo.
+/// - [notifications]: A list of notifications received from the API.
+/// - [_selectedSector]: A string for the selected sector from the dropdown menu.
+/// - [issearchbuttonclicked]: A boolean indicating if the search button has been clicked.
+/// - [scrollController]: A ScrollController to manage scrolling in the dashboard.
+/// - [acceptedPagination]: An instance of Pagination for managing pagination of accepted requests.
+/// - [canFetchMoreAccepted]: A boolean indicating if more accepted requests can be fetched.
+/// - [url]: A string holding the URL for fetching more accepted requests.
+///
+/// **Methods:**
+/// - [fetchConnectionRequests]: An asynchronous method that fetches connection requests from the API and updates the UI accordingly.
+/// - [fetchSortedConnectionRequests]: An asynchronous method that fetches sorted connection requests based on provided [Date], [Clock], and [Sector].
+/// - [fetchMoreConnectionRequests]: An asynchronous method to fetch additional connection requests when paginated results are available.
+/// - [fetchMoreSortedConnectionRequests]: An asynchronous method that fetches more sorted connection requests based on the specified [Date], [Clock], and [Sector].
+///
+/// **Actions:**
+/// - [_showNotificationsOverlay(context)]: Displays the notifications overlay.
+/// - [fetchSortedConnectionRequests(Date, Clock, Sector)]: Fetches connection requests based on the applied filters.
+/// - [fetchMoreConnectionRequests]: Loads additional accepted connection requests when the user scrolls to the bottom.
+/// - [fetchMoreSortedConnectionRequests]: Loads additional sorted connection requests based on user input when scrolling.
+/// - [buildNoRequestsWidget]: Constructs a widget to display when no appointment requests are found.
+/// - [LoadingContainer]: Displays a loading container while waiting for data to load.
+/// - [_showLogoutDialog]: Displays a confirmation dialog for user logout.
 class SecurityAdminDashboardUI extends StatefulWidget {
   final bool shouldRefresh;
 
@@ -30,7 +78,8 @@ class SecurityAdminDashboardUI extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<SecurityAdminDashboardUI> createState() => _SecurityAdminDashboardUIState();
+  State<SecurityAdminDashboardUI> createState() =>
+      _SecurityAdminDashboardUIState();
 }
 
 class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
@@ -53,7 +102,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
   late Map<String, dynamic> dailyData;
   late String appointmentDate;
   late String appointmentTime;
-
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
@@ -75,30 +123,13 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
     DropdownMenuItem(child: Text("Email"), value: "Email"),
   ];
 
-/*  Future<void> loadUserProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? '';
-      organizationName = prefs.getString('organizationName') ?? '';
-      photoUrl = prefs.getString('photoUrl') ?? '';
-      photoUrl = 'https://bcc.touchandsolve.com' + photoUrl;
-      print('User Name: $userName');
-      print('Organization Name: $organizationName');
-      print('Photo URL: $photoUrl');
-      print('User profile got it!!!!');
-    });
-  }*/
-
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
     try {
       final apiService = await DashboardAPIService.create();
-
-      // Fetch dashboard data
       final Map<String, dynamic>? dashboardData =
           await apiService.fetchDashboardItems();
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
@@ -108,13 +139,11 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
       final Map<String, dynamic>? records = dashboardData['records'] ?? [];
       print(records);
       if (records == null || records.isEmpty) {
-        // No records available
         print('No records available');
         return;
       }
 
       print(issearchbuttonclicked);
-
       final Map<String, dynamic> pagination = records['pagination'] ?? {};
       print(pagination);
 
@@ -130,10 +159,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
         canFetchMoreAccepted = false;
       }
 
-      // Extract notifications
       notifications = List<String>.from(records['notifications'] ?? []);
-
-      // Simulate fetching data for 5 seconds
       await Future.delayed(Duration(seconds: 3));
 
       final List<dynamic> acceptedRequestsData = records['Accepted'] ?? [];
@@ -157,7 +183,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
       await saveDailyDataToSharedPreferences(dailyDataJson);
 */
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return SecurityAdminVisitorRequestInfoCard(
           Name: request['name'],
@@ -181,11 +206,8 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
     } catch (e) {
       print('Error fetching connection requests: $e');
       _isFetched = true;
-      //_errorOccurred = true;
-      // Handle error as needed
     }
   }
-
   bool recordsdata = false;
 
   Future<void> fetchSortedConnectionRequests(
@@ -201,18 +223,13 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
     print('Sector Sent: $Sector');
     try {
       final apiService = await SortingAPIService.create();
-
-      print('1');
-      // Fetch dashboard data
       final Map<String, dynamic>? dashboardData =
           await apiService.filterData(Date, Clock, Sector);
       if (dashboardData == null || dashboardData.isEmpty) {
-        // No data available or an error occurred
         print(
             'No data available or error occurred while fetching dashboard data');
         return;
       }
-      print('2');
       print(dashboardData);
 
       final Map<String, dynamic> records = dashboardData['records'];
@@ -222,16 +239,12 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
           recordsdata = true;
           _isFetchedSorted = true;
         });
-        // No records available
         print('No records available');
         return;
       }
 
-      print('3');
-
       final Map<String, dynamic> pagination = records['pagination'] ?? {};
       print(pagination.toString());
-
       acceptedPagination = Pagination.fromJson(pagination);
       if (acceptedPagination.nextPage != 'None' &&
           acceptedPagination.nextPage!.isNotEmpty) {
@@ -243,7 +256,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
         canFetchMoreAccepted = false;
       }
 
-      // Set isLoading to true while fetching data
       setState(() {
         _isLoading = true;
       });
@@ -254,7 +266,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
             'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
       }
 
-      // Map accepted requests to widgets
       final List<Widget> acceptedWidgets = acceptedRequestsData.map((request) {
         return SecurityAdminVisitorRequestInfoCard(
           Name: request['name'],
@@ -288,7 +299,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
       _isLoading = true;
     });
     print(url);
-
     try {
       if (url != '' && url.isNotEmpty) {
         final apiService = await FullDashboardAPIService.create();
@@ -327,7 +337,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
               'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
         }
 
-        // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
           return SecurityAdminVisitorRequestInfoCard(
@@ -382,7 +391,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
         final apiService = await SortingFullAPIService.create();
         final Map<String, dynamic> dashboardData =
             await apiService.filterFullData(Date, Clock, Sector, url);
-
         if (dashboardData == null || dashboardData.isEmpty) {
           print(
               'No data available or error occurred while fetching dashboard data');
@@ -416,7 +424,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
               'Accepted Request at index $index: ${acceptedRequestsData[index]}\n');
         }
 
-        // Map accepted requests to widgets
         final List<Widget> acceptedWidgets =
             acceptedRequestsData.map((request) {
           return SecurityAdminVisitorRequestInfoCard(
@@ -490,17 +497,11 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
     });
     if (!_isFetched) {
       fetchConnectionRequests();
-      //_isFetched = true; // Set _isFetched to true after the first call
     }
-    // loadUserProfile();
     Future.delayed(Duration(seconds: 2), () {
       if (widget.shouldRefresh && !_isFetched) {
-        //   loadUserProfile();
-        // Refresh logic here, e.g., fetch data again
         print('Page Loading Done!!');
-        // connectionRequests = [];
       }
-      // After 5 seconds, set isLoading to false to stop showing the loading indicator
       setState(() {
         print('Page Loading');
         _pageLoading = false;
@@ -522,7 +523,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
-              // Show circular loading indicator while waiting
               child: CircularProgressIndicator(),
             ),
           )
@@ -590,12 +590,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                 ),
                             ],
                           ),
-                          /*     IconButton(
-                onPressed: () {
-                  _showLogoutDialog(context);
-                },
-                icon: const Icon(Icons.logout, color: Colors.white,),
-              ),*/
                         ],
                       ),
                       body: SingleChildScrollView(
@@ -612,7 +606,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                   Center(
                                     child: Text(
                                       'Welcome, ${userProfile.name}',
-                                      //textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 25,
@@ -647,19 +640,15 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                               TextFormField(
                                                 controller: _Datecontroller,
                                                 validator: (value) {
-                                                  // Check if the text field is empty or contains a valid date
                                                   if (value == null ||
                                                       value.isEmpty) {
                                                     return 'Please select a date';
                                                   }
-                                                  // You can add more complex validation logic if needed
                                                   return null;
                                                 },
                                                 readOnly: true,
-                                                // Make the text field readonly
                                                 enableInteractiveSelection:
                                                     false,
-                                                // Disable interactive selection
                                                 style: const TextStyle(
                                                   color: Color.fromRGBO(
                                                       143, 150, 158, 1),
@@ -686,7 +675,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             12.0),
-                                                    // Adjust the padding as needed
                                                     child: Icon(
                                                       Icons
                                                           .calendar_today_outlined,
@@ -700,7 +688,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                   color: Colors.transparent,
                                                   child: InkWell(
                                                     onTap: () {
-                                                      // Show the date picker dialog
                                                       showDatePicker(
                                                         context: context,
                                                         initialDate:
@@ -710,16 +697,13 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                         lastDate:
                                                             DateTime(2100),
                                                       ).then((selectedDate) {
-                                                        // Check if a date is selected
                                                         if (selectedDate !=
                                                             null) {
-                                                          // Format the selected date as needed
                                                           final formattedDate =
                                                               DateFormat(
                                                                       'dd-MM-yyyy')
                                                                   .format(
                                                                       selectedDate);
-                                                          // Set the formatted date to the controller
                                                           _Datecontroller.text =
                                                               formattedDate;
                                                           print(formattedDate);
@@ -752,19 +736,15 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                               TextFormField(
                                                 controller: _Clockcontroller,
                                                 validator: (value) {
-                                                  // Check if the text field is empty or contains a valid time
                                                   if (value == null ||
                                                       value.isEmpty) {
                                                     return 'Please select a time';
                                                   }
-                                                  // You can add more complex validation logic if needed
                                                   return null;
                                                 },
                                                 readOnly: true,
-                                                // Make the text field readonly
                                                 enableInteractiveSelection:
                                                     false,
-                                                // Disable interactive selection
                                                 style: const TextStyle(
                                                   color: Color.fromRGBO(
                                                       143, 150, 158, 1),
@@ -791,7 +771,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             12.0),
-                                                    // Adjust the padding as needed
                                                     child: Icon(
                                                       Icons.schedule_rounded,
                                                       size: 25,
@@ -804,20 +783,13 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                   color: Colors.transparent,
                                                   child: InkWell(
                                                     onTap: () {
-                                                      // Show the time picker dialog
                                                       showTimePicker(
                                                         context: context,
                                                         initialTime:
                                                             TimeOfDay.now(),
                                                       ).then((selectedTime) {
-                                                        // Check if a time is selected
                                                         if (selectedTime !=
                                                             null) {
-                                                          // Convert selectedTime to a formatted string
-                                                          /*String formattedTime =
-                                              selectedTime.hour.toString().padLeft(2, '0') +
-                                                  ':' +
-                                                  selectedTime.minute.toString().padLeft(2, '0');*/
                                                           String formattedTime =
                                                               DateFormat(
                                                                       'h:mm a')
@@ -832,7 +804,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                                     .minute),
                                                           );
                                                           print(formattedTime);
-                                                          // Set the formatted time to the controller
                                                           _Clockcontroller
                                                                   .text =
                                                               formattedTime;
@@ -865,7 +836,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                       onChanged: (value) {
                                         setState(() {
                                           _selectedSector = value ?? '';
-                                          //print('New: $_selectedUserType');
                                         });
                                       },
                                     ),
@@ -909,13 +879,11 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                           } else {
                                             Date = _Datecontroller.text;
                                           }
-
                                           if (_Clockcontroller.text.isEmpty) {
                                             Clock = ' ';
                                           } else {
                                             Clock = _Clockcontroller.text;
                                           }
-
                                           if (_selectedSector == null) {
                                             Sector = ' ';
                                           } else {
@@ -923,11 +891,9 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                           }
 
                                           print('Button pressed');
-
                                           print('Date: $Date');
                                           print('Time: $Clock');
                                           print('Sector: $Sector');
-
                                           fetchSortedConnectionRequests(
                                               Date, Clock, Sector);
                                         }
@@ -970,14 +936,12 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                   !_isLoading &&
                                                   canFetchMoreAccepted) {
                                                 setState(() {
-                                                  _isLoading =
-                                                      true; // Ensure loading state is set before fetching
+                                                  _isLoading = true;
                                                 });
                                                 fetchMoreConnectionRequests()
                                                     .then((_) {
                                                   setState(() {
-                                                    _isLoading =
-                                                        false; // Reset loading state after fetching
+                                                    _isLoading = false;
                                                   });
                                                 });
                                               }
@@ -988,7 +952,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                               shrinkWrap: true,
                                               physics:
                                                   NeverScrollableScrollPhysics(),
-                                              // Prevent internal scrolling
                                               itemCount:
                                                   acceptedRequests.length + 1,
                                               itemBuilder: (context, index) {
@@ -1037,7 +1000,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                             child: Center(
                                                 child:
                                                     CircularProgressIndicator()),
-                                          ) // Show circular progress indicator when button is clicked
+                                          )
                                         : SortedacceptedRequests.isNotEmpty
                                             ? NotificationListener<
                                                 ScrollNotification>(
@@ -1051,8 +1014,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                       !_isLoading &&
                                                       canFetchMoreAccepted) {
                                                     setState(() {
-                                                      _isLoading =
-                                                          true; // Ensure loading state is set before fetching
+                                                      _isLoading = true;
                                                     });
                                                     fetchMoreSortedConnectionRequests(
                                                             _Datecontroller
@@ -1062,8 +1024,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                             _selectedSector)
                                                         .then((_) {
                                                       setState(() {
-                                                        _isLoading =
-                                                            false; // Reset loading state after fetching
+                                                        _isLoading = false;
                                                       });
                                                     });
                                                   }
@@ -1074,7 +1035,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                   shrinkWrap: true,
                                                   physics:
                                                       NeverScrollableScrollPhysics(),
-                                                  // Prevent internal scrolling
                                                   itemCount:
                                                       SortedacceptedRequests
                                                               .length +
@@ -1112,82 +1072,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                                 : buildNoRequestsWidget(
                                                     screenWidth,
                                                     'No appointment found'),
-                                    /* Container(
-                                //height: screenHeight*0.25,
-                                child: FutureBuilder<void>(
-                                    future: _isLoading
-                                        ? null
-                                        : fetchSortedConnectionRequests(
-                                            _Datecontroller.text,
-                                            _Clockcontroller.text,
-                                            _selectedSector),
-                                    builder: (context, snapshot) {
-                                      if (!_isFetchedSorted) {
-                                        // Return a loading indicator while waiting for data
-                                        return Container(
-                                          height:
-                                              200, // Adjust height as needed
-                                          width:
-                                              screenWidth, // Adjust width as needed
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                      } else if (snapshot.hasError) {
-                                        // Handle errors
-                                        return buildNoRequestsWidget(
-                                            screenWidth,
-                                            'Error: ${snapshot.error}');
-                                      } else if (_isFetchedSorted) {
-                                        if (recordsdata == true) {
-                                          // Handle the case when there are no pending connection requests
-                                          return buildNoRequestsWidget(
-                                              screenWidth,
-                                              'No appointment found');
-                                        } else if (SortedacceptedRequests
-                                            .isNotEmpty) {
-                                          // If data is loaded successfully, display the ListView
-                                          return Container(
-                                            child: Column(
-                                              children: [
-                                                ListView.separated(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      NeverScrollableScrollPhysics(),
-                                                  itemCount:
-                                                      */ /*SortedacceptedRequests.length > 10
-                                                      ? 10
-                                                      :*/ /*
-                                                      SortedacceptedRequests
-                                                          .length,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    // Display each connection request using ConnectionRequestInfoCard
-                                                    return SortedacceptedRequests[
-                                                        index];
-                                                  },
-                                                  separatorBuilder:
-                                                      (context, index) =>
-                                                          const SizedBox(
-                                                              height: 10),
-                                                ),
-                                                */ /*  if (shouldShowSeeAllButton(
-                                            acceptedConnectionRequests))
-                                          buildSeeAllButtonReviewedList(
-                                              context),*/ /*
-                                              ],
-                                            ),
-                                          );
-                                        }
-                                      }
-                                      return SizedBox();
-                                    }),
-                              ),*/
                                   ],
                                   const SizedBox(height: 10),
                                 ],
@@ -1244,7 +1128,8 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const ProfileUI()));
+                                        builder: (context) =>
+                                            const ProfileUI()));
                               },
                               behavior: HitTestBehavior.translucent,
                               child: Container(
@@ -1369,7 +1254,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Cancel',
@@ -1386,18 +1271,12 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    // Clear user data from SharedPreferences
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.remove('userName');
                     await prefs.remove('organizationName');
                     await prefs.remove('photoUrl');
-                    // Create an instance of LogOutApiService
                     var logoutApiService = await LogOutApiService.create();
-
-                    // Wait for authToken to be initialized
                     logoutApiService.authToken;
-
-                    // Call the signOut method on the instance
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
@@ -1405,7 +1284,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  LoginUI())); // Close the drawer
+                                  LoginUI()));
                     }
                   },
                   child: Text(
@@ -1477,7 +1356,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                             leading: Icon(Icons.info_outline),
                             title: Text(notifications[index]),
                             onTap: () {
-                              // Handle notification tap if necessary
                               overlayEntry.remove();
                             },
                           ),
@@ -1492,8 +1370,6 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
     );
 
     overlay?.insert(overlayEntry);
-
-    // Remove the overlay when tapping outside
     Future.delayed(Duration(seconds: 5), () {
       if (overlayEntry.mounted) {
         overlayEntry.remove();
