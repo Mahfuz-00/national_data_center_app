@@ -155,7 +155,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
           final userProfile = state.userProfile;
           return  InternetConnectionChecker(
             child: PopScope(
-              canPop: false,
+            /*  canPop: false,*/
               child: Scaffold(
                 key: _scaffoldKey,
                 appBar: AppBar(

@@ -533,7 +533,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                 print('Welcome, ${userProfile.name}');
                 return InternetConnectionChecker(
                   child: PopScope(
-                    canPop: false,
+             /*       canPop: false,*/
                     child: Scaffold(
                       key: _scaffoldKey,
                       appBar: AppBar(

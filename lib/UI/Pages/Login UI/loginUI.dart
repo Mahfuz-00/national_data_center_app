@@ -283,45 +283,50 @@ class _LoginUIState extends State<LoginUI> {
                                       print('Checking $userType');
                                       if (userType != null) {
                                         if (userType == 'ndc_internal') {
-                                          Navigator.pushReplacement(
+                                          Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     VisitorDashboardUI(
                                                         shouldRefresh: true)),
+                                                (route) => false,
                                           );
                                         } else if (userType == 'ndc_vendor') {
-                                          Navigator.pushReplacement(
+                                          Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     VisitorDashboardUI(
                                                         shouldRefresh: true)),
+                                                (route) => false,
                                           );
                                         } else if (userType == 'ndc_customer') {
-                                          Navigator.pushReplacement(
+                                          Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     VisitorDashboardUI(
                                                         shouldRefresh: true)),
+                                                (route) => false,
                                           );
                                         } else if (userType == 'ndc_admin') {
-                                          Navigator.pushReplacement(
+                                          Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     AdminDashboardUI(
                                                         shouldRefresh: true)),
+                                                (route) => false,
                                           );
                                         } else if (userType ==
                                             'ndc_security_admin') {
-                                          Navigator.pushReplacement(
+                                          Navigator.pushAndRemoveUntil(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     SecurityAdminDashboardUI(
                                                         shouldRefresh: true)),
+                                                (route) => false,
                                           );
                                         } else {
                                           String errorMessage =

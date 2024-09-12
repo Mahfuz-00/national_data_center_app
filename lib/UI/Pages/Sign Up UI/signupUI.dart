@@ -253,8 +253,10 @@ class _SignupUIState extends State<SignupUI> {
                                   icon: Icon(_getIconPassword()),
                                   onPressed: () {
                                     setState(() {
-                                      _isObscuredPassword = !_isObscuredPassword;
-                                      _passwordController.text = _passwordController.text;
+                                      _isObscuredPassword =
+                                          !_isObscuredPassword;
+                                      _passwordController.text =
+                                          _passwordController.text;
                                     });
                                   },
                                 ),
@@ -272,8 +274,10 @@ class _SignupUIState extends State<SignupUI> {
                                   icon: Icon(_getIconConfirmPassword()),
                                   onPressed: () {
                                     setState(() {
-                                      _isObscuredConfirmPassword = !_isObscuredConfirmPassword;
-                                      _confirmPasswordController.text = _confirmPasswordController.text;
+                                      _isObscuredConfirmPassword =
+                                          !_isObscuredConfirmPassword;
+                                      _confirmPasswordController.text =
+                                          _confirmPasswordController.text;
                                     });
                                   },
                                 ),
@@ -471,9 +475,10 @@ class _SignupUIState extends State<SignupUI> {
             _isButtonLoading = false;
           });
           clearForm();
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginUI()),
+            (route) => false,
           );
           const snackBar = SnackBar(
             content: Text('Registration Submitted!'),

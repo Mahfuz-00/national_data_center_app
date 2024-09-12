@@ -534,7 +534,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
         if (response == 'Visitor Request Already Exist') {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => VisitorDashboardUI()),
+            MaterialPageRoute(builder: (context) => SplashScreenUI()),
             (route) => false,
           );
           const snackBar = SnackBar(
