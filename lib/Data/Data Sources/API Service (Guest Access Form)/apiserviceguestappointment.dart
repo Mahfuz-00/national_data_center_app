@@ -69,11 +69,13 @@ class GuestAppointmentRequestAPIService {
         requestMultipart.fields[key] = value.toString();
       });
 
-      requestMultipart.files.add(await http.MultipartFile.fromPath(
-        'document_file',
-        documentFile!.path,
-        filename: basename(documentFile.path),
-      ));
+      if (documentFile != null) {
+        requestMultipart.files.add(await http.MultipartFile.fromPath(
+          'document_file',
+          documentFile.path,
+          filename: basename(documentFile.path),
+        ));
+      }
 
       var streamedResponse = await requestMultipart.send();
       var response = await http.Response.fromStream(streamedResponse);

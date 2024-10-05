@@ -59,7 +59,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
   late TextEditingController _phonecontroller;
   late TextEditingController _emailcontroller;
   late TextEditingController _commentcontroller;
-  late TextEditingController _personnelcontroller;
   late TextEditingController _belongscontroller;
   late TextEditingController _appointmentwithcontroller;
   late TextEditingController _devicemodelcontroller;
@@ -100,7 +99,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
     _phonecontroller = TextEditingController();
     _emailcontroller = TextEditingController();
     _commentcontroller = TextEditingController();
-    _personnelcontroller = TextEditingController();
     _belongscontroller = TextEditingController();
     _devicemodelcontroller = TextEditingController();
     _deviceserialcontroller = TextEditingController();
@@ -116,7 +114,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
           Mobile: '',
           Email: '',
           Purpose: '',
-          Personnel: '',
           Belongs: '',
           Sector: '',
           DeviceModel: '',
@@ -349,18 +346,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                 return null;
                               },
                             ),
-                            SizedBox(height: 10),
-                            CustomTextFormField(
-                              height: true,
-                              controller: _personnelcontroller,
-                              labelText: 'Name(s) of Personnel',
-                              validator: (input) {
-                                if (input == null || input.isEmpty) {
-                                  return 'Please enter the name(s) of the accompanying personnel';
-                                }
-                                return null;
-                              },
-                            ),
                             SizedBox(
                               height: 10,
                             ),
@@ -560,7 +545,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
           Mobile: _phonecontroller.text,
           Email: _emailcontroller.text,
           Purpose: _commentcontroller.text,
-          Personnel: _personnelcontroller.text,
           Belongs: _belongscontroller.text,
           Sector: _selectedSector,
           DeviceModel: _devicemodelcontroller.text,
@@ -630,7 +614,6 @@ class _AccessFormUIState extends State<AccessFormUI> {
     final PhoneIsValid = _phonecontroller.text.isNotEmpty;
     final EmailIsValid = _emailcontroller.text.isNotEmpty;
     final PurposeIsValid = _commentcontroller.text.isNotEmpty;
-    final PersonnelIsValid = _personnelcontroller.text.isNotEmpty;
     final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
     final SectorIsValid = _selectedSector.isNotEmpty;
     final AppointmentDateIsValid = appointmentDate.isNotEmpty;
@@ -641,7 +624,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
         OrganizationIsValid &&
         DesignationIsValid &&
         PhoneIsValid &&
-        EmailIsValid && PurposeIsValid && PersonnelIsValid && BelongingsIsValid &&
+        EmailIsValid && PurposeIsValid && BelongingsIsValid &&
         SectorIsValid &&
         AppointmentDateIsValid &&
         AppointmentTimeValid;

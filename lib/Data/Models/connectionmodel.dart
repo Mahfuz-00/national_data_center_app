@@ -27,7 +27,6 @@ class AppointmentRequestModel {
   final String Mobile;
   final String Email;
   final String Purpose;
-  final String Personnel;
   final String Belongs;
   final String Sector;
   final String DeviceModel;
@@ -44,7 +43,6 @@ class AppointmentRequestModel {
     required this.Mobile,
     required this.Email,
     required this.Purpose,
-    required this.Personnel,
     required this.Belongs,
     required this.Sector,
     required this.DeviceModel,
@@ -63,7 +61,6 @@ class AppointmentRequestModel {
       'phone': Mobile,
       'email': Email,
       'purpose': Purpose,
-      'name_of_personnel': Personnel,
       'belong': Belongs,
       'sector': Sector,
       'device_model': DeviceModel,

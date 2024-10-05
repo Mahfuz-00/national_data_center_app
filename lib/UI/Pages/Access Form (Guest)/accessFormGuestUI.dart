@@ -266,7 +266,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                         },
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       CustomTextFormField(
                         controller: _belongscontroller,
@@ -477,19 +477,52 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
 
   Future<void> _pickFile() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'],
+      );
 
       if (result != null) {
-        setState(() {
-          _file = File(result.files.single.path!);
-        });
+        String? fileExtension = result.files.single.extension;
+
+        List<String> allowedExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
+
+        if (fileExtension != null && allowedExtensions.contains(fileExtension.toLowerCase())) {
+          if (result.files.single.size <= 21000 * 1024) {
+            setState(() {
+              _file = File(result.files.single.path!);
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("File exceeds the maximum allowed size of 21 MB."),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Invalid file extension. Allowed types: pdf, doc, docx, ppt, pptx, xls, xlsx."),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
       } else {
-        // User canceled the picker
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("No file selected."),
+            duration: Duration(seconds: 3),
+          ),
+        );
       }
     } catch (e) {
       print('Error picking file: $e');
     }
   }
+
+
+
 
   void _connectionRequestForm() {
     print('Full Name: ${_fullnamecontroller.text}');
