@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import 'overlaytext.dart';
 
 /// A custom [TextFormField] widget that encapsulates a [TextEditingController],
 /// label text, validation logic, keyboard type, input formatters, read-only state,
@@ -24,6 +27,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final String? hinttext;
   final bool? height;
   final bool? obscureText;
   final Widget? suffixIcon;
@@ -38,6 +42,7 @@ class CustomTextFormField extends StatelessWidget {
     required this.validator,
     this.keyboardType,
     this.inputFormatters,
+    this.hinttext,
     this.height,
     this.obscureText,
     this.suffixIcon,
@@ -84,28 +89,38 @@ class CustomTextFormField extends StatelessWidget {
               suffixIcon: suffixIcon ??
                   (readOnly
                       ? Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Icon(
-                      icon == 'Date'
-                          ? Icons.calendar_today_outlined
-                          : icon == 'Clock'
-                          ? Icons.alarm_outlined
-                          : keyboardType == TextInputType.phone
-                          ? Icons.phone
-                          : null,
-                      size: 25,
-                    ),
-                  )
+                          padding: const EdgeInsets.all(12.0),
+                          child: Icon(
+                            icon == 'Date'
+                                ? Icons.calendar_today_outlined
+                                : icon == 'Clock'
+                                    ? Icons.alarm_outlined
+                                    : keyboardType == TextInputType.phone
+                                        ? Icons.phone
+                                        : null,
+                            size: 25,
+                          ),
+                        )
                       : null),
               contentPadding: height == true
                   ? EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: MediaQuery.of(context).size.height * 0.18)
+                      horizontal: 10,
+                      vertical: MediaQuery.of(context).size.height * 0.18)
                   : null,
               alignLabelWithHint: true,
               isDense: true,
+              errorStyle: const TextStyle(
+                height: 1,
+                fontSize: 10,
+              ),
             ),
-            onTap: onTap,
+            onTap: onTap != null
+                ? onTap
+                : hinttext != null
+                ? () {
+              showCustomOverlay(context, hinttext!);
+            }
+                : null,
           ),
           if (onTap != null && readOnly)
             Positioned.fill(

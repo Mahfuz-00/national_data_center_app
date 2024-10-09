@@ -244,11 +244,29 @@ class _SignupUIState extends State<SignupUI> {
                               CustomTextFormField(
                                 controller: _passwordController,
                                 labelText: 'Password',
+                                hinttext:
+                                    "Password should be more than 7 characters and must include an uppercase letter, a lowercase letter, a number, and a special character.",
                                 validator: (input) {
                                   if (input!.length < 8) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "Password should be more than 7 characters"),
+                                        duration: Duration(seconds: 3),
+                                      ),
+                                    );
                                     return "Password should be more than 7 characters";
-                                  } else if (!RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]').hasMatch(input)) {
-                                    return "Password must contain uppercase, lowercase, number, and special character";
+                                  } else if (!RegExp(
+                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
+                                      .hasMatch(input)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "Password must include an uppercase letter, a lowercase letter, a number, and a special character."),
+                                        duration: Duration(seconds: 3),
+                                      ),
+                                    );
+                                    return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
                                   }
                                   return null;
                                 },
@@ -270,11 +288,15 @@ class _SignupUIState extends State<SignupUI> {
                               CustomTextFormField(
                                 controller: _confirmPasswordController,
                                 labelText: 'Confirm Password',
+                                hinttext:
+                                    "Password should be more than 7 characters and must include an uppercase letter, a lowercase letter, a number, and a special character.",
                                 validator: (input) {
                                   if (input!.length < 8) {
                                     return "Password should be more than 7 characters";
-                                  } else if (!RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]').hasMatch(input)) {
-                                    return "Password must contain uppercase, lowercase, number, and special character";
+                                  } else if (!RegExp(
+                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
+                                      .hasMatch(input)) {
+                                    return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
                                   }
                                   return null;
                                 },
@@ -552,7 +574,7 @@ class _SignupUIState extends State<SignupUI> {
           content: Text('Passwords do not match'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      } else {
+      } else if (validateAndSave() == false) {
         const snackBar = SnackBar(
           content: Text('Fill all Fields'),
         );
@@ -576,14 +598,128 @@ class _SignupUIState extends State<SignupUI> {
 
   Future<void> _selectImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              'Choose an option',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color.fromRGBO(13, 70, 127, 1),
+                fontWeight: FontWeight.bold,
+                fontFamily: 'default',
+                fontSize: 22,
+              ),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text(
+                  'Gallery',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.gallery);
+                  if (pickedFile != null) {
+                    // Check the file size
+                    final file = File(pickedFile.path);
+                    final fileSize = await file.length();
+                    if (fileSize <= 5 * 1024 * 1024) {
+                      // 5 MB
+                      setState(() {
+                        _imageFile = file;
+                      });
+                      await _getImageDimensions();
+                    } else {
+                      _showErrorDialog("Image must be less than 5 MB.");
+                    }
+                  }
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text(
+                  'Camera',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',
+                    fontSize: 18,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final pickedFile =
+                      await picker.pickImage(source: ImageSource.camera);
+                  if (pickedFile != null) {
+                    // Check the file size
+                    final file = File(pickedFile.path);
+                    final fileSize = await file.length();
+                    if (fileSize <= 5 * 1024 * 1024) {
+                      // 5 MB
+                      setState(() {
+                        _imageFile = file;
+                      });
+                      await _getImageDimensions();
+                    } else {
+                      _showErrorDialog("Image must be less than 5 MB.");
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-      await _getImageDimensions();
-    }
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Error",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color.fromRGBO(13, 70, 127, 1),
+              fontWeight: FontWeight.bold,
+              fontFamily: 'default',
+              fontSize: 22,
+            ),
+          ),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "OK",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'default',
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void clearForm() {

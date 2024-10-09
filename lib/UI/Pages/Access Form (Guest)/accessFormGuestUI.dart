@@ -111,361 +111,358 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return InternetConnectionChecker(
-      child: PopScope(
-        canPop: false,
-        child: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios_new_outlined,
-                  color: Colors.white,
-                )),
-            title: const Text(
-              'Access Request Form',
-              style: TextStyle(
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(13, 70, 127, 1),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_new_outlined,
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                fontFamily: 'default',
-              ),
+              )),
+          title: const Text(
+            'Access Request Form',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              fontFamily: 'default',
             ),
-            centerTitle: true,
           ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 25,
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Text('Access Request Form',
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default')),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                        'Please provide correct details in access request form.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Color.fromRGBO(143, 150, 158, 1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'default')),
+                    SizedBox(height: 20),
+                    CustomTextFormField(
+                      controller: _fullnamecontroller,
+                      labelText: 'Full Name',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter your full name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    CustomTextFormField(
+                      controller: _NIDcontroller,
+                      labelText: 'NID or Passport Number',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter your NID or Passport Number';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _organizationnamecontroller,
+                      labelText: 'Organization',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter the organization yor are representing';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _designationcontroller,
+                      labelText: 'Designation',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter your designation';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _phonecontroller,
+                      labelText: 'Mobile Number',
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(11),
+                      ],
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter your mobile number';
+                        }
+                        if (input.length != 11) {
+                          return 'Mobile number must be 11 digits';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _emailcontroller,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (input) {
+                        if (input!.isEmpty) {
+                          return 'Please enter your email address';
+                        }
+                        final emailRegex = RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                        if (!emailRegex.hasMatch(input)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
+                      labelText: 'Email address',
+                    ),
+                    SizedBox(height: 10),
+                    CustomTextFormField(
+                      height: true,
+                      controller: _commentcontroller,
+                      labelText: 'Purpose of the Visit',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter your purpose of your visit';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _belongscontroller,
+                      labelText: 'Belongings',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter belongings';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _devicemodelcontroller,
+                      labelText: 'Device Model (If any)',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter device model';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _deviceserialcontroller,
+                      labelText: 'Device Serial Number(If any)',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter device serial number';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _devicedescriptioncontroller,
+                      labelText: 'Device Description (If any)',
+                      validator: (input) {
+                        if (input == null || input.isEmpty) {
+                          return 'Please enter the device description';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _Datecontroller,
+                      labelText: 'Appointment Date',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a date';
+                        }
+                        return null;
+                      },
+                      readOnly: true,
+                      icon: 'Date',
+                      onTap: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        ).then((selectedDate) {
+                          if (selectedDate != null) {
+                            final formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
+                            _Datecontroller.text = formattedDate;
+                            print(formattedDate);
+                            appointmentDate = formattedDate;
+                            print(appointmentDate);
+                          } else {
+                            print('No date selected');
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      icon: 'Clock',
+                      controller: _Clockcontroller,
+                      labelText: 'Appointment Time',
+                      readOnly: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a time';
+                        }
+                        return null;
+                      },
+                      onTap: () {
+                        showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        ).then((selectedTime) {
+                          if (selectedTime != null) {
+                            String formattedTime = DateFormat('h:mm a').format(
+                              DateTime(
+                                2020,
+                                1,
+                                1,
+                                selectedTime.hour,
+                                selectedTime.minute,
+                              ),
+                            );
+                            _Clockcontroller.text = formattedTime;
+                            print(formattedTime);
+                            appointmentTime = formattedTime;
+                          }
+                          else{
+                            print('No time selected');
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(13, 70, 127, 1),
+                                fixedSize: Size(
+                                    MediaQuery.of(context).size.width * 0.9,
+                                    MediaQuery.of(context).size.height *
+                                        0.075),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              onPressed: _pickFile,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (_file == null) ...[
+                                    Icon(Icons.document_scanner, color: Colors.white,),
+                                    SizedBox(width: 10,),
+                                    Text('Pick File',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'default',
+                                        )),
+                                  ],
+                                  if (_file != null) ...[
+                                    Text('File Picked',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'default',
+                                        )),
+                                  ]
+                                ],
+                              )),
+                        ],
                       ),
-                      Text('Access Request Form',
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'default')),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Please provide correct details in access request form.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Color.fromRGBO(143, 150, 158, 1),
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromRGBO(13, 70, 127, 1),
+                          fixedSize: Size(
+                              MediaQuery.of(context).size.width * 0.9,
+                              MediaQuery.of(context).size.height * 0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                        onPressed: () {
+                          _connectionRequestForm();
+                        },
+                        child: const Text('Submit',
+                            style: TextStyle(
+                              color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'default')),
-                      SizedBox(height: 20),
-                      CustomTextFormField(
-                        controller: _fullnamecontroller,
-                        labelText: 'Full Name',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter your full name';
-                          }
-                          return null;
-                        },
+                              fontFamily: 'default',
+                            )),
                       ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      CustomTextFormField(
-                        controller: _NIDcontroller,
-                        labelText: 'NID or Passport Number',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter your NID or Passport Number';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _organizationnamecontroller,
-                        labelText: 'Organization',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter the organization yor are representing';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _designationcontroller,
-                        labelText: 'Designation',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter your designation';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _phonecontroller,
-                        labelText: 'Mobile Number',
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(11),
-                        ],
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter your mobile number';
-                          }
-                          if (input.length != 11) {
-                            return 'Mobile number must be 11 digits';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _emailcontroller,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (input) {
-                          if (input!.isEmpty) {
-                            return 'Please enter your email address';
-                          }
-                          final emailRegex = RegExp(
-                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                          if (!emailRegex.hasMatch(input)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                        labelText: 'Email address',
-                      ),
-                      SizedBox(height: 10),
-                      CustomTextFormField(
-                        height: true,
-                        controller: _commentcontroller,
-                        labelText: 'Purpose of the Visit',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter your purpose of your visit';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      CustomTextFormField(
-                        controller: _belongscontroller,
-                        labelText: 'Belongings',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter belongings';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _devicemodelcontroller,
-                        labelText: 'Device Model (If any)',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter device model';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _deviceserialcontroller,
-                        labelText: 'Device Serial Number(If any)',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter device serial number';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _devicedescriptioncontroller,
-                        labelText: 'Device Description (If any)',
-                        validator: (input) {
-                          if (input == null || input.isEmpty) {
-                            return 'Please enter the device description';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        controller: _Datecontroller,
-                        labelText: 'Appointment Date',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a date';
-                          }
-                          return null;
-                        },
-                        readOnly: true,
-                        icon: 'Date',
-                        onTap: () {
-                          showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          ).then((selectedDate) {
-                            if (selectedDate != null) {
-                              final formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
-                              _Datecontroller.text = formattedDate;
-                              print(formattedDate);
-                              appointmentDate = formattedDate;
-                              print(appointmentDate);
-                            } else {
-                              print('No date selected');
-                            }
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomTextFormField(
-                        icon: 'Clock',
-                        controller: _Clockcontroller,
-                        labelText: 'Appointment Time',
-                        readOnly: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a time';
-                          }
-                          return null;
-                        },
-                        onTap: () {
-                          showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          ).then((selectedTime) {
-                            if (selectedTime != null) {
-                              String formattedTime = DateFormat('h:mm a').format(
-                                DateTime(
-                                  2020,
-                                  1,
-                                  1,
-                                  selectedTime.hour,
-                                  selectedTime.minute,
-                                ),
-                              );
-                              _Clockcontroller.text = formattedTime;
-                              print(formattedTime);
-                              appointmentTime = formattedTime;
-                            }
-                            else{
-                              print('No time selected');
-                            }
-                          });
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromRGBO(13, 70, 127, 1),
-                                  fixedSize: Size(
-                                      MediaQuery.of(context).size.width * 0.9,
-                                      MediaQuery.of(context).size.height *
-                                          0.075),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                ),
-                                onPressed: _pickFile,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    if (_file == null) ...[
-                                      Icon(Icons.document_scanner, color: Colors.white,),
-                                      SizedBox(width: 10,),
-                                      Text('Pick File',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          )),
-                                    ],
-                                    if (_file != null) ...[
-                                      Text('File Picked',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'default',
-                                          )),
-                                    ]
-                                  ],
-                                )),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 60,
-                      ),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(13, 70, 127, 1),
-                            fixedSize: Size(
-                                MediaQuery.of(context).size.width * 0.9,
-                                MediaQuery.of(context).size.height * 0.1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                          onPressed: () {
-                            _connectionRequestForm();
-                          },
-                          child: const Text('Submit',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'default',
-                              )),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

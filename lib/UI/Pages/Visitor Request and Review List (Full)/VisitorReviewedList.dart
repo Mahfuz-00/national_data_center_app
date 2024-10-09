@@ -114,7 +114,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
-          Personnel: '',
         );
       }).toList();
 
@@ -184,7 +183,6 @@ class _VisitorReviewedListUIState extends State<VisitorReviewedListUI> {
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
-            Personnel: '',
           );
         }).toList();
 
