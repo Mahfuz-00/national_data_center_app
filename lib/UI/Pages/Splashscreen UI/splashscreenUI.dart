@@ -40,12 +40,12 @@ class _SplashScreenUIState extends State<SplashScreenUI>
         vsync: this, duration: const Duration(milliseconds: 1500));
     SlideAnimation = Tween(begin: const Offset(0, 3), end: const Offset(0, 0))
         .animate(CurvedAnimation(
-            parent: animationController, curve: Curves.easeInOutCirc));
+        parent: animationController, curve: Curves.easeInOutCirc));
     FadeAnimation = Tween(begin: 1.0, end: 0.0).animate(
         CurvedAnimation(parent: animationController, curve: Curves.easeInOut));
     animatedpadding = Tween(begin: const Offset(0, 0.3), end: Offset.zero)
         .animate(
-            CurvedAnimation(parent: animationController, curve: Curves.easeIn));
+        CurvedAnimation(parent: animationController, curve: Curves.easeIn));
 
     Future.delayed(const Duration(seconds: 5), () {
       animationController.forward();
@@ -69,13 +69,13 @@ class _SplashScreenUIState extends State<SplashScreenUI>
         height: double.infinity,
         decoration: const BoxDecoration(
             gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.fromRGBO(246, 246, 246, 255),
-            Color.fromRGBO(246, 246, 246, 255)
-          ],
-        )),
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(246, 246, 246, 255),
+                Color.fromRGBO(246, 246, 246, 255)
+              ],
+            )),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -134,7 +134,7 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                const Color.fromRGBO(13, 70, 127, 1),
+                            const Color.fromRGBO(13, 70, 127, 1),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -186,7 +186,7 @@ class _SplashScreenUIState extends State<SplashScreenUI>
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const AccessFormGuestUI()));
+                                    const AccessFormGuestUI()));
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,

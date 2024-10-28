@@ -135,287 +135,287 @@ class _SignupUIState extends State<SignupUI> {
                     children: [
                       Center(
                           child: Column(children: [
-                        const Text(
-                          'Hello! Register to get started!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color.fromRGBO(13, 70, 127, 1),
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Sign in to see how we manage',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color.fromRGBO(143, 150, 158, 1),
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'default',
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                        Form(
-                          key: globalfromkey,
-                          child: Column(
-                            children: [
-                              CustomTextFormField(
-                                controller: _fullNameController,
-                                labelText: 'Full Name',
-                                validator: (input) {
-                                  if (input == null || input.isEmpty) {
-                                    return 'Please enter your full name';
-                                  }
-                                  return null;
-                                },
+                            const Text(
+                              'Hello! Register to get started!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromRGBO(13, 70, 127, 1),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
                               ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _organizationController,
-                                labelText: 'Organization',
-                                validator: (input) {
-                                  if (input == null || input.isEmpty) {
-                                    return 'Please enter your organization name';
-                                  }
-                                  return null;
-                                },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Sign in to see how we manage',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Color.fromRGBO(143, 150, 158, 1),
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'default',
                               ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _designationController,
-                                labelText: 'Designation',
-                                validator: (input) {
-                                  if (input == null || input.isEmpty) {
-                                    return 'Please enter your designation';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _NIDController,
-                                labelText: 'NID or Passport Number',
-                                validator: (input) {
-                                  if (input == null || input.isEmpty) {
-                                    return 'Please enter your NID or Passport Number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (input) {
-                                  if (input!.isEmpty) {
-                                    return 'Please enter your email address';
-                                  }
-                                  final emailRegex = RegExp(
-                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                                  if (!emailRegex.hasMatch(input)) {
-                                    return 'Please enter a valid email address';
-                                  }
-                                  return null;
-                                },
-                                labelText: 'Email address',
-                              ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _phoneController,
-                                labelText: 'Mobile Number',
-                                keyboardType: TextInputType.phone,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(11),
-                                ],
-                                validator: (input) {
-                                  if (input == null || input.isEmpty) {
-                                    return 'Please enter your mobile number';
-                                  }
-                                  if (input.length != 11) {
-                                    return 'Mobile number must be 11 digits';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _passwordController,
-                                labelText: 'Password',
-                                hinttext:
+                            ),
+                            const SizedBox(height: 50),
+                            Form(
+                              key: globalfromkey,
+                              child: Column(
+                                children: [
+                                  CustomTextFormField(
+                                    controller: _fullNameController,
+                                    labelText: 'Full Name',
+                                    validator: (input) {
+                                      if (input == null || input.isEmpty) {
+                                        return 'Please enter your full name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _organizationController,
+                                    labelText: 'Organization',
+                                    validator: (input) {
+                                      if (input == null || input.isEmpty) {
+                                        return 'Please enter your organization name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _designationController,
+                                    labelText: 'Designation',
+                                    validator: (input) {
+                                      if (input == null || input.isEmpty) {
+                                        return 'Please enter your designation';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _NIDController,
+                                    labelText: 'NID or Passport Number',
+                                    validator: (input) {
+                                      if (input == null || input.isEmpty) {
+                                        return 'Please enter your NID or Passport Number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (input) {
+                                      if (input!.isEmpty) {
+                                        return 'Please enter your email address';
+                                      }
+                                      final emailRegex = RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                      if (!emailRegex.hasMatch(input)) {
+                                        return 'Please enter a valid email address';
+                                      }
+                                      return null;
+                                    },
+                                    labelText: 'Email address',
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _phoneController,
+                                    labelText: 'Mobile Number',
+                                    keyboardType: TextInputType.phone,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(11),
+                                    ],
+                                    validator: (input) {
+                                      if (input == null || input.isEmpty) {
+                                        return 'Please enter your mobile number';
+                                      }
+                                      if (input.length != 11) {
+                                        return 'Mobile number must be 11 digits';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _passwordController,
+                                    labelText: 'Password',
+                                    hinttext:
                                     "Password should be more than 7 characters and must include an uppercase letter, a lowercase letter, a number, and a special character.",
-                                validator: (input) {
-                                  if (input!.length < 8) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            "Password should be more than 7 characters"),
-                                        duration: Duration(seconds: 3),
-                                      ),
-                                    );
-                                    return "Password should be more than 7 characters";
-                                  } else if (!RegExp(
-                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
-                                      .hasMatch(input)) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            "Password must include an uppercase letter, a lowercase letter, a number, and a special character."),
-                                        duration: Duration(seconds: 3),
-                                      ),
-                                    );
-                                    return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.text,
-                                obscureText: _isObscuredPassword,
-                                suffixIcon: IconButton(
-                                  icon: Icon(_getIconPassword()),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isObscuredPassword =
-                                          !_isObscuredPassword;
-                                      _passwordController.text =
-                                          _passwordController.text;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              CustomTextFormField(
-                                controller: _confirmPasswordController,
-                                labelText: 'Confirm Password',
-                                hinttext:
-                                    "Password should be more than 7 characters and must include an uppercase letter, a lowercase letter, a number, and a special character.",
-                                validator: (input) {
-                                  if (input!.length < 8) {
-                                    return "Password should be more than 7 characters";
-                                  } else if (!RegExp(
-                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
-                                      .hasMatch(input)) {
-                                    return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.text,
-                                obscureText: _isObscuredConfirmPassword,
-                                suffixIcon: IconButton(
-                                  icon: Icon(_getIconConfirmPassword()),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isObscuredConfirmPassword =
-                                          !_isObscuredConfirmPassword;
-                                      _confirmPasswordController.text =
-                                          _confirmPasswordController.text;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              DropdownFormField(
-                                hintText: 'Visitor Type',
-                                dropdownItems: dropdownItems,
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (value == 'BCC Staff') {
-                                      _selectedVisitorType =
-                                          'ndc_internal' ?? '';
-                                    }
-                                    if (value == 'Customer') {
-                                      _selectedVisitorType =
-                                          'ndc_customer' ?? '';
-                                    }
-                                    if (value == 'Vendor') {
-                                      _selectedVisitorType = 'ndc_vendor' ?? '';
-                                    }
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 15),
-                              Container(
-                                width: (_imageWidth != 0
-                                    ? (_imageWidth + 10)
-                                        .clamp(0, screenWidth * 0.9)
-                                    : screenWidth * 0.9),
-                                height: (_imageHeight != 0
-                                    ? (_imageHeight + 10).clamp(0, 200)
-                                    : 80),
-                                child: InkWell(
-                                  onTap: _selectImage,
-                                  child: InputDecorator(
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.white,
-                                      border: OutlineInputBorder(
-                                          borderSide: Divider.createBorderSide(
-                                              context)),
-                                      labelText: 'Add Profile Picture',
-                                      labelStyle: TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        fontFamily: 'default',
-                                      ),
-                                      errorMaxLines: null,
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.red),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: _imageFile != null
-                                              ? Image.file(
-                                                  _imageFile!,
-                                                  width: null,
-                                                  height: null,
-                                                  fit: BoxFit.contain,
-                                                )
-                                              : Icon(Icons.image,
-                                                  size: 60, color: Colors.grey),
-                                        ),
-                                        SizedBox(width: 8),
-                                        VerticalDivider(
-                                          thickness: 5,
-                                        ),
-                                        Text(
-                                          'Upload',
-                                          style: TextStyle(
-                                            color:
-                                                Color.fromRGBO(13, 70, 127, 1),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            fontFamily: 'default',
+                                    validator: (input) {
+                                      if (input!.length < 8) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                "Password should be more than 7 characters"),
+                                            duration: Duration(seconds: 3),
                                           ),
-                                        ),
-                                      ],
+                                        );
+                                        return "Password should be more than 7 characters";
+                                      } else if (!RegExp(
+                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
+                                          .hasMatch(input)) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                                "Password must include an uppercase letter, a lowercase letter, a number, and a special character."),
+                                            duration: Duration(seconds: 3),
+                                          ),
+                                        );
+                                        return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.text,
+                                    obscureText: _isObscuredPassword,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_getIconPassword()),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isObscuredPassword =
+                                          !_isObscuredPassword;
+                                          _passwordController.text =
+                                              _passwordController.text;
+                                        });
+                                      },
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(height: 10),
+                                  CustomTextFormField(
+                                    controller: _confirmPasswordController,
+                                    labelText: 'Confirm Password',
+                                    hinttext:
+                                    "Password should be more than 7 characters and must include an uppercase letter, a lowercase letter, a number, and a special character.",
+                                    validator: (input) {
+                                      if (input!.length < 8) {
+                                        return "Password should be more than 7 characters";
+                                      } else if (!RegExp(
+                                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]')
+                                          .hasMatch(input)) {
+                                        return "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
+                                      }
+                                      return null;
+                                    },
+                                    keyboardType: TextInputType.text,
+                                    obscureText: _isObscuredConfirmPassword,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_getIconConfirmPassword()),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isObscuredConfirmPassword =
+                                          !_isObscuredConfirmPassword;
+                                          _confirmPasswordController.text =
+                                              _confirmPasswordController.text;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  DropdownFormField(
+                                    hintText: 'Visitor Type',
+                                    dropdownItems: dropdownItems,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        if (value == 'BCC Staff') {
+                                          _selectedVisitorType =
+                                              'ndc_internal' ?? '';
+                                        }
+                                        if (value == 'Customer') {
+                                          _selectedVisitorType =
+                                              'ndc_customer' ?? '';
+                                        }
+                                        if (value == 'Vendor') {
+                                          _selectedVisitorType = 'ndc_vendor' ?? '';
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Container(
+                                    width: (_imageWidth != 0
+                                        ? (_imageWidth + 10)
+                                        .clamp(0, screenWidth * 0.9)
+                                        : screenWidth * 0.9),
+                                    height: (_imageHeight != 0
+                                        ? (_imageHeight + 10).clamp(0, 200)
+                                        : 80),
+                                    child: InkWell(
+                                      onTap: _selectImage,
+                                      child: InputDecorator(
+                                        decoration: InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(
+                                              borderSide: Divider.createBorderSide(
+                                                  context)),
+                                          labelText: 'Add Profile Picture',
+                                          labelStyle: TextStyle(
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            fontFamily: 'default',
+                                          ),
+                                          errorMaxLines: null,
+                                          errorBorder: OutlineInputBorder(
+                                            borderSide:
+                                            BorderSide(color: Colors.red),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: _imageFile != null
+                                                  ? Image.file(
+                                                _imageFile!,
+                                                width: null,
+                                                height: null,
+                                                fit: BoxFit.contain,
+                                              )
+                                                  : Icon(Icons.image,
+                                                  size: 60, color: Colors.grey),
+                                            ),
+                                            SizedBox(width: 8),
+                                            VerticalDivider(
+                                              thickness: 5,
+                                            ),
+                                            Text(
+                                              'Upload',
+                                              style: TextStyle(
+                                                color:
+                                                Color.fromRGBO(13, 70, 127, 1),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                                fontFamily: 'default',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  )
+                                ],
                               ),
-                              SizedBox(
-                                height: 15,
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                        ElevatedButton(
-                            onPressed: _registerUser,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromRGBO(13, 70, 127, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              fixedSize: Size(screenWidth * 0.9, 70),
                             ),
-                            child: _isButtonLoading
-                                ? CircularProgressIndicator()
-                                : const Text('Register',
+                            const SizedBox(height: 50),
+                            ElevatedButton(
+                                onPressed: _registerUser,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromRGBO(13, 70, 127, 1),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  fixedSize: Size(screenWidth * 0.9, 70),
+                                ),
+                                child: _isButtonLoading
+                                    ? CircularProgressIndicator()
+                                    : const Text('Register',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 20,
@@ -423,7 +423,7 @@ class _SignupUIState extends State<SignupUI> {
                                       color: Colors.white,
                                       fontFamily: 'default',
                                     ))),
-                      ])),
+                          ])),
                       Footer(
                         backgroundColor: Color.fromRGBO(246, 246, 246, 255),
                         alignment: Alignment.bottomCenter,
@@ -510,7 +510,7 @@ class _SignupUIState extends State<SignupUI> {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginUI()),
-            (route) => false,
+                (route) => false,
           );
           const snackBar = SnackBar(
             content: Text('Registration Submitted!'),
@@ -632,7 +632,7 @@ class _SignupUIState extends State<SignupUI> {
                 onTap: () async {
                   Navigator.pop(context);
                   final pickedFile =
-                      await picker.pickImage(source: ImageSource.gallery);
+                  await picker.pickImage(source: ImageSource.gallery);
                   if (pickedFile != null) {
                     // Check the file size
                     final file = File(pickedFile.path);
@@ -663,7 +663,7 @@ class _SignupUIState extends State<SignupUI> {
                 onTap: () async {
                   Navigator.pop(context);
                   final pickedFile =
-                      await picker.pickImage(source: ImageSource.camera);
+                  await picker.pickImage(source: ImageSource.camera);
                   if (pickedFile != null) {
                     // Check the file size
                     final file = File(pickedFile.path);

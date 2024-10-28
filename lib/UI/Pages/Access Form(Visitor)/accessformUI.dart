@@ -67,6 +67,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
   late AppointmentRequestModel _connectionRequest;
   late String appointmentDate;
   late String appointmentTime;
+  bool _isButtonClicked = false;
   String _selectedSector = '';
   bool _isVisible = true;
 
@@ -486,9 +487,17 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                   ),
                                 ),
                                 onPressed: () {
+                                  setState(() {
+                                    _isButtonClicked = true;
+                                  });
                                   _connectionRequestForm();
+                                  setState(() {
+                                    _isButtonClicked = false;
+                                  });
                                 },
-                                child: const Text('Submit',
+                                child:  _isButtonClicked
+                                    ? CircularProgressIndicator()
+                                    : const Text('Submit',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,

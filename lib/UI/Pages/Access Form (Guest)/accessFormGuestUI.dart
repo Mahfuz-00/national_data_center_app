@@ -63,6 +63,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   late String appointmentTime;
   String _selectedSector = 'Physical Security & Infrastructure';
   FilePickerResult? result;
+  bool _isButtonClicked = false;
   File? _file;
 
   @override
@@ -451,9 +452,17 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                           ),
                         ),
                         onPressed: () {
+                          setState(() {
+                            _isButtonClicked = true;
+                          });
                           _connectionRequestForm();
+                          setState(() {
+                            _isButtonClicked = false;
+                          });
                         },
-                        child: const Text('Submit',
+                        child:  _isButtonClicked
+                            ? CircularProgressIndicator()
+                            : const Text('Submit',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
