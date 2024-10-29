@@ -1,13 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rename_app/rename_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 import 'UI/Bloc/auth_cubit.dart';
 import 'UI/Bloc/email_cubit.dart';
 import 'UI/Pages/Splashscreen UI/splashscreenUI.dart';
+import 'UI/Pages/Visitor Dashboard/ServiceClass.dart';
+import 'UI/Pages/Visitor Dashboard/visitordashboardUI.dart';
 
 /// The entry point of the Flutter application.
 ///
@@ -17,11 +24,46 @@ import 'UI/Pages/Splashscreen UI/splashscreenUI.dart';
 /// Actions:
 /// - Calls [checkAndClearCache] to ensure any old cache is cleared
 ///   when the app version changes.
+
+/// Global instance of [FlutterLocalNotificationsPlugin]
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+// Initialize the notifications plugin
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: null, // Add iOS settings if needed
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+/*  Workmanager().initialize(callbackDispatcher);
+  Workmanager().registerPeriodicTask(
+    "checkForNewNotifications",
+    "checkForNewNotifications",
+    inputData: {'key': 'value'},
+    frequency: const Duration(minutes: 1), // minimum interval for iOS
+  );*/
+
   await checkAndClearCache();
+  // Request notification permissions for Android 13+
+  await requestPermission();
   runApp(const MyApp());
 }
+
+/*void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    if (inputData != null) {
+      await NotificationService().callFetchConnectionRequests();
+    }
+    return Future.value(true);
+  });
+}*/
+
 
 /// Checks the current application version against the stored version
 /// in [SharedPreferences]. If the versions differ, it clears the cache
@@ -40,6 +82,12 @@ Future<void> checkAndClearCache() async {
   if (storedVersion == null || storedVersion != currentVersion) {
     await DefaultCacheManager().emptyCache();
     await prefs.setString('app_version', currentVersion);
+  }
+}
+
+Future<void> requestPermission() async {
+  if (Platform.isAndroid && await Permission.notification.isDenied) {
+    await Permission.notification.request();
   }
 }
 

@@ -12,43 +12,43 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - [authToken]: The authentication token used for authorization in the API request.
 ///
 /// **Actions:**
-/// - [create]: A factory method that initializes the [NotificationReadApiService] and loads the [authToken].
+/// - [create]: A factory method that initializes the [PopUpNotificationReadApiService] and loads the [authToken].
 /// - [_loadAuthToken]: A private method to load the [authToken] from [SharedPreferences].
 /// - [readNotification]: Sends a GET request to the API to mark a notification as read.
-///   If the request is successful, it returns `true`. If not, it returns `false`. Handles exceptions
-///   by catching errors during the request.
-class NotificationReadApiService {
+///   Accepts [id] to specify the notification. Returns `true` if successful, otherwise `false`.
+class PopUpNotificationReadApiService {
   static const String URL = 'https://bcc.touchandsolve.com/api';
   late final String authToken;
 
-  NotificationReadApiService._();
+  PopUpNotificationReadApiService._();
 
-  static Future<NotificationReadApiService> create() async {
-    var apiService = NotificationReadApiService._();
+  static Future<PopUpNotificationReadApiService> create() async {
+    var apiService = PopUpNotificationReadApiService._();
     await apiService._loadAuthToken();
-    print('triggered API');
     return apiService;
   }
 
   Future<void> _loadAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('token') ?? '';
-    print('Load Token');
-    print(authToken);
   }
 
-
-  Future<bool> readNotification() async {
-    print(authToken);
+  /// Marks a specific notification as read by sending a GET request to the API.
+  ///
+  /// **Parameters:**
+  /// - [id]: The ID of the notification to mark as read.
+  ///
+  /// **Returns:**
+  /// - `true` if the request is successful, `false` otherwise.
+  Future<bool> readNotification(var id) async {
     try {
       if (authToken.isEmpty) {
-        print(authToken);
         await _loadAuthToken();
         throw Exception('Authentication token is empty.');
       }
 
       final response = await http.get(
-        Uri.parse('$URL/notification/read'),
+        Uri.parse('$URL/ndc/notification/read/$id'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken'
@@ -66,7 +66,7 @@ class NotificationReadApiService {
       }
     } catch (e) {
       final response = await http.post(
-        Uri.parse('$URL/notification/read'),
+        Uri.parse('$URL/ndc/notification/read/$id'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $authToken'

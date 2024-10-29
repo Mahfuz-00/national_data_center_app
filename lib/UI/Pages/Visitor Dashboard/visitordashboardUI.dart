@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ndc_app/Data/Data%20Sources/API%20Service%20(Notification)/apiServicePopUpNotificationRead.dart';
 import 'package:ndc_app/UI/Widgets/requestWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
 import '../../../Core/Connection Checker/internetconnectioncheck.dart';
 import '../../../Data/Data Sources/API Service (Dashboard)/apiserviceDashboard.dart';
 import '../../../Data/Data Sources/API Service (Log Out)/apiServiceLogOut.dart';
 import '../../../Data/Data Sources/API Service (Notification)/apiServiceNotificationRead.dart';
 import '../../../Data/Models/paginationModel.dart';
+import '../../../main.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/visitorRequestInfoCard.dart';
 import '../Access Form(Visitor)/accessformUI.dart';
@@ -38,7 +44,7 @@ class VisitorDashboardUI extends StatefulWidget {
   State<VisitorDashboardUI> createState() => _VisitorDashboardUIState();
 }
 
-class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
+class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBindingObserver{
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> pendingRequests = [];
   List<Widget> acceptedRequests = [];
@@ -47,6 +53,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
   bool _pageLoading = true;
   bool _errorOccurred = false;
   List<String> notifications = [];
+  List<String> filteredNotifications = [];
+  List<String> filteredPopUpNotifications = [];
   late String userName = '';
   late String organizationName = '';
   late String photoUrl = '';
@@ -54,6 +62,9 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
   late Pagination acceptedPagination;
   bool canFetchMorePending = false;
   bool canFetchMoreAccepted = false;
+  bool _isDialogShown = false;
+  Timer? _notificationTimer;
+  bool _isAppActive = true;
 
   Future<void> fetchConnectionRequests() async {
     if (_isFetched) return;
@@ -88,6 +99,18 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
       canFetchMorePending = pendingPagination.canFetchNext;
       canFetchMoreAccepted = acceptedPagination.canFetchNext;
       notifications = List<String>.from(records['notifications'] ?? []);
+
+      // Filter out notifications that start with the specified string
+      filteredPopUpNotifications = notifications.where((notification) {
+        return notification.startsWith("Your appointment date time has been updated");
+      }).toList();
+
+      checkAndShowAppointmentUpdateDialog(filteredPopUpNotifications);
+
+      // Filter out notifications that start with the specified string
+      filteredNotifications = notifications.where((notification) {
+        return !notification.startsWith("Your appointment date time has been updated");
+      }).toList();
 
       await Future.delayed(Duration(seconds: 5));
 
@@ -143,9 +166,141 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
     }
   }
 
+  void checkAndShowAppointmentUpdateDialog(List<String> notifications) {
+    for (String notification in notifications) {
+      if (!_isDialogShown &&
+          notification.startsWith('Your appointment date time has been updated')) {
+        _isDialogShown = true;
+
+        final parts = notification.split('|');
+        if (parts.length > 1) {
+          final details = parts[1].trim();
+          final idMatch = RegExp(r'id-(\d+)').firstMatch(details);
+          final sectorMatch = RegExp(r'sector-([A-Za-z]+)').firstMatch(details);
+          final dateTimeMatch = RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})').firstMatch(details);
+
+          final id = idMatch != null ? idMatch.group(1) ?? 'Unknown' : 'Unknown';
+          final sector = sectorMatch != null ? sectorMatch.group(1) ?? 'Unknown' : 'Unknown';
+          final date = dateTimeMatch != null ? dateTimeMatch.group(1) ?? 'Unknown' : 'Unknown';
+          final time = dateTimeMatch != null ? dateTimeMatch.group(2) ?? 'Unknown' : 'Unknown';
+
+          // Display the notification
+          _showAppointmentUpdateDialog(context, notification);
+          _showNotification(notification, sector, date, time);
+        }
+        break; // Exit the loop after processing the first relevant notification
+      }
+    }
+  }
+
+
+  void _showAppointmentUpdateDialog(BuildContext context, String notification) {
+    final parts = notification.split('|');
+    if (parts.length > 1) {
+      final details = parts[1].trim();
+      final idMatch = RegExp(r'id-(\d+)').firstMatch(details);
+      final id = idMatch != null ? idMatch.group(1) : 'Unknown';
+
+      // Extract sector, date, and time from the notification details
+      final sectorMatch = RegExp(r'sector-([A-Za-z]+)').firstMatch(details);
+      final dateTimeMatch =
+      RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})')
+          .firstMatch(details);
+
+      final sector = sectorMatch != null ? sectorMatch.group(1) : 'Unknown';
+      final date = dateTimeMatch != null ? dateTimeMatch.group(1) : 'Unknown';
+      final time = dateTimeMatch != null ? dateTimeMatch.group(2) : 'Unknown';
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              'Appointment Time Updated',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontFamily: 'default',
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(13, 70, 127, 1)),
+            ),
+            content: Text(
+              'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.',
+              style: TextStyle(
+                  fontFamily: 'default',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            actionsAlignment: MainAxisAlignment.center,
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  final notificationService = await PopUpNotificationReadApiService.create();
+                  bool isRead = await notificationService.readNotification(id);
+
+                  if (isRead) {
+                    print('Notification marked as read.');
+                  } else {
+                    print('Failed to mark notification as read.');
+                  }
+
+                  // Mark dialog as not shown to allow showing it again later
+                  _isDialogShown = false;
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                      fontFamily: 'default',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(13, 70, 127, 1)),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _showNotification(String notification, String sector, String date, String time) async {
+    // Create BigTextStyleInformation
+    final BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.', // Full text to be shown
+      htmlFormatBigText: true, // Optional, enables HTML formatting
+      contentTitle: 'Appointment Time Update', // Notification title
+      summaryText: '', // Optional, can provide summary text
+    );
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'appointment_updates_channel', // Unique ID for your notification channel
+      'Appointment Updates',         // User-friendly name
+      channelDescription: 'Notifications related to appointment updates', // Description
+      importance: Importance.max,    // Importance level for the notification
+      priority: Priority.high,        // Priority level for the notification
+      showWhen: true,                // Show the time of the notification
+      styleInformation: bigTextStyleInformation, // Pass the BigTextStyleInformation
+    );
+
+    final NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // Notification ID (use a unique ID for each notification if you want to update it later)
+      'Appointment Time Update', // Notification title
+      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.', // Notification body
+      platformChannelSpecifics,
+      payload: 'item x', // Optional payload (you can use this to pass additional data)
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+    startPeriodicNotificationCheck();
     print('initState called');
     pendingPagination = Pagination(nextPage: null, previousPage: null);
     acceptedPagination = Pagination(nextPage: null, previousPage: null);
@@ -160,6 +315,19 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
         print('Page Loading');
         _pageLoading = false;
       });
+    });
+  }
+
+
+  @override
+  void dispose() {
+    _notificationTimer?.cancel();
+    super.dispose();
+  }
+
+  void startPeriodicNotificationCheck() {
+    _notificationTimer = Timer.periodic(Duration(minutes: 5), (_) async {
+      await fetchConnectionRequests();
     });
   }
 
@@ -181,7 +349,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                 final userProfile = state.userProfile;
                 return InternetConnectionChecker(
                   child: PopScope(
-               /*     canPop: false,*/
+                    /*     canPop: false,*/
                     child: Scaffold(
                       key: _scaffoldKey,
                       appBar: AppBar(
@@ -301,14 +469,15 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                                   Divider(),
                                   const SizedBox(height: 25),
                                   Container(
-                                    child: const Text('Appointment Accepted List',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
-                                        )),
+                                    child:
+                                        const Text('Appointment Accepted List',
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
                                   ),
                                   Divider(),
                                   const SizedBox(height: 5),
@@ -379,7 +548,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => VisitorDashboardUI(
+                                        builder: (context) =>
+                                            VisitorDashboardUI(
                                               shouldRefresh: true,
                                             )));
                               },
@@ -572,11 +742,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                     if (await logoutApiService.signOut()) {
                       Navigator.pop(context);
                       context.read<AuthCubit>().logout();
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  LoginUI()));
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => LoginUI()));
                     }
                   },
                   child: Text(
@@ -620,7 +787,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                 ),
               ],
             ),
-            child: notifications.isEmpty
+            child: filteredNotifications.isEmpty
                 ? Container(
                     height: 50,
                     child: Row(
@@ -640,19 +807,19 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
                 : ListView.builder(
                     padding: EdgeInsets.all(8),
                     shrinkWrap: true,
-                    itemCount: notifications.length,
+                    itemCount: filteredNotifications.length,
                     itemBuilder: (context, index) {
                       return Column(
                         children: [
                           ListTile(
                             leading: Icon(Icons.info_outline),
-                            title: Text(notifications[index]),
+                            title: Text(filteredNotifications[index]),
                             onTap: () {
                               // Handle notification tap if necessary
                               overlayEntry.remove();
                             },
                           ),
-                          if (index < notifications.length - 1) Divider()
+                          if (index < filteredNotifications.length - 1) Divider()
                         ],
                       );
                     },
@@ -670,3 +837,16 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> {
     });
   }
 }
+
+// New public interface
+extension VisitorDashboardInterface on VisitorDashboardUI {
+  Future<void> fetchRequests() async {
+    final state = this.createState() as _VisitorDashboardUIState;
+    await state.fetchConnectionRequests(); // Pass the filtered notifications
+    state.checkAndShowAppointmentUpdateDialog(state.filteredPopUpNotifications);
+  }
+}
+
+
+
+
