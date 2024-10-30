@@ -25,6 +25,7 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
   final String Email;
   final String Sector;
   final String AppointmentDate;
+  final String AppointmentTime;
   final int ApplicationID;
   final String Purpose;
   final String Belongs;
@@ -40,6 +41,7 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
     required this.Sector,
     required this.ApplicationID,
     required this.AppointmentDate,
+    required this.AppointmentTime,
     required this.Purpose,
     required this.Belongs,
     required this.Status,
@@ -69,7 +71,8 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
             _buildRow('Phone', Phone),
             _buildRow('Email', Email),
             _buildRow('Sector', Sector),
-            _buildRow('Appoinment Date and Time', AppointmentDate),
+            _buildRow('Appoinment Start Date and Time', AppointmentDate),
+            _buildRow('Appoinment End Time', AppointmentTime),
             _buildRow('Purpose', Purpose),
             _buildRow('Belongings', Belongs),
             _buildRow('Status', Status),

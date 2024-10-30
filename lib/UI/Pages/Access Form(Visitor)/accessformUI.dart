@@ -50,7 +50,8 @@ class AccessFormUI extends StatefulWidget {
 
 class _AccessFormUIState extends State<AccessFormUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late TextEditingController _Clockcontroller = TextEditingController();
+  late TextEditingController _ClockFromcontroller = TextEditingController();
+  late TextEditingController _ClockTocontroller = TextEditingController();
   late TextEditingController _Datecontroller = TextEditingController();
   late TextEditingController _fullnamecontroller;
   late TextEditingController _NIDcontroller;
@@ -66,7 +67,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
   late TextEditingController _devicedescriptioncontroller;
   late AppointmentRequestModel _connectionRequest;
   late String appointmentDate;
-  late String appointmentTime;
+  late String appointmentFromTime;
+  late String appointmentToTime;
   bool _isButtonClicked = false;
   String _selectedSector = '';
   bool _isVisible = true;
@@ -121,7 +123,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
           DeviceSerial: '',
           DeviceDescription: '',
           AppointmentDate: '',
-          AppointmentTime: '');
+          AppointmentFromTime: '', AppointmentToTime: '');
       setState(() {
         _isVisible = false;
       });
@@ -130,7 +132,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
 
   @override
   void dispose() {
-    _Clockcontroller.dispose();
+    _ClockFromcontroller.dispose();
+    _ClockTocontroller.dispose();
     _Datecontroller.dispose();
     super.dispose();
   }
@@ -437,8 +440,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
                             ),
                             CustomTextFormField(
                               icon: 'Clock',
-                              controller: _Clockcontroller,
-                              labelText: 'Appointment Time',
+                              controller: _ClockFromcontroller,
+                              labelText: 'Appointment Start Time',
                               readOnly: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -461,9 +464,47 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                         selectedTime.minute,
                                       ),
                                     );
-                                    _Clockcontroller.text = formattedTime;
+                                    _ClockFromcontroller.text = formattedTime;
                                     print(formattedTime);
-                                    appointmentTime = formattedTime;
+                                    appointmentFromTime = formattedTime;
+                                  }
+                                  else{
+                                    print('No time selected');
+                                  }
+                                });
+                              },
+                            ), SizedBox(
+                              height: 10,
+                            ),
+                            CustomTextFormField(
+                              icon: 'Clock',
+                              controller: _ClockTocontroller,
+                              labelText: 'Appointment End Time',
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a time';
+                                }
+                                return null;
+                              },
+                              onTap: () {
+                                showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                ).then((selectedTime) {
+                                  if (selectedTime != null) {
+                                    String formattedTime = DateFormat('h:mm a').format(
+                                      DateTime(
+                                        2020,
+                                        1,
+                                        1,
+                                        selectedTime.hour,
+                                        selectedTime.minute,
+                                      ),
+                                    );
+                                    _ClockTocontroller.text = formattedTime;
+                                    print(formattedTime);
+                                    appointmentToTime = formattedTime;
                                   }
                                   else{
                                     print('No time selected');
@@ -536,7 +577,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
     print('Purpose: ${_commentcontroller.text}');
     print('Belongings: ${_belongscontroller.text}');
     print('Appoinment Date: $appointmentDate');
-    print('Appointment Time: $appointmentTime');
+    print('Appointment From Time: $appointmentFromTime');
+    print('Appointment To Time: $appointmentToTime');
 
     if (_validateAndSave()) {
       print('triggered Validation');
@@ -560,7 +602,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
           DeviceSerial: _deviceserialcontroller.text,
           DeviceDescription: _devicedescriptioncontroller.text,
           AppointmentDate: appointmentDate,
-          AppointmentTime: appointmentTime);
+          AppointmentFromTime: appointmentFromTime, AppointmentToTime: appointmentToTime);
 
       AppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest)
@@ -626,7 +668,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
     final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
     final SectorIsValid = _selectedSector.isNotEmpty;
     final AppointmentDateIsValid = appointmentDate.isNotEmpty;
-    final AppointmentTimeValid = appointmentTime.isNotEmpty;
+    final AppointmentFromTimeValid = appointmentFromTime.isNotEmpty;
+    final AppointmentToTimeValid = appointmentToTime.isNotEmpty;
 
     final allFieldsAreValid = NameIsValid &&
         NIDIsValid &&
@@ -636,7 +679,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
         EmailIsValid && PurposeIsValid && BelongingsIsValid &&
         SectorIsValid &&
         AppointmentDateIsValid &&
-        AppointmentTimeValid;
+        AppointmentFromTimeValid && AppointmentToTimeValid;
 
     return allFieldsAreValid;
   }

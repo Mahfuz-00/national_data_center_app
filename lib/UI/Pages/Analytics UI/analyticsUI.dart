@@ -135,6 +135,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Designation: request['status'],
           Email: request['status'],
           Sector: request['status'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 
@@ -150,6 +151,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Designation: request['status'],
           Email: request['status'],
           Sector: request['status'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 

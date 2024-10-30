@@ -125,6 +125,7 @@ class _VisitorRequestListUIState extends State<VisitorRequestListUI> {
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 
@@ -193,6 +194,7 @@ class _VisitorRequestListUIState extends State<VisitorRequestListUI> {
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
+            AppointmentTime: request['to_time'],
           );
         }).toList();
 

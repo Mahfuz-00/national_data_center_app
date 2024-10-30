@@ -29,6 +29,7 @@ class VisitorRequestInfoCard extends StatelessWidget {
   final String Email;
   final String Sector;
   final String AppointmentDate;
+  final String AppointmentTime;
   final String Purpose;
   final String Belongs;
   final String Status;
@@ -42,6 +43,7 @@ class VisitorRequestInfoCard extends StatelessWidget {
     required this.Email,
     required this.Sector,
     required this.AppointmentDate,
+    required this.AppointmentTime,
     required this.Purpose,
     required this.Belongs,
     required this.Status,
@@ -69,7 +71,8 @@ class VisitorRequestInfoCard extends StatelessWidget {
             _buildRow('Phone', Phone),
             _buildRow('Email', Email),
             _buildRow('Sector', Sector),
-            _buildRow('Appoinment Date and Time', AppointmentDate),
+            _buildRow('Appoinment Start Date and Time', AppointmentDate),
+            _buildRow('Appoinment End Time', AppointmentTime),
             _buildRow('Purpose', Purpose),
             _buildRow('Belongings', Belongs),
             _buildRow('Status', Status),

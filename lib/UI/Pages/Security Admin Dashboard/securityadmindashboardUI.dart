@@ -195,6 +195,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 
@@ -277,6 +278,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 
@@ -348,6 +350,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
+            AppointmentTime: request['to_time'],
           );
         }).toList();
 
@@ -434,6 +437,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
+            AppointmentTime: request['to_time'],
           );
         }).toList();
 

@@ -32,7 +32,8 @@ class GuestAppointmentModel {
   final String DeviceSerial;
   final String DeviceDescription;
   final String AppointmentDate;
-  final String AppointmentTime;
+  final String AppointmentFromTime;
+  final String AppointmentToTime;
 
   GuestAppointmentModel({
     required this.FullName,
@@ -48,7 +49,8 @@ class GuestAppointmentModel {
     required this.DeviceSerial,
     required this.DeviceDescription,
     required this.AppointmentDate,
-    required this.AppointmentTime,
+    required this.AppointmentFromTime,
+    required this.AppointmentToTime,
   });
 
   Map<String, dynamic> toJson() {
@@ -66,7 +68,8 @@ class GuestAppointmentModel {
       'device_serial': DeviceSerial,
       'device_description': DeviceDescription,
       'date': AppointmentDate,
-      'time': AppointmentTime,
+      'time': AppointmentFromTime,
+      'to_time': AppointmentToTime,
     };
   }
 }

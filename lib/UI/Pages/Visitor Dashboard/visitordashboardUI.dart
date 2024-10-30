@@ -136,7 +136,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
           Status: request['status'],
           Designation: request['designation'],
           Email: request['email'],
-          Sector: request['sector'],
+          Sector: request['sector'], AppointmentTime: request['to_time'],
         );
       }).toList();
 
@@ -152,6 +152,7 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
+          AppointmentTime: request['to_time'],
         );
       }).toList();
 
