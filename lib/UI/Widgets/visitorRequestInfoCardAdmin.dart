@@ -48,11 +48,31 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
   }) : super(key: key);
 
   late String action;
+  String _formatDate(String dateTimeStr) {
+    try {
+      final dateTime = DateFormat("dd-MM-yyyy, hh:mm a").parse(dateTimeStr);
+      return DateFormat("dd-MM-yyyy").format(dateTime);
+    } catch (e) {
+      return "Invalid date format";
+    }
+  }
+
+  String _formatTime(String dateTimeStr) {
+    try {
+      final dateTime = DateFormat("dd-MM-yyyy, hh:mm a").parse(dateTimeStr);
+      return DateFormat("hh:mm a").format(dateTime);
+    } catch (e) {
+      return "Invalid time format";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final formattedDate = _formatDate(AppointmentDate);
+    final formattedTime = _formatTime(AppointmentDate);
+
     return Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(10),
@@ -67,12 +87,12 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
           children: [
             _buildRow('Visitor Name', Name),
             _buildRow('Organization', Organization),
-            _buildRow('Desination', Designation),
+            _buildRow('Designation', Designation),
             _buildRow('Phone', Phone),
             _buildRow('Email', Email),
             _buildRow('Sector', Sector),
-            _buildRow('Appoinment Start Date and Time', AppointmentDate),
-            _buildRow('Appoinment End Time', AppointmentTime),
+            _buildRow('Appointment Start Time', '$formattedTime, $formattedDate'),
+            _buildRow('Appointment End Time', '$AppointmentTime, $formattedDate'),
             _buildRow('Purpose', Purpose),
             _buildRow('Belongings', Belongs),
             _buildRow('Status', Status),
