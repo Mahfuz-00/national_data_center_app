@@ -27,7 +27,7 @@ import 'package:path/path.dart';
 /// - [jsonResponse]: The decoded JSON response body containing the result of the appointment request.
 class GuestAppointmentRequestAPIService {
   final String URL = 'https://bcc.touchandsolve.com/api';
-  late final Future<String> authToken;
+  //late final Future<String> authToken;
 
   GuestAppointmentRequestAPIService._();
 
@@ -39,7 +39,7 @@ class GuestAppointmentRequestAPIService {
   }
 
   GuestAppointmentRequestAPIService() {
-    authToken = _loadAuthToken();
+   // authToken = _loadAuthToken();
     print('triggered');
   }
 
@@ -52,17 +52,17 @@ class GuestAppointmentRequestAPIService {
   }
 
   Future<String> postConnectionRequest(GuestAppointmentModel request, File? documentFile) async {
-    final String token = await authToken;
+   // final String token = await authToken;
     try {
-      if (token.isEmpty) {
+     /* if (token.isEmpty) {
         await _loadAuthToken();
         throw Exception('Authentication token is empty.');
-      }
+      }*/
 
       var uri = Uri.parse('$URL/ndc/guest/appointment');
       var requestMultipart = http.MultipartRequest('POST', uri);
 
-      requestMultipart.headers['Authorization'] = 'Bearer $token';
+      //requestMultipart.headers['Authorization'] = 'Bearer $token';
       requestMultipart.headers['Content-Type'] = 'multipart/form-data';
 
       request.toJson().forEach((key, value) {

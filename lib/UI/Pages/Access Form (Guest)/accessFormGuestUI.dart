@@ -46,7 +46,8 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController _ClockFromcontroller = TextEditingController();
   late TextEditingController _ClockTocontroller = TextEditingController();
-  late TextEditingController _Datecontroller = TextEditingController();
+  late TextEditingController _DateFromcontroller = TextEditingController();
+  late TextEditingController _DateTocontroller = TextEditingController();
   late TextEditingController _fullnamecontroller;
   late TextEditingController _NIDcontroller;
   late TextEditingController _organizationnamecontroller;
@@ -60,13 +61,16 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   late TextEditingController _deviceserialcontroller;
   late TextEditingController _devicedescriptioncontroller;
   late GuestAppointmentModel _connectionRequest;
-  late String appointmentDate;
+  late String appointmentFromDate;
+  late String appointmentToDate;
   late String appointmentFromTime;
   late String appointmentToTime;
   String _selectedSector = 'Physical Security & Infrastructure';
   FilePickerResult? result;
   bool _isButtonClicked = false;
   File? _file;
+  bool _isLoading = false;
+  bool _isPicked = false;
 
   @override
   void initState() {
@@ -106,7 +110,8 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   void dispose() {
     _ClockFromcontroller.dispose();
     _ClockTocontroller.dispose();
-    _Datecontroller.dispose();
+    _DateFromcontroller.dispose();
+    _DateTocontroller.dispose();
     super.dispose();
   }
 
@@ -324,8 +329,8 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                       height: 10,
                     ),
                     CustomTextFormField(
-                      controller: _Datecontroller,
-                      labelText: 'Appointment Date',
+                      controller: _DateFromcontroller,
+                      labelText: 'Appointment Start Date',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please select a date';
@@ -344,10 +349,10 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                           if (selectedDate != null) {
                             final formattedDate =
                                 DateFormat('dd-MM-yyyy').format(selectedDate);
-                            _Datecontroller.text = formattedDate;
+                            _DateFromcontroller.text = formattedDate;
                             print(formattedDate);
-                            appointmentDate = formattedDate;
-                            print(appointmentDate);
+                            appointmentFromDate = formattedDate;
+                            print(appointmentFromDate);
                           } else {
                             print('No date selected');
                           }
@@ -388,6 +393,40 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                             appointmentFromTime = formattedTime;
                           } else {
                             print('No time selected');
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextFormField(
+                      controller: _DateTocontroller,
+                      labelText: 'Appointment End Date',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a date';
+                        }
+                        return null;
+                      },
+                      readOnly: true,
+                      icon: 'Date',
+                      onTap: () {
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        ).then((selectedDate) {
+                          if (selectedDate != null) {
+                            final formattedDate =
+                            DateFormat('dd-MM-yyyy').format(selectedDate);
+                            _DateTocontroller.text = formattedDate;
+                            print(formattedDate);
+                            appointmentToDate = formattedDate;
+                            print(appointmentToDate);
+                          } else {
+                            print('No date selected');
                           }
                         });
                       },
@@ -448,11 +487,15 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                               ),
-                              onPressed: _pickFile,
+                              onPressed: _isPicked? null : _pickFile,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if (_file == null) ...[
+                                  if (_isPicked) ...[
+                                    CircularProgressIndicator(
+                                      color: Color.fromRGBO(13, 70, 127, 1),
+                                    ),
+                                  ] else if (_file == null) ...[
                                     Icon(
                                       Icons.document_scanner,
                                       color: Colors.white,
@@ -505,8 +548,8 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                             _isButtonClicked = false;
                           });
                         },
-                        child: _isButtonClicked
-                            ? CircularProgressIndicator()
+                        child: _isLoading
+                            ? CircularProgressIndicator( color: Colors.white,)
                             : const Text('Submit',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -527,10 +570,13 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   }
 
   Future<void> _pickFile() async {
+    setState(() {
+      _isPicked = true;
+    });
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'],
+        allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'bmg'],
       );
 
       if (result != null) {
@@ -543,7 +589,8 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
           'ppt',
           'pptx',
           'xls',
-          'xlsx'
+          'xlsx',
+          'bmg'
         ];
 
         if (fileExtension != null &&
@@ -551,6 +598,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
           if (result.files.single.size <= 21000 * 1024) {
             setState(() {
               _file = File(result.files.single.path!);
+              _isPicked = false;
             });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -584,6 +632,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   }
 
   void _connectionRequestForm() {
+    _isLoading = true;
     print('Full Name: ${_fullnamecontroller.text}');
     print('NID: ${_NIDcontroller.text}');
     print('Organization: ${_organizationnamecontroller.text}');
@@ -592,15 +641,16 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     print('Email: ${_emailcontroller.text}');
     print('Purpose: ${_commentcontroller.text}');
     print('Belongings: ${_belongscontroller.text}');
-    print('Appoinment Date: $appointmentDate');
+    print('Appoinment Date: $appointmentFromDate');
     print('Appointment Start Time: $appointmentFromTime');
+    print('Appoinment End Time: $appointmentToTime');
     print('Appointment End Time: $appointmentToTime');
 
     if (_validateAndSave()) {
       print('triggered Validation');
 
       const snackBar = SnackBar(
-        content: Text('Processing'),
+        content: Text('Processing. Please wait a moment...'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       _connectionRequest = GuestAppointmentModel(
@@ -616,13 +666,14 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
           DeviceModel: _devicemodelcontroller.text,
           DeviceSerial: _deviceserialcontroller.text,
           DeviceDescription: _devicedescriptioncontroller.text,
-          AppointmentDate: appointmentDate,
+          AppointmentDate: appointmentFromDate,
           AppointmentFromTime: appointmentFromTime,
           AppointmentToTime: appointmentToTime);
 
       GuestAppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest, _file)
           .then((response) {
+            _isLoading = false;
         print(response);
         print('Visitor request sent successfully!!');
         if (response == 'Visitor Request Already Exist') {
@@ -673,8 +724,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     final EmailIsValid = _emailcontroller.text.isNotEmpty;
     final PurposeIsValid = _commentcontroller.text.isNotEmpty;
     final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
-    final AppointmentDateIsValid = appointmentDate.isNotEmpty;
+    final AppointmentDateIsValid = appointmentFromDate.isNotEmpty;
     final AppointmentFromTimeValid = appointmentFromTime.isNotEmpty;
+    final AppointmentToDateIsValid = appointmentToDate.isNotEmpty;
     final AppointmentToTimeValid = appointmentToTime.isNotEmpty;
 
     final allFieldsAreValid = NameIsValid &&
@@ -687,6 +739,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
         BelongingsIsValid &&
         AppointmentDateIsValid &&
         AppointmentFromTimeValid &&
+        AppointmentToDateIsValid &&
         AppointmentToTimeValid;
 
     return allFieldsAreValid;

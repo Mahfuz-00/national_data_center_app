@@ -52,7 +52,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TextEditingController _ClockFromcontroller = TextEditingController();
   late TextEditingController _ClockTocontroller = TextEditingController();
-  late TextEditingController _Datecontroller = TextEditingController();
+  late TextEditingController _DateFromcontroller = TextEditingController();
+  late TextEditingController _DateTocontroller = TextEditingController();
   late TextEditingController _fullnamecontroller;
   late TextEditingController _NIDcontroller;
   late TextEditingController _organizationnamecontroller;
@@ -66,7 +67,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
   late TextEditingController _deviceserialcontroller;
   late TextEditingController _devicedescriptioncontroller;
   late AppointmentRequestModel _connectionRequest;
-  late String appointmentDate;
+  late String appointmentFromDate;
+  late String appointmentToDate;
   late String appointmentFromTime;
   late String appointmentToTime;
   bool _isButtonClicked = false;
@@ -134,7 +136,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
   void dispose() {
     _ClockFromcontroller.dispose();
     _ClockTocontroller.dispose();
-    _Datecontroller.dispose();
+    _DateFromcontroller.dispose();
+    _DateTocontroller.dispose();
     super.dispose();
   }
 
@@ -406,8 +409,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
                               height: 10,
                             ),
                             CustomTextFormField(
-                              controller: _Datecontroller,
-                              labelText: 'Appointment Date',
+                              controller: _DateFromcontroller,
+                              labelText: 'Appointment Start Date',
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please select a date';
@@ -425,10 +428,10 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                 ).then((selectedDate) {
                                   if (selectedDate != null) {
                                     final formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
-                                    _Datecontroller.text = formattedDate;
+                                    _DateFromcontroller.text = formattedDate;
                                     print(formattedDate);
-                                    appointmentDate = formattedDate;
-                                    print(appointmentDate);
+                                    appointmentFromDate = formattedDate;
+                                    print(appointmentFromDate);
                                   } else {
                                     print('No date selected');
                                   }
@@ -474,6 +477,39 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                 });
                               },
                             ), SizedBox(
+                              height: 10,
+                            ),
+                            CustomTextFormField(
+                              controller: _DateTocontroller,
+                              labelText: 'Appointment End Date',
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a date';
+                                }
+                                return null;
+                              },
+                              readOnly: true, // Makes the field non-editable
+                              icon: 'Date', // Icon for the date field
+                              onTap: () {
+                                showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2100),
+                                ).then((selectedDate) {
+                                  if (selectedDate != null) {
+                                    final formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
+                                    _DateTocontroller.text = formattedDate;
+                                    print(formattedDate);
+                                    appointmentToDate = formattedDate;
+                                    print(appointmentToDate);
+                                  } else {
+                                    print('No date selected');
+                                  }
+                                });
+                              },
+                            ),
+                            SizedBox(
                               height: 10,
                             ),
                             CustomTextFormField(
@@ -567,6 +603,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
   }
 
   void _connectionRequestForm() {
+    _isButtonClicked = true;
     if(userType == 'ndc_internal'){
       _selectedSector = 'Physical Security & Infrastructure';
     }
@@ -576,7 +613,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
     print('description: ${_devicedescriptioncontroller.text}');
     print('Purpose: ${_commentcontroller.text}');
     print('Belongings: ${_belongscontroller.text}');
-    print('Appoinment Date: $appointmentDate');
+    print('Appoinment Date: $appointmentFromDate');
     print('Appointment From Time: $appointmentFromTime');
     print('Appointment To Time: $appointmentToTime');
 
@@ -585,7 +622,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
 
       const snackBar = SnackBar(
         content: Text(
-            'Processing'),
+            'Processing. Please wait a moment ...'),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       _connectionRequest = AppointmentRequestModel(
@@ -601,12 +638,13 @@ class _AccessFormUIState extends State<AccessFormUI> {
           DeviceModel: _devicemodelcontroller.text,
           DeviceSerial: _deviceserialcontroller.text,
           DeviceDescription: _devicedescriptioncontroller.text,
-          AppointmentDate: appointmentDate,
+          AppointmentDate: appointmentFromDate,
           AppointmentFromTime: appointmentFromTime, AppointmentToTime: appointmentToTime);
 
       AppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest)
           .then((response) {
+        _isButtonClicked = false;
         print('Visitor request sent successfully!!');
         if (response == 'Visitor Request Already Exist') {
           Navigator.pushAndRemoveUntil(
@@ -667,8 +705,9 @@ class _AccessFormUIState extends State<AccessFormUI> {
     final PurposeIsValid = _commentcontroller.text.isNotEmpty;
     final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
     final SectorIsValid = _selectedSector.isNotEmpty;
-    final AppointmentDateIsValid = appointmentDate.isNotEmpty;
+    final AppointmentDateIsValid = appointmentFromDate.isNotEmpty;
     final AppointmentFromTimeValid = appointmentFromTime.isNotEmpty;
+    final AppointmentToDateIsValid = appointmentToDate.isNotEmpty;
     final AppointmentToTimeValid = appointmentToTime.isNotEmpty;
 
     final allFieldsAreValid = NameIsValid &&
@@ -679,7 +718,9 @@ class _AccessFormUIState extends State<AccessFormUI> {
         EmailIsValid && PurposeIsValid && BelongingsIsValid &&
         SectorIsValid &&
         AppointmentDateIsValid &&
-        AppointmentFromTimeValid && AppointmentToTimeValid;
+        AppointmentFromTimeValid &&
+        AppointmentToDateIsValid &&
+        AppointmentToTimeValid;
 
     return allFieldsAreValid;
   }
