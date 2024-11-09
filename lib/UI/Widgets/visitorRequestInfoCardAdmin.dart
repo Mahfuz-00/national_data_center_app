@@ -5,7 +5,7 @@ import '../Pages/Admin Dashboard/admindashboardUI.dart';
 
 /// [AdminVisitorRequestInfoCard] is a [StatelessWidget] that represents a detailed information card
 /// for visitor requests in an admin panel. It displays various details such as the [Name], [Organization],
-/// [Designation], [Phone], [Email], [Sector], [AppointmentDate], [ApplicationID], [Purpose],
+/// [Designation], [Phone], [Email], [Sector], [AppointmentStartDateandTime], [ApplicationID], [Purpose],
 /// [Personnel], [Belongs], and [Status] of the visitor request.
 ///
 /// The widget provides options for the admin to [Accept] or [Decline] the request using two buttons.
@@ -24,8 +24,9 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
   final String Phone;
   final String Email;
   final String Sector;
-  final String AppointmentDate;
-  final String AppointmentTime;
+  final String AppointmentStartDateandTime;
+  final String AppointmentEndDate;
+  final String AppointmentEndTime;
   final int ApplicationID;
   final String Purpose;
   final String Belongs;
@@ -40,8 +41,9 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
     required this.Email,
     required this.Sector,
     required this.ApplicationID,
-    required this.AppointmentDate,
-    required this.AppointmentTime,
+    required this.AppointmentStartDateandTime,
+    required this.AppointmentEndDate,
+    required this.AppointmentEndTime,
     required this.Purpose,
     required this.Belongs,
     required this.Status,
@@ -70,8 +72,8 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final formattedDate = _formatDate(AppointmentDate);
-    final formattedTime = _formatTime(AppointmentDate);
+    final formattedDate = _formatDate(AppointmentStartDateandTime);
+    final formattedTime = _formatTime(AppointmentStartDateandTime);
 
     return Material(
       elevation: 5,
@@ -92,7 +94,7 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
             _buildRow('Email', Email),
             _buildRow('Sector', Sector),
             _buildRow('Appointment Start Time', '$formattedTime, $formattedDate'),
-            _buildRow('Appointment End Time', '$AppointmentTime, $formattedDate'),
+            _buildRow('Appointment End Time', '$AppointmentEndTime, $AppointmentEndDate'),
             _buildRow('Purpose', Purpose),
             _buildRow('Belongings', Belongs),
             _buildRow('Status', Status),

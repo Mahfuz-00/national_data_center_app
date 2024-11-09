@@ -44,7 +44,8 @@ class VisitorDashboardUI extends StatefulWidget {
   State<VisitorDashboardUI> createState() => _VisitorDashboardUIState();
 }
 
-class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBindingObserver{
+class _VisitorDashboardUIState extends State<VisitorDashboardUI>
+    with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Widget> pendingRequests = [];
   List<Widget> acceptedRequests = [];
@@ -102,14 +103,16 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
 
       // Filter out notifications that start with the specified string
       filteredPopUpNotifications = notifications.where((notification) {
-        return notification.startsWith("Your appointment date time has been updated");
+        return notification
+            .startsWith("Your appointment date time has been updated");
       }).toList();
 
       checkAndShowAppointmentUpdateDialog(filteredPopUpNotifications);
 
       // Filter out notifications that start with the specified string
       filteredNotifications = notifications.where((notification) {
-        return !notification.startsWith("Your appointment date time has been updated");
+        return !notification
+            .startsWith("Your appointment date time has been updated");
       }).toList();
 
       await Future.delayed(Duration(seconds: 5));
@@ -130,13 +133,15 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['designation'],
           Email: request['email'],
-          Sector: request['sector'], AppointmentTime: request['to_time'],
+          Sector: request['sector'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
@@ -145,14 +150,15 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
-          AppointmentTime: request['to_time'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
@@ -170,7 +176,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
   void checkAndShowAppointmentUpdateDialog(List<String> notifications) {
     for (String notification in notifications) {
       if (!_isDialogShown &&
-          notification.startsWith('Your appointment date time has been updated')) {
+          notification
+              .startsWith('Your appointment date time has been updated')) {
         _isDialogShown = true;
 
         final parts = notification.split('|');
@@ -178,12 +185,21 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
           final details = parts[1].trim();
           final idMatch = RegExp(r'id-(\d+)').firstMatch(details);
           final sectorMatch = RegExp(r'sector-([A-Za-z]+)').firstMatch(details);
-          final dateTimeMatch = RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})').firstMatch(details);
+          final dateTimeMatch =
+              RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})')
+                  .firstMatch(details);
 
-          final id = idMatch != null ? idMatch.group(1) ?? 'Unknown' : 'Unknown';
-          final sector = sectorMatch != null ? sectorMatch.group(1) ?? 'Unknown' : 'Unknown';
-          final date = dateTimeMatch != null ? dateTimeMatch.group(1) ?? 'Unknown' : 'Unknown';
-          final time = dateTimeMatch != null ? dateTimeMatch.group(2) ?? 'Unknown' : 'Unknown';
+          final id =
+              idMatch != null ? idMatch.group(1) ?? 'Unknown' : 'Unknown';
+          final sector = sectorMatch != null
+              ? sectorMatch.group(1) ?? 'Unknown'
+              : 'Unknown';
+          final date = dateTimeMatch != null
+              ? dateTimeMatch.group(1) ?? 'Unknown'
+              : 'Unknown';
+          final time = dateTimeMatch != null
+              ? dateTimeMatch.group(2) ?? 'Unknown'
+              : 'Unknown';
 
           // Display the notification
           _showAppointmentUpdateDialog(context, notification);
@@ -193,7 +209,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
       }
     }
   }
-
 
   void _showAppointmentUpdateDialog(BuildContext context, String notification) {
     final parts = notification.split('|');
@@ -205,8 +220,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
       // Extract sector, date, and time from the notification details
       final sectorMatch = RegExp(r'sector-([A-Za-z]+)').firstMatch(details);
       final dateTimeMatch =
-      RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})')
-          .firstMatch(details);
+          RegExp(r'(\d{4}-\d{2}-\d{2})[^\d]*(\d{2}:\d{2} [APM]{2})')
+              .firstMatch(details);
 
       final sector = sectorMatch != null ? sectorMatch.group(1) : 'Unknown';
       final date = dateTimeMatch != null ? dateTimeMatch.group(1) : 'Unknown';
@@ -236,7 +251,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
             actions: [
               TextButton(
                 onPressed: () async {
-                  final notificationService = await PopUpNotificationReadApiService.create();
+                  final notificationService =
+                      await PopUpNotificationReadApiService.create();
                   bool isRead = await notificationService.readNotification(id);
 
                   if (isRead) {
@@ -265,35 +281,46 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
     }
   }
 
-  Future<void> _showNotification(String notification, String sector, String date, String time) async {
+  Future<void> _showNotification(
+      String notification, String sector, String date, String time) async {
     // Create BigTextStyleInformation
-    final BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
-      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.', // Full text to be shown
+    final BigTextStyleInformation bigTextStyleInformation =
+        BigTextStyleInformation(
+      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.',
+      // Full text to be shown
       htmlFormatBigText: true, // Optional, enables HTML formatting
       contentTitle: 'Appointment Time Update', // Notification title
       summaryText: '', // Optional, can provide summary text
     );
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
+        AndroidNotificationDetails(
       'appointment_updates_channel', // Unique ID for your notification channel
-      'Appointment Updates',         // User-friendly name
-      channelDescription: 'Notifications related to appointment updates', // Description
-      importance: Importance.max,    // Importance level for the notification
-      priority: Priority.high,        // Priority level for the notification
-      showWhen: true,                // Show the time of the notification
-      styleInformation: bigTextStyleInformation, // Pass the BigTextStyleInformation
+      'Appointment Updates', // User-friendly name
+      channelDescription: 'Notifications related to appointment updates',
+      // Description
+      importance: Importance.max,
+      // Importance level for the notification
+      priority: Priority.high,
+      // Priority level for the notification
+      showWhen: true,
+      // Show the time of the notification
+      styleInformation:
+          bigTextStyleInformation, // Pass the BigTextStyleInformation
     );
 
     final NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      0, // Notification ID (use a unique ID for each notification if you want to update it later)
+      0,
+      // Notification ID (use a unique ID for each notification if you want to update it later)
       'Appointment Time Update', // Notification title
-      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.', // Notification body
+      'Your appointment time in $sector Sector has been updated.\n\nThe new appointment is scheduled for $date at $time.',
+      // Notification body
       platformChannelSpecifics,
-      payload: 'item x', // Optional payload (you can use this to pass additional data)
+      payload:
+          'item x', // Optional payload (you can use this to pass additional data)
     );
   }
 
@@ -318,7 +345,6 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
       });
     });
   }
-
 
   @override
   void dispose() {
@@ -820,7 +846,8 @@ class _VisitorDashboardUIState extends State<VisitorDashboardUI> with WidgetsBin
                               overlayEntry.remove();
                             },
                           ),
-                          if (index < filteredNotifications.length - 1) Divider()
+                          if (index < filteredNotifications.length - 1)
+                            Divider()
                         ],
                       );
                     },
@@ -847,7 +874,3 @@ extension VisitorDashboardInterface on VisitorDashboardUI {
     state.checkAndShowAppointmentUpdateDialog(state.filteredPopUpNotifications);
   }
 }
-
-
-
-

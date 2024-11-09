@@ -28,8 +28,9 @@ class VisitorRequestInfoCard extends StatelessWidget {
   final String Phone;
   final String Email;
   final String Sector;
-  final String AppointmentDate;
-  final String AppointmentTime;
+  final String AppointmentStartDateandTime;
+  final String AppointmentEndDate;
+  final String AppointmentEndTime;
   final String Purpose;
   final String Belongs;
   final String Status;
@@ -42,8 +43,9 @@ class VisitorRequestInfoCard extends StatelessWidget {
     required this.Phone,
     required this.Email,
     required this.Sector,
-    required this.AppointmentDate,
-    required this.AppointmentTime,
+    required this.AppointmentStartDateandTime,
+    required this.AppointmentEndDate,
+    required this.AppointmentEndTime,
     required this.Purpose,
     required this.Belongs,
     required this.Status,
@@ -71,8 +73,8 @@ class VisitorRequestInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final formattedDate = _formatDate(AppointmentDate);
-    final formattedTime = _formatTime(AppointmentDate);
+    final formattedDate = _formatDate(AppointmentStartDateandTime);
+    final formattedTime = _formatTime(AppointmentStartDateandTime);
 
     return Material(
       elevation: 5,
@@ -93,7 +95,7 @@ class VisitorRequestInfoCard extends StatelessWidget {
             _buildRow('Email', Email),
             _buildRow('Sector', Sector),
             _buildRow('Appointment Start Time', '$formattedTime, $formattedDate'),
-            _buildRow('Appointment End Time', '$AppointmentTime, $formattedDate'),
+            _buildRow('Appointment End Time', '$AppointmentEndTime, $AppointmentEndDate'),
             _buildRow('Purpose', Purpose),
             _buildRow('Belongings', Belongs),
             _buildRow('Status', Status),

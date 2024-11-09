@@ -146,7 +146,7 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
@@ -154,7 +154,8 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
-          AppointmentTime: request['to_time'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
@@ -163,14 +164,15 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['designation'],
           Email: request['email'],
           Sector: request['sector'],
-          AppointmentTime: request['to_time'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
@@ -257,7 +259,7 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             Name: request['name'],
             Organization: request['organization'],
             Phone: request['phone'],
-            AppointmentDate: request['appointment_date_time'],
+            AppointmentStartDateandTime: request['appointment_date_time'],
             Purpose: request['purpose'],
             Belongs: request['belong'],
             Status: request['status'],
@@ -265,7 +267,8 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
-            AppointmentTime: request['to_time'],
+            AppointmentEndTime: request['to_time'],
+            AppointmentEndDate: request['to_date'],
           );
         }).toList();
 
@@ -275,14 +278,15 @@ class _AdminDashboardUIState extends State<AdminDashboardUI>
             Name: request['name'],
             Organization: request['organization'],
             Phone: request['phone'],
-            AppointmentDate: request['appointment_date_time'],
+            AppointmentStartDateandTime: request['appointment_date_time'],
             Purpose: request['purpose'],
             Belongs: request['belong'],
             Status: request['status'],
             Designation: request['designation'],
             Email: request['email'],
             Sector: request['sector'],
-            AppointmentTime: request['to_time'],
+            AppointmentEndTime: request['to_time'],
+            AppointmentEndDate: request['to_date'],
           );
         }).toList();
         setState(() {

@@ -32,9 +32,10 @@ class AppointmentRequestModel {
   final String DeviceModel;
   final String DeviceSerial;
   final String DeviceDescription;
-  final String AppointmentDate;
-  final String AppointmentFromTime;
-  final String AppointmentToTime;
+  final String AppointmentStartDate;
+  final String AppointmentStartTime;
+  final String AppointmentEndDate;
+  final String AppointmentEndTime;
 
   AppointmentRequestModel({
     required this.FullName,
@@ -49,9 +50,10 @@ class AppointmentRequestModel {
     required this.DeviceModel,
     required this.DeviceSerial,
     required this.DeviceDescription,
-    required this.AppointmentDate,
-    required this.AppointmentFromTime,
-    required this.AppointmentToTime,
+    required this.AppointmentStartDate,
+    required this.AppointmentStartTime,
+    required this.AppointmentEndDate,
+    required this.AppointmentEndTime,
   });
 
   Map<String, dynamic> toJson() {
@@ -68,9 +70,10 @@ class AppointmentRequestModel {
       'device_model': DeviceModel,
       'device_serial': DeviceSerial,
       'device_description': DeviceDescription,
-      'date': AppointmentDate,
-      'time': AppointmentFromTime,
-      'to_time': AppointmentToTime,
+      'date': AppointmentStartDate,
+      'time': AppointmentStartTime,
+      'to_date': AppointmentEndDate,
+      'to_time': AppointmentEndTime,
     };
   }
 }

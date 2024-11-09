@@ -44,10 +44,11 @@ class AccessFormGuestUI extends StatefulWidget {
 
 class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late TextEditingController _ClockFromcontroller = TextEditingController();
-  late TextEditingController _ClockTocontroller = TextEditingController();
-  late TextEditingController _DateFromcontroller = TextEditingController();
-  late TextEditingController _DateTocontroller = TextEditingController();
+  late TextEditingController _ClockStartTimeController =
+      TextEditingController();
+  late TextEditingController _ClockEndTimeController = TextEditingController();
+  late TextEditingController _DateStartTimeController = TextEditingController();
+  late TextEditingController _DateEndTimeController = TextEditingController();
   late TextEditingController _fullnamecontroller;
   late TextEditingController _NIDcontroller;
   late TextEditingController _organizationnamecontroller;
@@ -61,10 +62,10 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
   late TextEditingController _deviceserialcontroller;
   late TextEditingController _devicedescriptioncontroller;
   late GuestAppointmentModel _connectionRequest;
-  late String appointmentFromDate;
-  late String appointmentToDate;
-  late String appointmentFromTime;
-  late String appointmentToTime;
+  late String appointmentStartDate;
+  late String appointmentEndDate;
+  late String appointmentStartTime;
+  late String appointmentEndTime;
   String _selectedSector = 'Physical Security & Infrastructure';
   FilePickerResult? result;
   bool _isButtonClicked = false;
@@ -100,18 +101,19 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
       DeviceModel: '',
       DeviceSerial: '',
       DeviceDescription: '',
-      AppointmentDate: '',
-      AppointmentFromTime: '',
-      AppointmentToTime: '',
+      AppointmentStartDate: '',
+      AppointmentStartTime: '',
+      AppointmentEndTime: '',
+      AppointmentEndDate: '',
     );
   }
 
   @override
   void dispose() {
-    _ClockFromcontroller.dispose();
-    _ClockTocontroller.dispose();
-    _DateFromcontroller.dispose();
-    _DateTocontroller.dispose();
+    _ClockStartTimeController.dispose();
+    _ClockEndTimeController.dispose();
+    _DateStartTimeController.dispose();
+    _DateEndTimeController.dispose();
     super.dispose();
   }
 
@@ -329,7 +331,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                       height: 10,
                     ),
                     CustomTextFormField(
-                      controller: _DateFromcontroller,
+                      controller: _DateStartTimeController,
                       labelText: 'Appointment Start Date',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -349,10 +351,10 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                           if (selectedDate != null) {
                             final formattedDate =
                                 DateFormat('dd-MM-yyyy').format(selectedDate);
-                            _DateFromcontroller.text = formattedDate;
+                            _DateStartTimeController.text = formattedDate;
                             print(formattedDate);
-                            appointmentFromDate = formattedDate;
-                            print(appointmentFromDate);
+                            appointmentStartDate = formattedDate;
+                            print(appointmentStartDate);
                           } else {
                             print('No date selected');
                           }
@@ -364,7 +366,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                     ),
                     CustomTextFormField(
                       icon: 'Clock',
-                      controller: _ClockFromcontroller,
+                      controller: _ClockStartTimeController,
                       labelText: 'Appointment Start Time',
                       readOnly: true,
                       validator: (value) {
@@ -388,9 +390,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                                 selectedTime.minute,
                               ),
                             );
-                            _ClockFromcontroller.text = formattedTime;
+                            _ClockStartTimeController.text = formattedTime;
                             print(formattedTime);
-                            appointmentFromTime = formattedTime;
+                            appointmentStartTime = formattedTime;
                           } else {
                             print('No time selected');
                           }
@@ -401,7 +403,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                       height: 10,
                     ),
                     CustomTextFormField(
-                      controller: _DateTocontroller,
+                      controller: _DateEndTimeController,
                       labelText: 'Appointment End Date',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -420,11 +422,11 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                         ).then((selectedDate) {
                           if (selectedDate != null) {
                             final formattedDate =
-                            DateFormat('dd-MM-yyyy').format(selectedDate);
-                            _DateTocontroller.text = formattedDate;
+                                DateFormat('dd-MM-yyyy').format(selectedDate);
+                            _DateEndTimeController.text = formattedDate;
                             print(formattedDate);
-                            appointmentToDate = formattedDate;
-                            print(appointmentToDate);
+                            appointmentEndDate = formattedDate;
+                            print(appointmentEndDate);
                           } else {
                             print('No date selected');
                           }
@@ -436,7 +438,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                     ),
                     CustomTextFormField(
                       icon: 'Clock',
-                      controller: _ClockTocontroller,
+                      controller: _ClockEndTimeController,
                       labelText: 'Appointment End Time',
                       readOnly: true,
                       validator: (value) {
@@ -460,9 +462,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                                 selectedTime.minute,
                               ),
                             );
-                            _ClockTocontroller.text = formattedTime;
+                            _ClockEndTimeController.text = formattedTime;
                             print(formattedTime);
-                            appointmentToTime = formattedTime;
+                            appointmentEndTime = formattedTime;
                           } else {
                             print('No time selected');
                           }
@@ -487,7 +489,7 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                               ),
-                              onPressed: _isPicked? null : _pickFile,
+                              onPressed: _isPicked ? null : _pickFile,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -549,7 +551,9 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
                           });
                         },
                         child: _isLoading
-                            ? CircularProgressIndicator( color: Colors.white,)
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : const Text('Submit',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -576,7 +580,16 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'bmg'],
+        allowedExtensions: [
+          'pdf',
+          'doc',
+          'docx',
+          'ppt',
+          'pptx',
+          'xls',
+          'xlsx',
+          'bmg'
+        ],
       );
 
       if (result != null) {
@@ -641,10 +654,10 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     print('Email: ${_emailcontroller.text}');
     print('Purpose: ${_commentcontroller.text}');
     print('Belongings: ${_belongscontroller.text}');
-    print('Appoinment Date: $appointmentFromDate');
-    print('Appointment Start Time: $appointmentFromTime');
-    print('Appoinment End Time: $appointmentToTime');
-    print('Appointment End Time: $appointmentToTime');
+    print('Appointment Start Date: $appointmentStartDate');
+    print('Appointment Start Time: $appointmentStartTime');
+    print('Appointment End Date: $appointmentEndDate');
+    print('Appointment End Time: $appointmentEndTime');
 
     if (_validateAndSave()) {
       print('triggered Validation');
@@ -666,14 +679,15 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
           DeviceModel: _devicemodelcontroller.text,
           DeviceSerial: _deviceserialcontroller.text,
           DeviceDescription: _devicedescriptioncontroller.text,
-          AppointmentDate: appointmentFromDate,
-          AppointmentFromTime: appointmentFromTime,
-          AppointmentToTime: appointmentToTime);
+          AppointmentStartDate: appointmentStartDate,
+          AppointmentStartTime: appointmentStartTime,
+          AppointmentEndTime: appointmentEndTime,
+          AppointmentEndDate: appointmentEndDate);
 
       GuestAppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest, _file)
           .then((response) {
-            _isLoading = false;
+        _isLoading = false;
         print(response);
         print('Visitor request sent successfully!!');
         if (response == 'Visitor Request Already Exist') {
@@ -724,10 +738,10 @@ class _AccessFormGuestUIState extends State<AccessFormGuestUI> {
     final EmailIsValid = _emailcontroller.text.isNotEmpty;
     final PurposeIsValid = _commentcontroller.text.isNotEmpty;
     final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
-    final AppointmentDateIsValid = appointmentFromDate.isNotEmpty;
-    final AppointmentFromTimeValid = appointmentFromTime.isNotEmpty;
-    final AppointmentToDateIsValid = appointmentToDate.isNotEmpty;
-    final AppointmentToTimeValid = appointmentToTime.isNotEmpty;
+    final AppointmentDateIsValid = appointmentStartDate.isNotEmpty;
+    final AppointmentFromTimeValid = appointmentStartTime.isNotEmpty;
+    final AppointmentToDateIsValid = appointmentEndDate.isNotEmpty;
+    final AppointmentToTimeValid = appointmentEndTime.isNotEmpty;
 
     final allFieldsAreValid = NameIsValid &&
         NIDIsValid &&

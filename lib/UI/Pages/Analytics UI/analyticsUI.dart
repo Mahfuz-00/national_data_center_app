@@ -127,7 +127,7 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
@@ -135,7 +135,8 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Designation: request['status'],
           Email: request['status'],
           Sector: request['status'],
-          AppointmentTime: request['to_time'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
@@ -144,14 +145,15 @@ class _AnalyticsUIState extends State<AnalyticsUI>
           Name: request['name'],
           Organization: request['organization'],
           Phone: request['phone'],
-          AppointmentDate: request['appointment_date_time'],
+          AppointmentStartDateandTime: request['appointment_date_time'],
           Purpose: request['purpose'],
           Belongs: request['belong'],
           Status: request['status'],
           Designation: request['status'],
           Email: request['status'],
           Sector: request['status'],
-          AppointmentTime: request['to_time'],
+          AppointmentEndTime: request['to_time'],
+          AppointmentEndDate: request['to_date'],
         );
       }).toList();
 
