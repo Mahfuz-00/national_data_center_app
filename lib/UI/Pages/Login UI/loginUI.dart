@@ -554,7 +554,7 @@ class _LoginUIState extends State<LoginUI> {
 
       print('Mounted Again');
 
-      authCubit.login(userProfile, token);
+      authCubit.login(userProfile, token, userProfile.user);
     } catch (e) {
       print('Error fetching user profile: $e');
     }
