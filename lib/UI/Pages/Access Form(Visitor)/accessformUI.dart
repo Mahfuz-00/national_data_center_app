@@ -9,6 +9,8 @@ import '../../../Data/Models/connectionmodel.dart';
 import '../../Bloc/auth_cubit.dart';
 import '../../Widgets/CustomTextField.dart';
 import '../../Widgets/dropdownfield.dart';
+import '../../Widgets/labelText.dart';
+import '../../Widgets/labelTextTemplate.dart';
 import '../Visitor Dashboard/visitordashboardUI.dart';
 
 /// The [AccessFormUI] class is a StatefulWidget that represents
@@ -50,7 +52,8 @@ class AccessFormUI extends StatefulWidget {
 
 class _AccessFormUIState extends State<AccessFormUI> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late TextEditingController _ClockStartTimeController = TextEditingController();
+  late TextEditingController _ClockStartTimeController =
+      TextEditingController();
   late TextEditingController _ClockEndTimeController = TextEditingController();
   late TextEditingController _DateStartTimeController = TextEditingController();
   late TextEditingController _DateEndTimeController = TextEditingController();
@@ -67,13 +70,15 @@ class _AccessFormUIState extends State<AccessFormUI> {
   late TextEditingController _deviceserialcontroller;
   late TextEditingController _devicedescriptioncontroller;
   late AppointmentRequestModel _connectionRequest;
-  late String appointmentStartDate;
-  late String appointmentEndDate;
-  late String appointmentStartTime;
-  late String appointmentEndTime;
+  late String appointmentStartDate = '';
+  late String appointmentEndDate = '';
+  late String appointmentStartTime = '';
+  late String appointmentEndTime = '';
   bool _isButtonClicked = false;
   String _selectedSector = '';
   bool _isVisible = true;
+  GlobalKey<FormState> globalformpart1key = GlobalKey<FormState>();
+  GlobalKey<FormState> globalformpart2key = GlobalKey<FormState>();
 
   List<DropdownMenuItem<String>> dropdownItems = [
     DropdownMenuItem(
@@ -126,7 +131,8 @@ class _AccessFormUIState extends State<AccessFormUI> {
           DeviceDescription: '',
           AppointmentStartDate: '',
           AppointmentStartTime: '',
-          AppointmentEndTime: '', AppointmentEndDate: '');
+          AppointmentEndTime: '',
+          AppointmentEndDate: '');
       setState(() {
         _isVisible = false;
       });
@@ -158,6 +164,7 @@ class _AccessFormUIState extends State<AccessFormUI> {
             builder: (context, state) {
               if (state is AuthAuthenticated) {
                 final userProfile = state.userProfile;
+                userType = userProfile.user;
                 return InternetConnectionChecker(
                   child: PopScope(
                     /*  canPop: false,*/
@@ -188,22 +195,25 @@ class _AccessFormUIState extends State<AccessFormUI> {
                         child: SingleChildScrollView(
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    height: 25,
-                                  ),
-                                  Text('Access Request Form',
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 25,
+                                ),
+                                Center(
+                                  child: Text('Access Request Form',
                                       style: TextStyle(
                                           fontSize: 30,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'default')),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: Text(
                                       'Please provide correct details in access request form.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -212,404 +222,530 @@ class _AccessFormUIState extends State<AccessFormUI> {
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'default')),
-                                  SizedBox(height: 20),
-                                  CustomTextFormField(
-                                    controller: _fullnamecontroller,
-                                    labelText: 'Full Name',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter your full name';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _NIDcontroller,
-                                    labelText: 'NID or Passport Number',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter your NID or Passport Number';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _organizationnamecontroller,
-                                    labelText: 'Organization',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter the organization yor are representing';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _designationcontroller,
-                                    labelText: 'Designation',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter your designation';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _phonecontroller,
-                                    labelText: 'Mobile Number',
-                                    keyboardType: TextInputType.phone,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(11),
-                                    ],
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter your mobile number';
-                                      }
-                                      if (input.length != 11) {
-                                        return 'Mobile number must be 11 digits';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _emailcontroller,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (input) {
-                                      if (input!.isEmpty) {
-                                        return 'Please enter your email address';
-                                      }
-                                      final emailRegex = RegExp(
-                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                                      if (!emailRegex.hasMatch(input)) {
-                                        return 'Please enter a valid email address';
-                                      }
-                                      return null;
-                                    },
-                                    labelText: 'Email address',
-                                  ),
-                                  SizedBox(height: 10),
-                                  if (userProfile.user == 'ndc_vendor' ||
-                                      userProfile.user == 'ndc_customer') ...[
-                                    DropdownFormField(
-                                      hintText: 'Select Visiting Sector',
-                                      dropdownItems: dropdownItems,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _selectedSector = value ?? '';
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                  if (userProfile.user == 'ndc_internal') ...[
-                                    Container(
-                                      width: screenWidth * 0.9,
-                                      height: screenHeight * 0.075,
-                                      child: TextFormField(
-                                        initialValue: sector,
-                                        readOnly: true,
-                                        style: const TextStyle(
-                                          color:
-                                              Color.fromRGBO(143, 150, 158, 1),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'default',
+                                ),
+                                SizedBox(height: 20),
+                                Form(
+                                    key: globalformpart1key,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Full Name',
                                         ),
-                                        decoration: InputDecoration(
-                                          labelText: 'Visiting Sector',
-                                          labelStyle: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            fontFamily: 'default',
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _fullnamecontroller,
+                                          labelText: 'Full Name',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter your full name';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your NID or Passport Number',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _NIDcontroller,
+                                          labelText: 'NID or Passport Number',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter your NID or Passport Number';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Organization',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller:
+                                              _organizationnamecontroller,
+                                          labelText: 'Organization',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter the organization yor are representing';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Designation',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _designationcontroller,
+                                          labelText: 'Designation',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter your designation';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Phone Number',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _phonecontroller,
+                                          labelText: 'Mobile Number',
+                                          keyboardType: TextInputType.phone,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                            LengthLimitingTextInputFormatter(
+                                                11),
+                                          ],
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter your mobile number';
+                                            }
+                                            if (input.length != 11) {
+                                              return 'Mobile number must be 11 digits';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Email Address',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _emailcontroller,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: (input) {
+                                            if (input!.isEmpty) {
+                                              return 'Please enter your email address';
+                                            }
+                                            final emailRegex = RegExp(
+                                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                            if (!emailRegex.hasMatch(input)) {
+                                              return 'Please enter a valid email address';
+                                            }
+                                            return null;
+                                          },
+                                          labelText: 'Email address',
+                                        ),
+                                        SizedBox(height: 10),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Select Visiting Sector',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        if (userProfile.user == 'ndc_vendor' ||
+                                            userProfile.user ==
+                                                'ndc_customer') ...[
+                                          DropdownFormField(
+                                            hintText: 'Select Visiting Sector',
+                                            dropdownItems: dropdownItems,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _selectedSector = value ?? '';
+                                              });
+                                            },
                                           ),
-                                          alignLabelWithHint: true,
-                                          border: const OutlineInputBorder(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(5)),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  SizedBox(height: 10),
-                                  CustomTextFormField(
-                                    height: true,
-                                    controller: _commentcontroller,
-                                    labelText: 'Purpose of the Visit',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter your purpose of your visit';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _belongscontroller,
-                                    labelText: 'Belongings',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter belongings';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _devicemodelcontroller,
-                                    labelText: 'Device Model (If any)',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter device model';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _deviceserialcontroller,
-                                    labelText: 'Device Serial Number(If any)',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter device serial number';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _devicedescriptioncontroller,
-                                    labelText: 'Device Description (If any)',
-                                    validator: (input) {
-                                      if (input == null || input.isEmpty) {
-                                        return 'Please enter the device description';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _DateStartTimeController,
-                                    labelText: 'Appointment Start Date',
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please select a date';
-                                      }
-                                      return null;
-                                    },
-                                    readOnly: true,
-                                    // Makes the field non-editable
-                                    icon: 'Date',
-                                    // Icon for the date field
-                                    onTap: () {
-                                      showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2020),
-                                        lastDate: DateTime(2100),
-                                      ).then((selectedDate) {
-                                        if (selectedDate != null) {
-                                          final formattedDate =
-                                              DateFormat('dd-MM-yyyy')
-                                                  .format(selectedDate);
-                                          _DateStartTimeController.text =
-                                              formattedDate;
-                                          print(formattedDate);
-                                          appointmentStartDate = formattedDate;
-                                          print(appointmentStartDate);
-                                        } else {
-                                          print('No date selected');
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    icon: 'Clock',
-                                    controller: _ClockStartTimeController,
-                                    labelText: 'Appointment Start Time',
-                                    readOnly: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please select a time';
-                                      }
-                                      return null;
-                                    },
-                                    onTap: () {
-                                      showTimePicker(
-                                        context: context,
-                                        initialTime: TimeOfDay.now(),
-                                      ).then((selectedTime) {
-                                        if (selectedTime != null) {
-                                          String formattedTime =
-                                              DateFormat('h:mm a').format(
-                                            DateTime(
-                                              2020,
-                                              1,
-                                              1,
-                                              selectedTime.hour,
-                                              selectedTime.minute,
-                                            ),
-                                          );
-                                          _ClockStartTimeController.text =
-                                              formattedTime;
-                                          print(formattedTime);
-                                          appointmentStartTime = formattedTime;
-                                        } else {
-                                          print('No time selected');
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    controller: _DateEndTimeController,
-                                    labelText: 'Appointment End Date',
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please select a date';
-                                      }
-                                      return null;
-                                    },
-                                    readOnly: true,
-                                    // Makes the field non-editable
-                                    icon: 'Date',
-                                    // Icon for the date field
-                                    onTap: () {
-                                      showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2020),
-                                        lastDate: DateTime(2100),
-                                      ).then((selectedDate) {
-                                        if (selectedDate != null) {
-                                          final formattedDate =
-                                              DateFormat('dd-MM-yyyy')
-                                                  .format(selectedDate);
-                                          _DateEndTimeController.text =
-                                              formattedDate;
-                                          print(formattedDate);
-                                          appointmentEndDate = formattedDate;
-                                          print(appointmentEndDate);
-                                        } else {
-                                          print('No date selected');
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  CustomTextFormField(
-                                    icon: 'Clock',
-                                    controller: _ClockEndTimeController,
-                                    labelText: 'Appointment End Time',
-                                    readOnly: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please select a time';
-                                      }
-                                      return null;
-                                    },
-                                    onTap: () {
-                                      showTimePicker(
-                                        context: context,
-                                        initialTime: TimeOfDay.now(),
-                                      ).then((selectedTime) {
-                                        if (selectedTime != null) {
-                                          String formattedTime =
-                                              DateFormat('h:mm a').format(
-                                            DateTime(
-                                              2020,
-                                              1,
-                                              1,
-                                              selectedTime.hour,
-                                              selectedTime.minute,
-                                            ),
-                                          );
-                                          _ClockEndTimeController.text =
-                                              formattedTime;
-                                          print(formattedTime);
-                                          appointmentEndTime = formattedTime;
-                                        } else {
-                                          print('No time selected');
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  SizedBox(
-                                    height: 60,
-                                  ),
-                                  Center(
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromRGBO(
-                                            13, 70, 127, 1),
-                                        fixedSize: Size(
-                                            MediaQuery.of(context).size.width *
-                                                0.9,
-                                            MediaQuery.of(context).size.height *
-                                                0.1),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _isButtonClicked = true;
-                                        });
-                                        _connectionRequestForm();
-                                        setState(() {
-                                          _isButtonClicked = false;
-                                        });
-                                      },
-                                      child: _isButtonClicked
-                                          ? CircularProgressIndicator()
-                                          : const Text('Submit',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
+                                        ],
+                                        if (userProfile.user ==
+                                            'ndc_internal') ...[
+                                          Container(
+                                            width: screenWidth * 0.9,
+                                            height: screenHeight * 0.075,
+                                            child: TextFormField(
+                                              initialValue: sector,
+                                              readOnly: true,
+                                              style: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    143, 150, 158, 1),
+                                                fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                                 fontFamily: 'default',
-                                              )),
+                                              ),
+                                              decoration: InputDecoration(
+                                                labelText: 'Visiting Sector',
+                                                labelStyle: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  fontFamily: 'default',
+                                                ),
+                                                alignLabelWithHint: true,
+                                                border:
+                                                    const OutlineInputBorder(
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                          Radius.circular(5)),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                        SizedBox(height: 10),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Purpose of the Visit',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          height: true,
+                                          controller: _commentcontroller,
+                                          labelText: 'Purpose of the Visit',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter your purpose of your visit';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Belongings',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _belongscontroller,
+                                          labelText: 'Belongings',
+                                          validator: (input) {
+                                            if (input == null ||
+                                                input.isEmpty) {
+                                              return 'Please enter belongings';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                LabeledTextWithoutAsterisk(
+                                  text: 'Your device Model',
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                CustomTextFormField(
+                                  controller: _devicemodelcontroller,
+                                  labelText: 'Device Model (If any)',
+                                  validator: (value) {
+                                    // Optional field, no validation needed
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                LabeledTextWithoutAsterisk(
+                                  text: 'Your device serial number',
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                CustomTextFormField(
+                                  controller: _deviceserialcontroller,
+                                  labelText: 'Device Serial Number(If any)',
+                                  validator: (value) {
+                                    // Optional field, no validation needed
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                LabeledTextWithoutAsterisk(
+                                  text: 'Your device description',
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                CustomTextFormField(
+                                  controller: _devicedescriptioncontroller,
+                                  labelText: 'Device Description (If any)',
+                                  validator: (value) {
+                                    // Optional field, no validation needed
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Form(
+                                    key: globalformpart2key,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Appointment Start Date',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _DateStartTimeController,
+                                          labelText: 'Appointment Start Date',
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a date';
+                                            }
+                                            return null;
+                                          },
+                                          readOnly: true,
+                                          // Makes the field non-editable
+                                          icon: 'Date',
+                                          // Icon for the date field
+                                          onTap: () {
+                                            showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime(2100),
+                                            ).then((selectedDate) {
+                                              if (selectedDate != null) {
+                                                final formattedDate =
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(selectedDate);
+                                                _DateStartTimeController.text =
+                                                    formattedDate;
+                                                print(formattedDate);
+                                                appointmentStartDate =
+                                                    formattedDate;
+                                                print(appointmentStartDate);
+                                              } else {
+                                                print('No date selected');
+                                              }
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Appointment Start Time',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          icon: 'Clock',
+                                          controller: _ClockStartTimeController,
+                                          labelText: 'Appointment Start Time',
+                                          readOnly: true,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a time';
+                                            }
+                                            return null;
+                                          },
+                                          onTap: () {
+                                            showTimePicker(
+                                              context: context,
+                                              initialTime: TimeOfDay.now(),
+                                            ).then((selectedTime) {
+                                              if (selectedTime != null) {
+                                                String formattedTime =
+                                                    DateFormat('h:mm a').format(
+                                                  DateTime(
+                                                    2020,
+                                                    1,
+                                                    1,
+                                                    selectedTime.hour,
+                                                    selectedTime.minute,
+                                                  ),
+                                                );
+                                                _ClockStartTimeController.text =
+                                                    formattedTime;
+                                                print(formattedTime);
+                                                appointmentStartTime =
+                                                    formattedTime;
+                                              } else {
+                                                print('No time selected');
+                                              }
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Appointment End Date',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          controller: _DateEndTimeController,
+                                          labelText: 'Appointment End Date',
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a date';
+                                            }
+                                            return null;
+                                          },
+                                          readOnly: true,
+                                          // Makes the field non-editable
+                                          icon: 'Date',
+                                          // Icon for the date field
+                                          onTap: () {
+                                            showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2020),
+                                              lastDate: DateTime(2100),
+                                            ).then((selectedDate) {
+                                              if (selectedDate != null) {
+                                                final formattedDate =
+                                                    DateFormat('dd-MM-yyyy')
+                                                        .format(selectedDate);
+                                                _DateEndTimeController.text =
+                                                    formattedDate;
+                                                print(formattedDate);
+                                                appointmentEndDate =
+                                                    formattedDate;
+                                                print(appointmentEndDate);
+                                              } else {
+                                                print('No date selected');
+                                              }
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        LabeledTextWithAsterisk(
+                                          text: 'Your Appointment End Time',
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        CustomTextFormField(
+                                          icon: 'Clock',
+                                          controller: _ClockEndTimeController,
+                                          labelText: 'Appointment End Time',
+                                          readOnly: true,
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Please select a time';
+                                            }
+                                            return null;
+                                          },
+                                          onTap: () {
+                                            showTimePicker(
+                                              context: context,
+                                              initialTime: TimeOfDay.now(),
+                                            ).then((selectedTime) {
+                                              if (selectedTime != null) {
+                                                String formattedTime =
+                                                    DateFormat('h:mm a').format(
+                                                  DateTime(
+                                                    2020,
+                                                    1,
+                                                    1,
+                                                    selectedTime.hour,
+                                                    selectedTime.minute,
+                                                  ),
+                                                );
+                                                _ClockEndTimeController.text =
+                                                    formattedTime;
+                                                print(formattedTime);
+                                                appointmentEndTime =
+                                                    formattedTime;
+                                              } else {
+                                                print('No time selected');
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                                SizedBox(
+                                  height: 60,
+                                ),
+                                Center(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          const Color.fromRGBO(13, 70, 127, 1),
+                                      fixedSize: Size(
+                                          MediaQuery.of(context).size.width *
+                                              0.9,
+                                          MediaQuery.of(context).size.height *
+                                              0.1),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
                                     ),
+                                    onPressed: () {
+                                      _connectionRequestForm();
+
+                                    },
+                                    child: _isButtonClicked
+                                        ? CircularProgressIndicator()
+                                        : const Text('Submit',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'default',
+                                            )),
                                   ),
-                                  SizedBox(
-                                    height: 20,
-                                  )
-                                ],
-                              ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                )
+                              ],
                             ),
                           ),
                         ),
@@ -627,7 +763,9 @@ class _AccessFormUIState extends State<AccessFormUI> {
   }
 
   void _connectionRequestForm() {
-    _isButtonClicked = true;
+    setState(() {
+      _isButtonClicked = true;
+    });
     if (userType == 'ndc_internal') {
       _selectedSector = 'Physical Security & Infrastructure';
     }
@@ -670,7 +808,9 @@ class _AccessFormUIState extends State<AccessFormUI> {
       AppointmentRequestAPIService()
           .postConnectionRequest(_connectionRequest)
           .then((response) {
-        _isButtonClicked = false;
+        setState(() {
+          _isButtonClicked = false;
+        });
         print('Visitor request sent successfully!!');
         if (response == 'Visitor Request Already Exist') {
           Navigator.pushAndRemoveUntil(
@@ -715,38 +855,52 @@ class _AccessFormUIState extends State<AccessFormUI> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         print('Error sending connection request: $error');
       });
+    } else {
+      setState(() {
+        _isButtonClicked = false;
+      });
+      const snackBar = SnackBar(
+        content: Text('Please fill up all fields properly'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
   bool _validateAndSave() {
-    final NameIsValid = _fullnamecontroller.text.isNotEmpty;
-    final NIDIsValid = _NIDcontroller.text.isNotEmpty;
-    final OrganizationIsValid = _organizationnamecontroller.text.isNotEmpty;
-    final DesignationIsValid = _designationcontroller.text.isNotEmpty;
-    final PhoneIsValid = _phonecontroller.text.isNotEmpty;
-    final EmailIsValid = _emailcontroller.text.isNotEmpty;
-    final PurposeIsValid = _commentcontroller.text.isNotEmpty;
-    final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
-    final SectorIsValid = _selectedSector.isNotEmpty;
-    final AppointmentDateIsValid = appointmentStartDate.isNotEmpty;
-    final AppointmentFromTimeValid = appointmentStartTime.isNotEmpty;
-    final AppointmentToDateIsValid = appointmentEndDate.isNotEmpty;
-    final AppointmentToTimeValid = appointmentEndTime.isNotEmpty;
+    bool check = globalformpart1key.currentState!.validate() &&
+        globalformpart2key.currentState!.validate();
+    if (check) {
+      final NameIsValid = _fullnamecontroller.text.isNotEmpty;
+      final NIDIsValid = _NIDcontroller.text.isNotEmpty;
+      final OrganizationIsValid = _organizationnamecontroller.text.isNotEmpty;
+      final DesignationIsValid = _designationcontroller.text.isNotEmpty;
+      final PhoneIsValid = _phonecontroller.text.isNotEmpty;
+      final EmailIsValid = _emailcontroller.text.isNotEmpty;
+      final PurposeIsValid = _commentcontroller.text.isNotEmpty;
+      final BelongingsIsValid = _belongscontroller.text.isNotEmpty;
+      final SectorIsValid = _selectedSector.isNotEmpty;
+      final AppointmentDateIsValid = appointmentStartDate.isNotEmpty;
+      final AppointmentFromTimeValid = appointmentStartTime.isNotEmpty;
+      final AppointmentToDateIsValid = appointmentEndDate.isNotEmpty;
+      final AppointmentToTimeValid = appointmentEndTime.isNotEmpty;
 
-    final allFieldsAreValid = NameIsValid &&
-        NIDIsValid &&
-        OrganizationIsValid &&
-        DesignationIsValid &&
-        PhoneIsValid &&
-        EmailIsValid &&
-        PurposeIsValid &&
-        BelongingsIsValid &&
-        SectorIsValid &&
-        AppointmentDateIsValid &&
-        AppointmentFromTimeValid &&
-        AppointmentToDateIsValid &&
-        AppointmentToTimeValid;
+      final allFieldsAreValid = NameIsValid &&
+          NIDIsValid &&
+          OrganizationIsValid &&
+          DesignationIsValid &&
+          PhoneIsValid &&
+          EmailIsValid &&
+          PurposeIsValid &&
+          BelongingsIsValid &&
+          SectorIsValid &&
+          AppointmentDateIsValid &&
+          AppointmentFromTimeValid &&
+          AppointmentToDateIsValid &&
+          AppointmentToTimeValid;
 
-    return allFieldsAreValid;
+      return allFieldsAreValid;
+    } else {
+      return false;
+    }
   }
 }
