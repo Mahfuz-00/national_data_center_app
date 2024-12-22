@@ -55,6 +55,7 @@ dependencies:
   cached_network_image: ^3.3.1
   package_info_plus: ^5.0.1
   flutter_secure_storage:
+  in_app_update:
 
 dev_dependencies:
   flutter_test:

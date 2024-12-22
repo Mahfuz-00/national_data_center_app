@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:in_app_update/in_app_update.dart';
 import '../../../Data/Data Sources/API Service (Profile)/apiserviceprofile.dart';
 import '../../../Data/Models/profilemodel.dart';
 import '../../Bloc/auth_cubit.dart';
@@ -55,7 +56,74 @@ class _SplashScreenUIState extends State<SplashScreenUI>
         .animate(
             CurvedAnimation(parent: animationController, curve: Curves.easeIn));
 
+    checkForUpdate(context);
     _checkAuthAndNavigate(context);
+  }
+
+  void checkForUpdate(BuildContext context) async {
+    // Check for available updates
+    AppUpdateInfo updateInfo = await InAppUpdate.checkForUpdate();
+
+    if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+      // Show a dialog to inform the user about the update
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              "Update Available",
+              style: TextStyle(
+                color: Color.fromRGBO(13, 70, 127, 1),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'default',
+              ),
+            ),
+            content: Text(
+              "A new version of the app is available. Please update to the latest version.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'default',
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Trigger the immediate update
+                  InAppUpdate.performImmediateUpdate();
+                },
+                child: Text(
+                  "Update",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Close the dialog without updating
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Later",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'default',
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
