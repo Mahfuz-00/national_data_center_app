@@ -107,7 +107,7 @@ class AdminVisitorRequestInfoCard extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(25, 192, 122, 1),
-                      fixedSize: Size(MediaQuery.of(context).size.width * 0.35,
+                      fixedSize: Size(MediaQuery.of(context).size.width * 0.33,
                           MediaQuery.of(context).size.height * 0.06),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
