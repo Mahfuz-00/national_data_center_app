@@ -1085,7 +1085,7 @@ class _SecurityAdminDashboardUIState extends State<SecurityAdminDashboardUI> {
                         ),
                       ),
                       bottomNavigationBar: Container(
-                        height: screenHeight * 0.08,
+                        height: screenHeight * 0.082,
                         color: const Color.fromRGBO(13, 70, 127, 1),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
