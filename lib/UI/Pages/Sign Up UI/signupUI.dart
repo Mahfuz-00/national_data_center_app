@@ -425,7 +425,7 @@ class _SignupUIState extends State<SignupUI> {
                                     ))),
                           ])),
                       Footer(
-                        backgroundColor: Color.fromRGBO(246, 246, 246, 255),
+                        backgroundColor: Colors.grey[100],
                         alignment: Alignment.bottomCenter,
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
